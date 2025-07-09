@@ -10,3 +10,40 @@ module.exports = function (api) {
     ],
   };
 };
+
+// module.exports = function (api) {
+//   api.cache(true);
+//   return {
+//     presets: [
+//       ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+//     ],
+//     plugins: [
+//       "nativewind/babel", // ✅ Move here
+//       "react-native-reanimated/plugin", // ✅ Always LAST
+//     ],
+//   };
+// };
+
+// module.exports = function (api) {
+//   api.cache(true);
+//   return {
+//     presets: [
+//       ["babel-preset-expo", { jsxImportSource: "nativewind" }]
+//     ],
+//     plugins: [
+//       "nativewind/babel",
+//       "react-native-reanimated/plugin" // Must be LAST
+//     ]
+//   };
+// };
+
+// module.exports = function (api) {
+//   api.cache(true);
+//   return {
+//     presets: ["babel-preset-expo"],
+//     plugins: [
+//       ["nativewind/babel"],
+//       "react-native-reanimated/plugin" // 👈 must be last
+//     ]
+//   };
+// };

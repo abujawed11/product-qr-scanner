@@ -48,3 +48,57 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+```
+react_qr_scanner
+├─ app
+│  ├─ (auth)
+│  │  ├─ login.tsx
+│  │  ├─ register.tsx
+│  │  └─ _layout.tsx
+│  ├─ (main)
+│  │  ├─ dashboard
+│  │  │  ├─ index.tsx
+│  │  │  └─ my-orders.tsx
+│  │  ├─ notifications.tsx
+│  │  ├─ profile.tsx
+│  │  ├─ settings.tsx
+│  │  ├─ support.tsx
+│  │  ├─ warranty
+│  │  │  ├─ claim-form.tsx
+│  │  │  ├─ claim-status.tsx
+│  │  │  └─ warranty-card.tsx
+│  │  └─ _layout.tsx
+│  ├─ index.tsx
+│  └─ _layout.tsx
+├─ app.json
+├─ assets
+│  ├─ fonts
+│  │  └─ SpaceMono-Regular.ttf
+│  └─ images
+│     ├─ adaptive-icon.png
+│     ├─ favicon.png
+│     ├─ icon.png
+│     ├─ partial-react-logo.png
+│     ├─ react-logo.png
+│     ├─ react-logo@2x.png
+│     ├─ react-logo@3x.png
+│     └─ splash-icon.png
+├─ babel.config.js
+├─ components
+├─ context
+│  ├─ AuthContext.tsx
+│  ├─ NotificationContext.tsx
+│  └─ ThemeContext.tsx
+├─ eslint.config.js
+├─ global.css
+├─ metro.config.js
+├─ nativewind-env.d.ts
+├─ package-lock.json
+├─ package.json
+├─ README.md
+├─ services
+├─ tailwind.config.js
+└─ tsconfig.json
+
+```
