@@ -1,3 +1,16 @@
+// module.exports = function (api) {
+//   api.cache(true);
+//   return {
+//     presets: [
+//       ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+//       "nativewind/babel",
+//     ],
+//     plugins: [
+//       "react-native-reanimated/plugin", // ✅ This must be the last plugin
+//     ],
+//   };
+// };
+
 module.exports = function (api) {
   api.cache(true);
   return {
@@ -5,11 +18,24 @@ module.exports = function (api) {
       ["babel-preset-expo", { jsxImportSource: "nativewind" }],
       "nativewind/babel",
     ],
-    plugins: [
-      "react-native-reanimated/plugin", // ✅ This must be the last plugin
-    ],
   };
 };
+
+// module.exports = function (api) {
+//   api.cache(true);
+//   return {
+//     presets: [
+//       ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+//     ],
+//     plugins: [
+//       "nativewind/babel",
+//       "expo-router/babel",               // ✅ Required for expo-router 5.x
+//       "react-native-reanimated/plugin",  // ✅ Must be last
+//     ],
+//   };
+// };
+
+
 
 // module.exports = function (api) {
 //   api.cache(true);

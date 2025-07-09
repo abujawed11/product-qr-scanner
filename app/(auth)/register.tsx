@@ -1,5 +1,6 @@
 import { BASE_URL } from '@/utils/constants';
 import axios from 'axios';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { twMerge } from 'tailwind-merge';
@@ -45,14 +46,16 @@ export default function RegisterScreen() {
     const [otp, setOtp] = useState('');
     const [otpSent, setOtpSent] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
+    // const [message, setMessage] = useState('');
 
     const sendOTP = async () => {
         try {
             console.log("Sending OTP to:", email);
             setLoading(true);
+
             const res = await axios.post(`${BASE_URL}/send-otp/`, { email });
             setOtpSent(true);
+            // console.log(res)
             Alert.alert('OTP sent successfully');
             // console.log("Sending OTP success");
         } catch (err: any) {
@@ -65,7 +68,8 @@ export default function RegisterScreen() {
 
     const register = async () => {
         if (password !== confirmPassword) {
-            return setMessage('Passwords do not match');
+            // return setMessage('Passwords do not match');
+            Alert.alert('Passwords do not match');
         }
 
         try {
@@ -78,9 +82,14 @@ export default function RegisterScreen() {
                 otp,
             });
 
-            setMessage('Registration successful. Please login.');
+            Alert.alert("Success", "Registration successful!", [
+                { text: "Login Now", onPress: () => router.replace("/(auth)/login") },
+            ]);
+
+            // setMessage('Registration successful. Please login.');
         } catch (err: any) {
-            setMessage(err.response?.data?.error || 'Registration failed.');
+            // setMessage(err.response?.data?.error || 'Registration failed.');
+            Alert.alert(err.response?.data?.error || 'Registration failed.');
         } finally {
             setLoading(false);
         }
@@ -136,10 +145,17 @@ export default function RegisterScreen() {
                             >
                                 <Text className="text-black text-center font-bold">Register</Text>
                             </TouchableOpacity>
+
                         </>
                     )}
-
-                    {message ? <Text className="text-center text-red-500 mt-2">{message}</Text> : null}
+                    <TouchableOpacity
+                        className="mt-4"
+                        onPress={() => router.push('/login')} // Adjust this as per your router/navigation setup
+                    >
+                        <Text className="text-center text-sm text-gray-600">
+                            Already have an account? <Text className="text-yellow-600 font-semibold">Login</Text>
+                        </Text>
+                    </TouchableOpacity>
                 </ScrollView>
             </KeyboardAvoidingView>
         </View>
