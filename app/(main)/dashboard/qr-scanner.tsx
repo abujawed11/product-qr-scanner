@@ -185,32 +185,71 @@ const QRScanner = () => {
     const router = useRouter();
 
 
+    // useFocusEffect(
+    //     React.useCallback(() => {
+    //         const onBackPress = () => {
+    //             router.replace('/(main)/dashboard');
+    //             return true; // Prevent default back behavior
+    //         };
+    //         const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    //         return () => subscription.remove();
+    //         // BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+    //         // return () => {
+    //         //   BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    //         // };
+    //     }, [])
+    // );
+
     useFocusEffect(
         React.useCallback(() => {
+            // Reset scanned so QR scanner works every time
+            setScanned(false);
+
             const onBackPress = () => {
                 router.replace('/(main)/dashboard');
-                return true; // Prevent default back behavior
+                return true;
             };
-            const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-            return () => subscription.remove();
-            // BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
-            // return () => {
-            //   BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-            // };
+            const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+            return () => {
+                subscription.remove();
+            };
         }, [])
     );
+
 
 
     useEffect(() => {
         requestPermission();
     }, []);
 
+    // const handleBarcodeScanned = (result: BarcodeScanningResult) => {
+    //     if (scanned) return;
+    //     setScanned(true);
+    //     Alert.alert('QR Scanned', result.data);
+    //     // router.back();
+    //     router.replace('/(main)/dashboard');
+    // };
     const handleBarcodeScanned = (result: BarcodeScanningResult) => {
         if (scanned) return;
         setScanned(true);
-        Alert.alert('QR Scanned', result.data);
-        router.back();
+
+        try {
+            const parsed = JSON.parse(result.data);
+            router.push({
+                pathname: '/(main)/order-details',
+                params: {
+                    customerId: parsed.customerId,
+                    orderId: parsed.orderId,
+                    kitId: parsed.kitId,
+                },
+            });
+        } catch (e) {
+            Alert.alert('Invalid QR code', 'The QR data is not valid JSON.');
+            setScanned(false);
+        }
     };
 
     if (!permission?.granted) {
