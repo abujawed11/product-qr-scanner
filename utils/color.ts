@@ -1,5 +1,5 @@
 export const COLORS = {
-  background: '#FFF8DC',
+  background: '#FAD90E',
   fieldBg: '#ffffff',
   text: '#000000',
   placeholder: '#000000',
@@ -7,3 +7,7 @@ export const COLORS = {
   border: '#cccccc',
   primary: '#FACC15', // yellow-400
 };
+
+
+// utils/color.ts
+export const BACKGROUND_COLOR = '#FAD90E';
