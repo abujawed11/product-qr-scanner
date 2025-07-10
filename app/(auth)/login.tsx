@@ -52,7 +52,7 @@ export default function LoginScreen() {
             router.replace("/dashboard");
         } catch (err: any) {
             console.error('Login error:', err);
-      
+
             Alert.alert('Login Failed', err.message || 'Invalid credentials');
         } finally {
             setLoading(false);
@@ -98,8 +98,12 @@ export default function LoginScreen() {
                             Don’t have an account? <Text className="text-yellow-600 font-semibold">Register</Text>
                         </Text>
                     </TouchableOpacity>
+                    <TouchableOpacity onPress={() => router.push('/forgot-password')}>
+                        <Text className="text-yellow-600 text-center font-semibold py-2">Forgot Password?</Text>
+                    </TouchableOpacity>
 
-                    
+
+
                 </ScrollView>
             </KeyboardAvoidingView>
         </View>

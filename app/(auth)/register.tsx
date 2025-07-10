@@ -1,3 +1,4 @@
+import api from '@/utils/api';
 import { BASE_URL } from '@/utils/constants';
 import axios from 'axios';
 import { router } from 'expo-router';
@@ -53,7 +54,11 @@ export default function RegisterScreen() {
             console.log("Sending OTP to:", email);
             setLoading(true);
 
-            const res = await axios.post(`${BASE_URL}/send-otp/`, { email });
+            // const res = await axios.post(`${BASE_URL}/send-otp/`, { email });
+            await api.post('/send-otp/', {
+                email: email,
+                purpose: 'register', // or 'reset'
+            });
             setOtpSent(true);
             // console.log(res)
             Alert.alert('OTP sent successfully');
