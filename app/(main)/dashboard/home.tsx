@@ -39,9 +39,10 @@
 
 import { useAuth } from '@/context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Alert, BackHandler, Text, TouchableOpacity, View } from 'react-native';
+ // Adjust the import path as needed
 
 const HomeScreen = () => {
   const router = useRouter();
@@ -51,6 +52,24 @@ const HomeScreen = () => {
   const [customerId, setCustomerId] = useState('CUST123');
   const [orders, setOrders] = useState({ total: 10, delivered: 7, pending: 3 });
 
+    useFocusEffect(() => {
+    const onBackPress = () => {
+      Alert.alert(
+        'Exit App',
+        'Are you sure you want to exit?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Exit', onPress: () => BackHandler.exitApp() },
+        ],
+        { cancelable: true }
+      );
+      return true; // prevent default behavior (going back)
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => subscription.remove();
+  });
+
   useEffect(() => {
     // fetch user/orders from context or backend here
   }, []);
@@ -58,13 +77,14 @@ const HomeScreen = () => {
   const openScanner = () => {
     router.push('/(main)/dashboard/qr-scanner');
   };
+  console.log(user)
 
   return (
     <View className="flex-1 bg-black px-6 pt-14">
       {/* Header */}
       <Text className="text-white text-xl font-bold">Hi {user?.username}</Text>
       <Text className="text-white text-lg">Welcome to Sunrack Warranty Portal</Text>
-      <Text className="text-yellow-400 text-base font-semibold mt-1">Cust ID: {customerId}</Text>
+      <Text className="text-yellow-400 text-base font-semibold mt-1">Cust ID: {user?.customer_id}</Text>
 
       {/* Order Summary */}
       <View className="mt-10 bg-yellow-400 rounded-2xl p-6">

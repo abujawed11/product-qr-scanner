@@ -1,5 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
-import { AntDesign, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign, Entypo, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -28,10 +28,38 @@ const CustomDrawer = (props: any) => {
       </View>
 
       <View className="mt-6">
-        <DrawerItem label="Home" onPress={() => router.push('/dashboard')} icon={({ size }) => <Entypo name="home" size={size} color="#facc15" />} labelStyle={{ color: '#facc15', fontWeight: 'bold' }} style={{ backgroundColor: 'transparent' }} />
-        <DrawerItem label="Profile" onPress={() => router.push('/profile')} icon={({ size }) => <AntDesign name="profile" size={size} color="#facc15" />} labelStyle={{ color: '#facc15', fontWeight: 'bold' }} style={{ backgroundColor: 'transparent' }} />
-        <DrawerItem label="About" onPress={() => router.push('/about')} icon={({ size }) => <AntDesign name="infocirlce" size={size} color="#facc15" />} labelStyle={{ color: '#facc15', fontWeight: 'bold' }} style={{ backgroundColor: 'transparent' }} />
-        <DrawerItem label="Settings" onPress={() => router.push('/settings')} icon={({ size }) => <AntDesign name="setting" size={size} color="#facc15" />} labelStyle={{ color: '#facc15', fontWeight: 'bold' }} style={{ backgroundColor: 'transparent' }} />
+        <DrawerItem
+          label="Home"
+          onPress={() => router.push('/dashboard')}
+          icon={({ size }) => <Entypo name="home" size={size} color="#facc15" />}
+          labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
+          style={{ backgroundColor: 'transparent' }}
+        />
+
+        <DrawerItem
+          label="Orders"
+          onPress={() => router.push('/all-orders')}
+          icon={({ size }) => <FontAwesome5 name="box-open" size={24} color="#facc15" />}
+          labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
+          style={{ backgroundColor: 'transparent' }}
+        />
+
+        <DrawerItem
+          label="About"
+          onPress={() => router.push('/about')}
+          icon={({ size }) => <AntDesign name="infocirlce" size={size} color="#facc15" />}
+          labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
+          style={{ backgroundColor: 'transparent' }}
+        />
+
+        <DrawerItem
+          label="Settings"
+          onPress={() => router.push('/settings')}
+          icon={({ size }) => <AntDesign name="setting" size={size} color="#facc15" />}
+          labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
+          style={{ backgroundColor: 'transparent' }}
+        />
+
       </View>
 
       <View className="mt-auto border-t border-yellow-400">

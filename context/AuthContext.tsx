@@ -220,16 +220,17 @@
 //   return context;
 // };
 
+import { User } from '@/types/user.types';
 import api from '@/utils/api';
 import * as SecureStore from 'expo-secure-store';
 import { jwtDecode } from 'jwt-decode';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-interface User {
-  id: number;
-  username: string;
-  email: string;
-}
+// interface User {
+//   id: number;
+//   username: string;
+//   email: string;
+// }
 
 interface AuthContextType {
   user: User | null;

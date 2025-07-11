@@ -41,8 +41,8 @@ export default function DashboardLayout() {
       {[
         { name: 'index', title: 'Home' },
         { name: 'my-orders', title: 'My Orders' },
-        // { name: 'create-task', title: 'Create Task' },
-        // { name: 'task-progress/[taskId]', title: 'Task Progress' },
+        { name: 'all-orders', title: 'All Orders' },
+        { name: 'order-details', title: 'Order Details' },
         // { name: 'tasks/[taskId]/update', title: 'Update Task' },
         // { name: 'my-tasks', title: 'My Tasks' },
         { name: 'notifications', title: 'Notifications' },
