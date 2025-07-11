@@ -169,6 +169,139 @@
 
 
 
+// import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+// import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
+// import { useRouter } from 'expo-router';
+// import React, { useEffect, useState } from 'react';
+// import { Alert, BackHandler, Dimensions, Text, View } from 'react-native';
+
+// const { width } = Dimensions.get('window');
+// const SCAN_BOX_SIZE = width * 0.7;
+
+// const QRScanner = () => {
+//     const [permission, requestPermission] = useCameraPermissions();
+//     const [scanned, setScanned] = useState(false);
+//     const isFocused = useIsFocused();
+//     const router = useRouter();
+
+
+//     // useFocusEffect(
+//     //     React.useCallback(() => {
+//     //         const onBackPress = () => {
+//     //             router.replace('/(main)/dashboard');
+//     //             return true; // Prevent default back behavior
+//     //         };
+//     //         const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+//     //         return () => subscription.remove();
+//     //         // BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+//     //         // return () => {
+//     //         //   BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+//     //         // };
+//     //     }, [])
+//     // );
+
+//     useFocusEffect(
+//         React.useCallback(() => {
+//             // Reset scanned so QR scanner works every time
+//             setScanned(false);
+
+//             const onBackPress = () => {
+//                 router.replace('/(main)/dashboard');
+//                 return true;
+//             };
+
+//             const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+//             return () => {
+//                 subscription.remove();
+//             };
+//         }, [])
+//     );
+
+
+
+//     useEffect(() => {
+//         requestPermission();
+//     }, []);
+
+//     // const handleBarcodeScanned = (result: BarcodeScanningResult) => {
+//     //     if (scanned) return;
+//     //     setScanned(true);
+//     //     Alert.alert('QR Scanned', result.data);
+//     //     // router.back();
+//     //     router.replace('/(main)/dashboard');
+//     // };
+//     const handleBarcodeScanned = (result: BarcodeScanningResult) => {
+//         if (scanned) return;
+//         setScanned(true);
+
+//         try {
+//             const parsed = JSON.parse(result.data);
+//             router.push({
+//                 pathname: '/(main)/order-details',
+//                 params: {
+//                     customerId: parsed.customerId,
+//                     orderId: parsed.orderId,
+//                     kitId: parsed.kitId,
+//                 },
+//             });
+//         } catch (e) {
+//             Alert.alert('Invalid QR code', 'The QR data is not valid JSON.');
+//             setScanned(false);
+//         }
+//     };
+
+//     if (!permission?.granted) {
+//         return (
+//             <View className="flex-1 justify-center items-center bg-black">
+//                 <Text className="text-white text-base">Camera permission not granted.</Text>
+//             </View>
+//         );
+//     }
+
+//     return (
+//         <View className="flex-1 relative bg-black">
+//             {isFocused && (
+//                 <CameraView
+//                     style={{ flex: 1 }}
+//                     onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
+//                     barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+//                 />
+//             )}
+
+//             {/* Dimmed Overlay with Transparent Scan Box */}
+//             <View className="absolute inset-0">
+//                 {/* Top */}
+//                 <View className="flex-1 bg-black/60" />
+
+//                 {/* Middle (Scan Box Row) */}
+//                 <View className="flex-row justify-center items-center">
+//                     <View className="flex-1 bg-black/60" />
+
+//                     <View
+//                         className="border-4 border-yellow-400 bg-transparent"
+//                         style={{ width: SCAN_BOX_SIZE, height: SCAN_BOX_SIZE }}
+//                     />
+
+//                     <View className="flex-1 bg-black/60" />
+//                 </View>
+
+//                 {/* Bottom */}
+//                 <View className="flex-1 bg-black/60" />
+//             </View>
+
+//             {/* Instruction Text */}
+//             <Text className="absolute bottom-16 self-center text-white bg-black/60 px-4 py-2 rounded-lg text-base">
+//                 Align QR code inside the square
+//             </Text>
+//         </View>
+//     );
+// };
+
+// export default QRScanner;
+
+import api from '@/utils/api';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter } from 'expo-router';
@@ -179,126 +312,103 @@ const { width } = Dimensions.get('window');
 const SCAN_BOX_SIZE = width * 0.7;
 
 const QRScanner = () => {
-    const [permission, requestPermission] = useCameraPermissions();
-    const [scanned, setScanned] = useState(false);
-    const isFocused = useIsFocused();
-    const router = useRouter();
+  const [permission, requestPermission] = useCameraPermissions();
+  const [scanned, setScanned] = useState(false);
+  const isFocused = useIsFocused();
+  const router = useRouter();
 
+  useFocusEffect(
+    React.useCallback(() => {
+      setScanned(false); // Reset scanner on focus
 
-    // useFocusEffect(
-    //     React.useCallback(() => {
-    //         const onBackPress = () => {
-    //             router.replace('/(main)/dashboard');
-    //             return true; // Prevent default back behavior
-    //         };
-    //         const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    //         return () => subscription.remove();
-    //         // BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      const onBackPress = () => {
+        router.replace('/(main)/dashboard');
+        return true;
+      };
 
-    //         // return () => {
-    //         //   BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-    //         // };
-    //     }, [])
-    // );
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => subscription.remove();
+    }, [])
+  );
 
-    useFocusEffect(
-        React.useCallback(() => {
-            // Reset scanned so QR scanner works every time
-            setScanned(false);
+  useEffect(() => {
+    requestPermission();
+  }, []);
 
-            const onBackPress = () => {
-                router.replace('/(main)/dashboard');
-                return true;
-            };
+  const handleBarcodeScanned = async (result: BarcodeScanningResult) => {
+    if (scanned) return;
+    setScanned(true);
 
-            const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    try {
+      const parsed = JSON.parse(result.data);
+      const { customerId, orderId, locationId } = parsed;
 
-            return () => {
-                subscription.remove();
-            };
-        }, [])
-    );
+      if (!customerId || !orderId || !locationId) {
+        throw new Error('Missing required fields');
+      }
 
+      console.log(`Scanned data: ${JSON.stringify(parsed)}`);
 
+      // ✅ Call backend API to save scanned order
+      await api.post('/save-order/', {
+        customerId,
+        orderId,
+        locationId
+      });
 
-    useEffect(() => {
-        requestPermission();
-    }, []);
+      // ✅ Navigate to details page
+      router.push({
+        pathname: '/(main)/order-details',
+        params: { customerId, orderId }
+      });
 
-    // const handleBarcodeScanned = (result: BarcodeScanningResult) => {
-    //     if (scanned) return;
-    //     setScanned(true);
-    //     Alert.alert('QR Scanned', result.data);
-    //     // router.back();
-    //     router.replace('/(main)/dashboard');
-    // };
-    const handleBarcodeScanned = (result: BarcodeScanningResult) => {
-        if (scanned) return;
-        setScanned(true);
-
-        try {
-            const parsed = JSON.parse(result.data);
-            router.push({
-                pathname: '/(main)/order-details',
-                params: {
-                    customerId: parsed.customerId,
-                    orderId: parsed.orderId,
-                    kitId: parsed.kitId,
-                },
-            });
-        } catch (e) {
-            Alert.alert('Invalid QR code', 'The QR data is not valid JSON.');
-            setScanned(false);
-        }
-    };
-
-    if (!permission?.granted) {
-        return (
-            <View className="flex-1 justify-center items-center bg-black">
-                <Text className="text-white text-base">Camera permission not granted.</Text>
-            </View>
-        );
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Invalid QR code or server error.');
+      setScanned(false);
     }
+  };
 
+  if (!permission?.granted) {
     return (
-        <View className="flex-1 relative bg-black">
-            {isFocused && (
-                <CameraView
-                    style={{ flex: 1 }}
-                    onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
-                    barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
-                />
-            )}
-
-            {/* Dimmed Overlay with Transparent Scan Box */}
-            <View className="absolute inset-0">
-                {/* Top */}
-                <View className="flex-1 bg-black/60" />
-
-                {/* Middle (Scan Box Row) */}
-                <View className="flex-row justify-center items-center">
-                    <View className="flex-1 bg-black/60" />
-
-                    <View
-                        className="border-4 border-yellow-400 bg-transparent"
-                        style={{ width: SCAN_BOX_SIZE, height: SCAN_BOX_SIZE }}
-                    />
-
-                    <View className="flex-1 bg-black/60" />
-                </View>
-
-                {/* Bottom */}
-                <View className="flex-1 bg-black/60" />
-            </View>
-
-            {/* Instruction Text */}
-            <Text className="absolute bottom-16 self-center text-white bg-black/60 px-4 py-2 rounded-lg text-base">
-                Align QR code inside the square
-            </Text>
-        </View>
+      <View className="flex-1 justify-center items-center bg-black">
+        <Text className="text-white text-base">Camera permission not granted.</Text>
+      </View>
     );
+  }
+
+  return (
+    <View className="flex-1 relative bg-black">
+      {isFocused && (
+        <CameraView
+          style={{ flex: 1 }}
+          onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
+          barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+        />
+      )}
+
+      {/* Dimmed Overlay */}
+      <View className="absolute inset-0">
+        <View className="flex-1 bg-black/60" />
+        <View className="flex-row justify-center items-center">
+          <View className="flex-1 bg-black/60" />
+          <View
+            className="border-4 border-yellow-400 bg-transparent"
+            style={{ width: SCAN_BOX_SIZE, height: SCAN_BOX_SIZE }}
+          />
+          <View className="flex-1 bg-black/60" />
+        </View>
+        <View className="flex-1 bg-black/60" />
+      </View>
+
+      <Text className="absolute bottom-16 self-center text-white bg-black/60 px-4 py-2 rounded-lg text-base">
+        Align QR code inside the square
+      </Text>
+    </View>
+  );
 };
 
 export default QRScanner;
+
 
 
