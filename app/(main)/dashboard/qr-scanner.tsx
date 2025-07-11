@@ -301,39 +301,159 @@
 
 // export default QRScanner;
 
+// import api from '@/utils/api';
+// import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+// import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
+// import { useRouter } from 'expo-router';
+// import React, { useEffect, useState } from 'react';
+// import { Alert, BackHandler, Dimensions, Text, View } from 'react-native';
+
+// const { width } = Dimensions.get('window');
+// const SCAN_BOX_SIZE = width * 0.7;
+
+// const QRScanner = () => {
+//   const [permission, requestPermission] = useCameraPermissions();
+//   const [scanned, setScanned] = useState(false);
+//   const isFocused = useIsFocused();
+//   const router = useRouter();
+
+//   useFocusEffect(
+//     React.useCallback(() => {
+//       setScanned(false); // Reset scanner on focus
+
+//       const onBackPress = () => {
+//         router.replace('/(main)/dashboard');
+//         return true;
+//       };
+
+//       const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+//       return () => subscription.remove();
+//     }, [])
+//   );
+
+//   useEffect(() => {
+//     requestPermission();
+//   }, []);
+
+//   const handleBarcodeScanned = async (result: BarcodeScanningResult) => {
+//     if (scanned) return;
+//     setScanned(true);
+
+//     try {
+//       const parsed = JSON.parse(result.data);
+//       const { customerId, orderId, locationId } = parsed;
+
+//       if (!customerId || !orderId || !locationId) {
+//         throw new Error('Missing required fields');
+//       }
+
+//       console.log(`Scanned data: ${JSON.stringify(parsed)}`);
+
+//       // ✅ Call backend API to save scanned order
+//       await api.post('/save-order/', {
+//         customerId,
+//         orderId,
+//         locationId
+//       });
+
+//       // ✅ Navigate to details page
+//       router.push({
+//         pathname: '/(main)/order-details',
+//         params: { customerId, orderId }
+//       });
+
+//     } catch (error) {
+//       console.error(error);
+//       Alert.alert('Error', 'Invalid QR code or server error.');
+//       setScanned(false);
+//     }
+//   };
+
+//   if (!permission?.granted) {
+//     return (
+//       <View className="flex-1 justify-center items-center bg-black">
+//         <Text className="text-white text-base">Camera permission not granted.</Text>
+//       </View>
+//     );
+//   }
+
+//   return (
+//     <View className="flex-1 relative bg-black">
+//       {isFocused && (
+//         <CameraView
+//           style={{ flex: 1 }}
+//           onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
+//           barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+//         />
+//       )}
+
+//       {/* Dimmed Overlay */}
+//       <View className="absolute inset-0">
+//         <View className="flex-1 bg-black/60" />
+//         <View className="flex-row justify-center items-center">
+//           <View className="flex-1 bg-black/60" />
+//           <View
+//             className="border-4 border-yellow-400 bg-transparent"
+//             style={{ width: SCAN_BOX_SIZE, height: SCAN_BOX_SIZE }}
+//           />
+//           <View className="flex-1 bg-black/60" />
+//         </View>
+//         <View className="flex-1 bg-black/60" />
+//       </View>
+
+//       <Text className="absolute bottom-16 self-center text-white bg-black/60 px-4 py-2 rounded-lg text-base">
+//         Align QR code inside the square
+//       </Text>
+//     </View>
+//   );
+// };
+
+// export default QRScanner;
+
 import api from '@/utils/api';
+import { Entypo, Feather } from '@expo/vector-icons';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Alert, BackHandler, Dimensions, Text, View } from 'react-native';
+import {
+  Alert,
+  BackHandler,
+  Dimensions,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const SCAN_BOX_SIZE = width * 0.7;
+const SCAN_BOX_TOP = (height - SCAN_BOX_SIZE) / 4;
+const YELLOW = '#FAD90E';
+const OVERLAY_COLOR = 'rgba(0,0,0,0.6)';
 
 const QRScanner = () => {
-  const [permission, requestPermission] = useCameraPermissions();
-  const [scanned, setScanned] = useState(false);
-  const isFocused = useIsFocused();
-  const router = useRouter();
+    const [permission, requestPermission] = useCameraPermissions();
+    const [scanned, setScanned] = useState(false);
+    const isFocused = useIsFocused();
+    const router = useRouter();
 
-  useFocusEffect(
-    React.useCallback(() => {
-      setScanned(false); // Reset scanner on focus
+    useFocusEffect(
+        React.useCallback(() => {
 
-      const onBackPress = () => {
-        router.replace('/(main)/dashboard');
-        return true;
-      };
+           setScanned(false); // Reset scanner on focus
 
-      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-      return () => subscription.remove();
-    }, [])
-  );
+            const onBackPress = () => {
+                router.replace('/(main)/dashboard');
+                return true;
+            };
+            const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+            return () => subscription.remove();
+        }, [])
+    );
 
-  useEffect(() => {
-    requestPermission();
-  }, []);
+    useEffect(() => {
+        requestPermission();
+    }, []);
 
   const handleBarcodeScanned = async (result: BarcodeScanningResult) => {
     if (scanned) return;
@@ -369,46 +489,93 @@ const QRScanner = () => {
     }
   };
 
-  if (!permission?.granted) {
+    if (!permission?.granted) {
+        return (
+            <View className="flex-1 justify-center items-center bg-black">
+                <Text className="text-white text-base">Camera permission not granted.</Text>
+            </View>
+        );
+    }
+
     return (
-      <View className="flex-1 justify-center items-center bg-black">
-        <Text className="text-white text-base">Camera permission not granted.</Text>
-      </View>
-    );
-  }
+        <View className="flex-1 bg-black">
+            {isFocused && (
+                <CameraView
+                    style={{ flex: 1 }}
+                    onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
+                    barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+                />
+            )}
 
-  return (
-    <View className="flex-1 relative bg-black">
-      {isFocused && (
-        <CameraView
-          style={{ flex: 1 }}
-          onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
-          barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
-        />
-      )}
+            {/* Title - "Scan BlueBase" */}
+            <View className="absolute top-12 w-full items-center">
+                <Text style={{ color: YELLOW, fontWeight: '900', fontSize: 20 }}>
+                    Scan BlueBase
+                </Text>
+            </View>
 
-      {/* Dimmed Overlay */}
-      <View className="absolute inset-0">
-        <View className="flex-1 bg-black/60" />
-        <View className="flex-row justify-center items-center">
-          <View className="flex-1 bg-black/60" />
-          <View
-            className="border-4 border-yellow-400 bg-transparent"
-            style={{ width: SCAN_BOX_SIZE, height: SCAN_BOX_SIZE }}
-          />
-          <View className="flex-1 bg-black/60" />
+            {/* Dark overlay blur simulation */}
+            <View className="absolute inset-0">
+                {/* Top */}
+                <View style={{ height: SCAN_BOX_TOP, backgroundColor: OVERLAY_COLOR }} />
+
+                {/* Middle */}
+                <View style={{ flexDirection: 'row' }}>
+                    <View style={{ width: (width - SCAN_BOX_SIZE) / 2, backgroundColor: OVERLAY_COLOR }} />
+                    
+                    {/* Scan Box with Corners */}
+                    <View style={{ width: SCAN_BOX_SIZE, height: SCAN_BOX_SIZE }}>
+                        <View
+                            className="absolute top-0 left-0 w-6 h-6 rounded-tl-lg"
+                            style={{ borderTopWidth: 4, borderLeftWidth: 4, borderColor: YELLOW }}
+                        />
+                        <View
+                            className="absolute top-0 right-0 w-6 h-6 rounded-tr-lg"
+                            style={{ borderTopWidth: 4, borderRightWidth: 4, borderColor: YELLOW }}
+                        />
+                        <View
+                            className="absolute bottom-0 left-0 w-6 h-6 rounded-bl-lg"
+                            style={{ borderBottomWidth: 4, borderLeftWidth: 4, borderColor: YELLOW }}
+                        />
+                        <View
+                            className="absolute bottom-0 right-0 w-6 h-6 rounded-br-lg"
+                            style={{ borderBottomWidth: 4, borderRightWidth: 4, borderColor: YELLOW }}
+                        />
+                    </View>
+
+                    <View style={{ width: (width - SCAN_BOX_SIZE) / 2, backgroundColor: OVERLAY_COLOR }} />
+                </View>
+
+                {/* Bottom */}
+                <View style={{ flex: 1, backgroundColor: OVERLAY_COLOR }} />
+            </View>
+
+            {/* Upload QR and Torch */}
+            <View className="absolute bottom-28 w-full flex-row justify-center gap-x-12">
+                <TouchableOpacity className="items-center">
+                    <Feather name="image" size={24} color={YELLOW} />
+                    <Text style={{ color: YELLOW, marginTop: 4, fontSize: 14 }}>Upload QR</Text>
+                </TouchableOpacity>
+                <TouchableOpacity className="items-center">
+                    <Entypo name="flashlight" size={24} color={YELLOW} />
+                    <Text style={{ color: YELLOW, marginTop: 4, fontSize: 14 }}>Torch</Text>
+                </TouchableOpacity>
+            </View>
+
+            {/* SUN-RACK Branding */}
+            <View className="absolute bottom-10 w-full items-center">
+                <Text style={{
+                    color: YELLOW,
+                    fontWeight: 'bold',
+                    fontSize: 16,
+                    letterSpacing: 1.5,
+                }}>
+                    SUN-RACK
+                </Text>
+            </View>
         </View>
-        <View className="flex-1 bg-black/60" />
-      </View>
-
-      <Text className="absolute bottom-16 self-center text-white bg-black/60 px-4 py-2 rounded-lg text-base">
-        Align QR code inside the square
-      </Text>
-    </View>
-  );
+    );
 };
 
 export default QRScanner;
-
-
 
