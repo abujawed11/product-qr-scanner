@@ -1,5 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
-import { AntDesign, Entypo, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign, Entypo, FontAwesome, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -40,6 +40,14 @@ const CustomDrawer = (props: any) => {
           label="Orders"
           onPress={() => router.push('/all-orders')}
           icon={({ size }) => <FontAwesome5 name="box-open" size={24} color="#facc15" />}
+          labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
+          style={{ backgroundColor: 'transparent' }}
+        />
+
+        <DrawerItem
+          label="Warranty"
+          onPress={() => router.push('/warranty')}
+          icon={({ size }) => <FontAwesome name="id-card-o" size={24} color="#facc15" />}
           labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
           style={{ backgroundColor: 'transparent' }}
         />

@@ -413,16 +413,17 @@
 import api from '@/utils/api';
 import { Entypo, Feather } from '@expo/vector-icons';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import axios from 'axios';
 import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
-  BackHandler,
-  Dimensions,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    BackHandler,
+    Dimensions,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -440,7 +441,7 @@ const QRScanner = () => {
     useFocusEffect(
         React.useCallback(() => {
 
-           setScanned(false); // Reset scanner on focus
+            setScanned(false); // Reset scanner on focus
 
             const onBackPress = () => {
                 router.replace('/(main)/dashboard');
@@ -455,39 +456,44 @@ const QRScanner = () => {
         requestPermission();
     }, []);
 
-  const handleBarcodeScanned = async (result: BarcodeScanningResult) => {
-    if (scanned) return;
-    setScanned(true);
+    const handleBarcodeScanned = async (result: BarcodeScanningResult) => {
+        if (scanned) return;
+        setScanned(true);
 
-    try {
-      const parsed = JSON.parse(result.data);
-      const { customerId, orderId, locationId } = parsed;
+        try {
+            const parsed = JSON.parse(result.data);
+            const { customerId, orderId, locationId } = parsed;
 
-      if (!customerId || !orderId || !locationId) {
-        throw new Error('Missing required fields');
-      }
+            if (!customerId || !orderId || !locationId) {
+                throw new Error('Missing required fields');
+            }
 
-      console.log(`Scanned data: ${JSON.stringify(parsed)}`);
+            console.log(`Scanned data: ${JSON.stringify(parsed)}`);
 
-      // ✅ Call backend API to save scanned order
-      await api.post('/save-order/', {
-        customerId,
-        orderId,
-        locationId
-      });
+            // ✅ Call backend API to save scanned order
+            await api.post('/save-order/', {
+                customerId,
+                orderId,
+                locationId
+            });
 
-      // ✅ Navigate to details page
-      router.push({
-        pathname: '/(main)/order-details',
-        params: { customerId, orderId }
-      });
+            // ✅ Navigate to details page
+            router.push({
+                pathname: '/(main)/order-details',
+                params: { customerId, orderId }
+            });
 
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Invalid QR code or server error.');
-      setScanned(false);
-    }
-  };
+        } catch (err) {
+            console.error(err);
+            //   Alert.alert('Error', 'Invalid QR code or server error.');
+            let errorMessage = 'Invalid QR code or server error.';
+            if (axios.isAxiosError(err) && err.response?.data?.error) {
+                errorMessage = err.response.data.error;
+            }
+            Alert.alert('Error', errorMessage);
+            setScanned(false);
+        }
+    };
 
     if (!permission?.granted) {
         return (
@@ -522,7 +528,7 @@ const QRScanner = () => {
                 {/* Middle */}
                 <View style={{ flexDirection: 'row' }}>
                     <View style={{ width: (width - SCAN_BOX_SIZE) / 2, backgroundColor: OVERLAY_COLOR }} />
-                    
+
                     {/* Scan Box with Corners */}
                     <View style={{ width: SCAN_BOX_SIZE, height: SCAN_BOX_SIZE }}>
                         <View

@@ -8,7 +8,7 @@
 // //     <View className="flex-1 bg-yellow-100 items-center justify-center px-4">
 // //       <Text className="text-2xl font-bold text-yellow-600 mb-2">Welcome!</Text>
 // //         <Text>My Orders</Text>
-      
+
 // //     </View>
 // //   );
 // // }
@@ -213,8 +213,7 @@ import {
   RefreshControl,
   ScrollView,
   Text,
-  TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 
 const MyOrdersScreen = () => {
@@ -267,11 +266,12 @@ const MyOrdersScreen = () => {
         <Text className="text-white text-center mt-8 text-lg">No orders found.</Text>
       ) : (
         orders.map((order) => (
-          <TouchableOpacity
-            key={order.order_id}
-            className="bg-white rounded-2xl p-4 mb-4 shadow"
-            onPress={() => goToOrderDetails(order.customer_id)}
-          >
+          // <TouchableOpacity
+          //   key={order.order_id}
+          //   className="bg-white rounded-2xl p-4 mb-4 shadow"
+          //   onPress={() => goToOrderDetails(order.customer_id)}
+          // >
+          <View className='bg-white rounded-2xl p-4 mb-4 shadow'>
             <Text className="text-black text-lg font-bold">📦 Order ID: {order.order_id}</Text>
             <Text className="text-gray-600 text-sm mt-1">
               🗓️ {new Date(order.order_date).toDateString()}
@@ -292,11 +292,12 @@ const MyOrdersScreen = () => {
               )}
             </View>
 
+
             {/* Status */}
             <Text className={`mt-2 font-semibold ${getStatusColor(order.status)}`}>
               📌 Status: {order.status.toUpperCase()}
             </Text>
-          </TouchableOpacity>
+          </View>
         ))
       )}
     </ScrollView>

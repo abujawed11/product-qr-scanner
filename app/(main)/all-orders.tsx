@@ -105,7 +105,6 @@
 import { Order } from '@/types/order.types';
 import api from '@/utils/api';
 import { BACKGROUND_COLOR } from '@/utils/color';
-import { getStatusColor } from '@/utils/statusColor';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, BackHandler, RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -220,9 +219,9 @@ export default function AllOrdersScreen() {
                         <View className="mt-2">
                             <Text className="text-black text-sm">🔢 Unique Kits: {order.kit_count}</Text>
                             <Text className="text-black text-sm">📦 Total Kits: {order.total_quantity}</Text>
-                            <Text className={`mt-1 font-bold ${getStatusColor(order.status)}`}>
+                            {/* <Text className={`mt-1 font-bold ${getStatusColor(order.status)}`}>
                                 📌 Status: {order.status.toUpperCase()}
-                            </Text>
+                            </Text> */}
                         </View>
                     </View>
                 ))
