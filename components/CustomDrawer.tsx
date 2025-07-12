@@ -53,6 +53,14 @@ const CustomDrawer = (props: any) => {
         />
 
         <DrawerItem
+          label="About Product"
+          onPress={() => router.push('/(main)/product-info')}
+          icon={({ size }) => <AntDesign name="shoppingcart" size={24} color="#facc15" />}
+          labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
+          style={{ backgroundColor: 'transparent' }}
+        />
+
+        <DrawerItem
           label="About"
           onPress={() => router.push('/about')}
           icon={({ size }) => <AntDesign name="infocirlce" size={size} color="#facc15" />}
