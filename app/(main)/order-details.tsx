@@ -713,14 +713,15 @@
 
 import api from '@/utils/api';
 import { BACKGROUND_COLOR } from '@/utils/color';
+import { formatDateTime } from '@/utils/formatDate';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    BackHandler,
-    ScrollView,
-    Text,
-    View,
+  ActivityIndicator,
+  BackHandler,
+  ScrollView,
+  Text,
+  View,
 } from 'react-native';
 
 // Interfaces
@@ -822,7 +823,8 @@ export default function OrderDetailsScreen() {
         <Text className="text-white">Order ID: {order.order_id}</Text>
         <Text className="text-white">Customer ID: {order.customer}</Text>
         <Text className="text-white">Status: {order.status}</Text>
-        <Text className="text-white">Order Date: {new Date(order.order_date).toDateString()}</Text>
+        {/* <Text className="text-white">Order Date: {new Date(order.order_date).toDateString()}</Text> */}
+         <Text className="text-white">Order Date: {formatDateTime(order.order_date)}</Text>
         <Text className="text-white">Manufacturing: {order.manufacturing_location}</Text>
         <Text className="text-white">Dispatch: {order.dispatch_location}</Text>
         {order.expected_delivery_date && (
