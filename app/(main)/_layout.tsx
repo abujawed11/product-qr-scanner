@@ -43,6 +43,7 @@ export default function DashboardLayout() {
         { name: 'my-orders', title: 'My Orders' },
         { name: 'all-orders', title: 'All Orders' },
         { name: 'order-details', title: 'Order Details' },
+        { name: 'dashboard/qr-scanner', title: 'QR Scanner' },
         // { name: 'tasks/[taskId]/update', title: 'Update Task' },
         // { name: 'my-tasks', title: 'My Tasks' },
         { name: 'notifications', title: 'Notifications' },

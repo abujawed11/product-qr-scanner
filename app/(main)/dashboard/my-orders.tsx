@@ -271,13 +271,39 @@ const MyOrdersScreen = () => {
           //   className="bg-white rounded-2xl p-4 mb-4 shadow"
           //   onPress={() => goToOrderDetails(order.customer_id)}
           // >
-          <View className='bg-white rounded-2xl p-4 mb-4 shadow'>
+          // <View className='bg-white rounded-2xl p-4 mb-4 shadow'>
+          //   <Text className="text-black text-lg font-bold">📦 Order ID: {order.order_id}</Text>
+          //   <Text className="text-gray-600 text-sm mt-1">
+          //     🗓️ {new Date(order.order_date).toDateString()}
+          //   </Text>
+
+          //   {/* Product Summary */}
+          //   <View className="mt-3 mb-2">
+          //     <Text className="text-black font-semibold text-sm mb-1">🛠️ Kits Ordered:</Text>
+          //     {order.items.slice(0, 2).map((item, index) => (
+          //       <View key={index} className="ml-2 mb-1">
+          //         <Text className="text-sm text-black">
+          //           • {item.kit.configuration} × {item.quantity}
+          //         </Text>
+          //       </View>
+          //     ))}
+          //     {order.items.length > 2 && (
+          //       <Text className="ml-2 text-xs text-gray-500">+ {order.items.length - 2} more kits</Text>
+          //     )}
+          //   </View>
+
+
+          //   {/* Status */}
+          //   <Text className={`mt-2 font-semibold ${getStatusColor(order.status)}`}>
+          //     📌 Status: {order.status.toUpperCase()}
+          //   </Text>
+          // </View>
+          <View key={order.order_id} className='bg-white rounded-2xl p-4 mb-4 shadow'>
             <Text className="text-black text-lg font-bold">📦 Order ID: {order.order_id}</Text>
             <Text className="text-gray-600 text-sm mt-1">
               🗓️ {new Date(order.order_date).toDateString()}
             </Text>
 
-            {/* Product Summary */}
             <View className="mt-3 mb-2">
               <Text className="text-black font-semibold text-sm mb-1">🛠️ Kits Ordered:</Text>
               {order.items.slice(0, 2).map((item, index) => (
@@ -292,12 +318,27 @@ const MyOrdersScreen = () => {
               )}
             </View>
 
-
             {/* Status */}
             <Text className={`mt-2 font-semibold ${getStatusColor(order.status)}`}>
               📌 Status: {order.status.toUpperCase()}
             </Text>
+
+            {/* Claim Warranty Button */}
+            <View className="mt-4">
+              <Text
+                onPress={() =>
+                  router.push({
+                    pathname: '/(main)/warranty/claim-form',
+                    params: { order_id: order.order_id },
+                  })
+                }
+                className="text-center bg-yellow-400 text-black font-bold py-2 rounded-xl"
+              >
+                🛡️ Claim Warranty
+              </Text>
+            </View>
           </View>
+
         ))
       )}
     </ScrollView>

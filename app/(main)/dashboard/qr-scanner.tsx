@@ -730,9 +730,17 @@ const QRScanner = () => {
             });
         }
 
-        catch (error) {
-            console.error(error);
-            Alert.alert('Error', 'Failed to upload or process QR code.');
+        catch (err) {
+            // console.error(error);
+            // Alert.alert('Error', 'Failed to upload or process QR code.');
+             console.error(err);
+            //   Alert.alert('Error', 'Invalid QR code or server error.');
+            let errorMessage = 'Invalid QR code or server error.';
+            if (axios.isAxiosError(err) && err.response?.data?.error) {
+                errorMessage = err.response.data.error;
+            }
+            Alert.alert('Error', errorMessage);
+            setScanned(false);
         }
     };
 
