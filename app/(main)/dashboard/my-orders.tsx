@@ -450,7 +450,7 @@ const MyOrdersScreen = () => {
                 }
                 className="text-center bg-yellow-400 text-black font-bold py-2 rounded-xl"
               >
-                🛡️ Claim Warranty
+                🛡️ Request Warranty
               </Text>
             </View>
           </View>
