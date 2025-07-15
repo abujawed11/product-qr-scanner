@@ -1,11 +1,20 @@
 // types/user.types.ts
 
 
+// export interface User {
+//   id: number;
+//   username: string;
+//   email: string;
+//   customer_id: string | null; // add null if customer_id can be missing
+// }
+
 export interface User {
   id: number;
   username: string;
   email: string;
-  customer_id: string | null; // add null if customer_id can be missing
+  customer_id: string;
+  account_type: 'admin' | 'client';
+  is_active: boolean;
 }
 
 // Form data sent from frontend to backend for registration

@@ -423,9 +423,277 @@
 // }
 
 
+// import api from '@/utils/api';
+// import DateTimePicker from '@react-native-community/datetimepicker';
+// import { Picker } from '@react-native-picker/picker';
+// import * as ImagePicker from 'expo-image-picker';
+// import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+// import React, { useEffect, useState } from 'react';
+// import {
+//   Alert,
+//   BackHandler,
+//   Image,
+//   KeyboardAvoidingView,
+//   Platform,
+//   ScrollView,
+//   Text,
+//   TextInput,
+//   TouchableOpacity,
+//   View,
+// } from 'react-native';
+
+// export default function WarrantyForm() {
+//   const [customerName, setCustomerName] = useState('');
+//   const [phone, setPhone] = useState('');
+//   const [email, setEmail] = useState('');
+//   const [orderId, setOrderId] = useState('');
+//   const [orderList, setOrderList] = useState<string[]>([]);
+//   const [kitId, setKitId] = useState('');
+//   const [serialNumber, setSerialNumber] = useState('');
+//   const [purchaseDate, setPurchaseDate] = useState('');
+//   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+//   const [showDatePicker, setShowDatePicker] = useState(false);
+//   const [issue, setIssue] = useState('');
+//   const [image, setImage] = useState<string | null>(null);
+//   const { order_id } = useLocalSearchParams<{ order_id: string }>();
+
+//   useEffect(() => {
+//     if (order_id) setOrderId(order_id);
+//   }, [order_id]);
+
+//   useEffect(() => {
+//     fetchOrders();
+//   }, []);
+
+//   useFocusEffect(
+//     React.useCallback(() => {
+//       const onBackPress = () => {
+//         router.replace('/(main)/dashboard');
+//         return true;
+//       };
+//       const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+//       return () => subscription.remove();
+//     }, [])
+//   );
+
+//   const fetchOrders = async () => {
+//     try {
+//       const res = await api.get('/orders/');
+//       const ids = res.data.map((order: any) => order.order_id);
+//       setOrderList(ids);
+//     } catch (err) {
+//       console.error('Error fetching orders:', err);
+//     }
+//   };
+
+//   const pickImage = async () => {
+//     const result = await ImagePicker.launchImageLibraryAsync({
+//       allowsEditing: true,
+//       quality: 0.7,
+//     });
+
+//     if (!result.canceled && result.assets.length > 0) {
+//       setImage(result.assets[0].uri);
+//     }
+//   };
+
+//   const handleSubmit = () => {
+//     if (!customerName || !phone || !orderId || !kitId || !serialNumber || !issue) {
+//       Alert.alert('Error', 'Please fill in all required fields.');
+//       return;
+//     }
+//     Alert.alert('Submitted', 'Warranty request submitted successfully.');
+//   };
+
+//   return (
+//     <View style={{ flex: 1, backgroundColor: '#000' }}>
+//       <KeyboardAvoidingView
+//         style={{ flex: 1 }}
+//         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+//         keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+//       >
+//         <ScrollView
+//           contentContainerStyle={{
+//             padding: 20,
+//             paddingBottom: 40,
+//             flexGrow: 1,
+//             paddingTop: 30,
+//             justifyContent: 'flex-start',
+//           }}
+//           keyboardShouldPersistTaps="handled"
+//           showsVerticalScrollIndicator={false}
+//         >
+//           <Text
+//             className="text-2xl font-bold text-center mb-6"
+//             style={{ color: '#FAD90E' }}
+//           >
+//             Warranty Claim Form
+//           </Text>
+
+//           <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
+//             Customer Name *
+//           </Text>
+//           <TextInput
+//             value={customerName}
+//             onChangeText={setCustomerName}
+//             placeholder="Enter your name"
+//             placeholderTextColor="#888"
+//             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//           />
+
+//           <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
+//             Phone Number *
+//           </Text>
+//           <TextInput
+//             value={phone}
+//             onChangeText={setPhone}
+//             keyboardType="phone-pad"
+//             placeholder="Enter your phone"
+//             placeholderTextColor="#888"
+//             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//           />
+
+//           <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
+//             Email
+//           </Text>
+//           <TextInput
+//             value={email}
+//             onChangeText={setEmail}
+//             keyboardType="email-address"
+//             placeholder="Enter your email"
+//             placeholderTextColor="#888"
+//             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//           />
+
+//           <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
+//             Order ID *
+//           </Text>
+//           <View className="bg-white rounded-xl mb-4">
+//             <Picker
+//               selectedValue={orderId}
+//               onValueChange={(value) => setOrderId(value)}
+//               dropdownIconColor="#000"
+//               style={{ color: 'black' }}
+//             >
+//               <Picker.Item label="Select Order ID" value="" />
+//               {orderList.map((id) => (
+//                 <Picker.Item key={id} label={id} value={id} />
+//               ))}
+//             </Picker>
+//           </View>
+
+//           <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
+//             Kit ID *
+//           </Text>
+//           <TextInput
+//             value={kitId}
+//             onChangeText={setKitId}
+//             placeholder="KIT-XXXX"
+//             placeholderTextColor="#888"
+//             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//           />
+
+//           <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
+//             Serial Number *
+//           </Text>
+//           <TextInput
+//             value={serialNumber}
+//             onChangeText={setSerialNumber}
+//             placeholder="SN-XXXXXX"
+//             placeholderTextColor="#888"
+//             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//           />
+
+//           <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
+//             Purchase Date
+//           </Text>
+//           <TouchableOpacity
+//             onPress={() => setShowDatePicker(true)}
+//             style={{
+//               backgroundColor: 'white',
+//               borderRadius: 12,
+//               paddingVertical: 12,
+//               paddingHorizontal: 16,
+//               marginBottom: 16,
+//             }}
+//           >
+//             <Text style={{ color: selectedDate ? 'black' : '#888' }}>
+//               {selectedDate
+//                 ? selectedDate.toISOString().split('T')[0]
+//                 : 'Select Purchase Date'}
+//             </Text>
+//           </TouchableOpacity>
+
+//           {showDatePicker && (
+//             <DateTimePicker
+//               value={selectedDate || new Date()}
+//               mode="date"
+//               display="default"
+//               onChange={(event, date) => {
+//                 setShowDatePicker(false);
+//                 if (date) {
+//                   setSelectedDate(date);
+//                   setPurchaseDate(date.toISOString().split('T')[0]);
+//                 }
+//               }}
+//             />
+//           )}
+
+//           <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
+//             Issue Description *
+//           </Text>
+//           <TextInput
+//             value={issue}
+//             onChangeText={setIssue}
+//             placeholder="Describe the issue"
+//             placeholderTextColor="#888"
+//             multiline
+//             numberOfLines={4}
+//             textAlignVertical="top"
+//             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//           />
+
+//           {image && (
+//             <Image
+//               source={{ uri: image }}
+//               className="w-full h-40 rounded-xl mb-4"
+//               resizeMode="cover"
+//             />
+//           )}
+
+//           <TouchableOpacity
+//             onPress={pickImage}
+//             style={{
+//               backgroundColor: '#FAD90E',
+//               borderRadius: 12,
+//               paddingVertical: 12,
+//               marginBottom: 24,
+//             }}
+//           >
+//             <Text className="text-center font-bold text-black">Upload Image *</Text>
+//           </TouchableOpacity>
+
+//           <TouchableOpacity
+//             onPress={handleSubmit}
+//             style={{
+//               backgroundColor: '#FAD90E',
+//               borderRadius: 12,
+//               paddingVertical: 16,
+//             }}
+//           >
+//             <Text className="text-center text-black text-lg font-bold">Submit Claim</Text>
+//           </TouchableOpacity>
+//         </ScrollView>
+//       </KeyboardAvoidingView>
+//     </View>
+//   );
+// }
+
+
 import api from '@/utils/api';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
+import { ResizeMode, Video } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -454,7 +722,8 @@ export default function WarrantyForm() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [issue, setIssue] = useState('');
-  const [image, setImage] = useState<string | null>(null);
+  const [multipleImages, setMultipleImages] = useState<string[]>([]);
+  const [multipleVideos, setMultipleVideos] = useState<string[]>([]); // Changed to array for multiple videos
   const { order_id } = useLocalSearchParams<{ order_id: string }>();
 
   useEffect(() => {
@@ -486,15 +755,53 @@ export default function WarrantyForm() {
     }
   };
 
-  const pickImage = async () => {
+  const pickMultipleImages = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
+      allowsMultipleSelection: true,
+      quality: 0.7,
+      selectionLimit: 5,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      const newUris = result.assets.map((asset) => asset.uri);
+      setMultipleImages([...multipleImages, ...newUris]);
+    }
+  };
+
+  const deleteImage = (uri: string) => {
+    setMultipleImages(multipleImages.filter((img) => img !== uri));
+  };
+
+  const pickVideo = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+      allowsMultipleSelection: true, // Enable multiple video selection
+      quality: 0.7,
+      selectionLimit: 5, // Limit to 5 videos, similar to images
+    });
+
+    console.log('Uploaded video result:', result); // Debug
+
+    if (!result.canceled && result.assets.length > 0) {
+      const newVideoUris = result.assets.map((asset) => asset.uri);
+      setMultipleVideos([...multipleVideos, ...newVideoUris]); // Append new videos
+    }
+  };
+
+  const recordVideo = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
       allowsEditing: true,
       quality: 0.7,
     });
 
     if (!result.canceled && result.assets.length > 0) {
-      setImage(result.assets[0].uri);
+      setMultipleVideos([...multipleVideos, result.assets[0].uri]); // Append recorded video
     }
+  };
+
+  const deleteVideo = (uri: string) => {
+    setMultipleVideos(multipleVideos.filter((vid) => vid !== uri)); // Delete specific video
   };
 
   const handleSubmit = () => {
@@ -502,6 +809,7 @@ export default function WarrantyForm() {
       Alert.alert('Error', 'Please fill in all required fields.');
       return;
     }
+
     Alert.alert('Submitted', 'Warranty request submitted successfully.');
   };
 
@@ -523,16 +831,12 @@ export default function WarrantyForm() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <Text
-            className="text-2xl font-bold text-center mb-6"
-            style={{ color: '#FAD90E' }}
-          >
-            Warranty Claim Form
+          <Text className="text-2xl font-bold text-center mb-6" style={{ color: '#FAD90E' }}>
+            Warranty Request Form
           </Text>
 
-          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
-            Customer Name *
-          </Text>
+          {/* Input fields */}
+          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>Customer Name *</Text>
           <TextInput
             value={customerName}
             onChangeText={setCustomerName}
@@ -541,9 +845,7 @@ export default function WarrantyForm() {
             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
           />
 
-          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
-            Phone Number *
-          </Text>
+          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>Phone Number *</Text>
           <TextInput
             value={phone}
             onChangeText={setPhone}
@@ -553,9 +855,7 @@ export default function WarrantyForm() {
             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
           />
 
-          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
-            Email
-          </Text>
+          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>Email</Text>
           <TextInput
             value={email}
             onChangeText={setEmail}
@@ -565,9 +865,7 @@ export default function WarrantyForm() {
             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
           />
 
-          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
-            Order ID *
-          </Text>
+          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>Order ID *</Text>
           <View className="bg-white rounded-xl mb-4">
             <Picker
               selectedValue={orderId}
@@ -582,9 +880,7 @@ export default function WarrantyForm() {
             </Picker>
           </View>
 
-          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
-            Kit ID *
-          </Text>
+          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>Kit ID *</Text>
           <TextInput
             value={kitId}
             onChangeText={setKitId}
@@ -593,9 +889,7 @@ export default function WarrantyForm() {
             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
           />
 
-          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
-            Serial Number *
-          </Text>
+          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>Serial Number *</Text>
           <TextInput
             value={serialNumber}
             onChangeText={setSerialNumber}
@@ -604,9 +898,7 @@ export default function WarrantyForm() {
             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
           />
 
-          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>
-            Purchase Date
-          </Text>
+          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>Purchase Date</Text>
           <TouchableOpacity
             onPress={() => setShowDatePicker(true)}
             style={{
@@ -618,9 +910,7 @@ export default function WarrantyForm() {
             }}
           >
             <Text style={{ color: selectedDate ? 'black' : '#888' }}>
-              {selectedDate
-                ? selectedDate.toISOString().split('T')[0]
-                : 'Select Purchase Date'}
+              {selectedDate ? selectedDate.toISOString().split('T')[0] : 'Select Purchase Date'}
             </Text>
           </TouchableOpacity>
 
@@ -653,16 +943,18 @@ export default function WarrantyForm() {
             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
           />
 
-          {image && (
-            <Image
-              source={{ uri: image }}
-              className="w-full h-40 rounded-xl mb-4"
-              resizeMode="cover"
-            />
-          )}
+          {/* Multiple Images */}
+          {multipleImages.map((img, index) => (
+            <View key={index} style={{ marginBottom: 10 }}>
+              <Image source={{ uri: img }} className="w-full h-40 rounded-xl" resizeMode="cover" />
+              <TouchableOpacity onPress={() => deleteImage(img)}>
+                <Text className="text-red-500 text-center font-bold mt-1">Delete</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
 
           <TouchableOpacity
-            onPress={pickImage}
+            onPress={pickMultipleImages}
             style={{
               backgroundColor: '#FAD90E',
               borderRadius: 12,
@@ -674,14 +966,57 @@ export default function WarrantyForm() {
           </TouchableOpacity>
 
           <TouchableOpacity
+            onPress={pickVideo}
+            style={{
+              backgroundColor: '#FAD90E',
+              borderRadius: 12,
+              paddingVertical: 12,
+              marginBottom: 12,
+            }}
+          >
+            <Text className="text-center font-bold text-black">Upload Existing Videos</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={recordVideo}
+            style={{
+              backgroundColor: '#FAD90E',
+              borderRadius: 12,
+              paddingVertical: 12,
+              marginBottom: 16,
+            }}
+          >
+            <Text className="text-center font-bold text-black">Record Video</Text>
+          </TouchableOpacity>
+
+          {/* Multiple Videos */}
+          {multipleVideos.map((vid, index) => (
+            <View key={index} style={{ marginBottom: 16 }}>
+              <Video
+                source={{ uri: vid }}
+                style={{ width: '100%', height: 200, borderRadius: 12 }}
+                useNativeControls
+                resizeMode={ResizeMode.CONTAIN}
+                key={vid} // Force re-render when new video is picked
+              />
+              <TouchableOpacity onPress={() => deleteVideo(vid)}>
+                <Text className="text-center text-red-500 font-bold mt-2">Delete Video</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+
+          {/* Submit Button */}
+          <TouchableOpacity
             onPress={handleSubmit}
+            disabled={multipleImages.length === 0 || multipleVideos.length === 0} // Updated to check multipleVideos
             style={{
               backgroundColor: '#FAD90E',
               borderRadius: 12,
               paddingVertical: 16,
+              opacity: multipleImages.length === 0 || multipleVideos.length === 0 ? 0.5 : 1,
             }}
           >
-            <Text className="text-center text-black text-lg font-bold">Submit Claim</Text>
+            <Text className="text-center text-black text-lg font-bold">Submit Request</Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>

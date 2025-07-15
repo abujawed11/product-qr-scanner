@@ -114,7 +114,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Alert,
     KeyboardAvoidingView,
@@ -180,13 +180,32 @@ export default function LoginScreen() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+    const { user, login } = useAuth();
+
+    // ✅ Redirect based on updated user after login
+    useEffect(() => {
+        if (user) {
+            if (user.account_type === 'admin') {
+                console.log("Account Type",user.account_type)
+                router.replace('/(adminDashboard)');
+            } else {
+                console.log("Account Type",user.account_type)
+                router.replace('/dashboard');
+            }
+        }
+    }, [user]);
 
     const handleLogin = async () => {
         try {
             setLoading(true);
             await login(username, password);
-            router.replace('/dashboard');
+            // // router.replace('/dashboard');
+            // if (user?.account_type === 'admin') {
+            //     console.log(user.account_type)
+            //     router.replace('/(adminDashboard)');
+            // } else {
+            //     router.replace('/dashboard');
+            // }
         } catch (err: any) {
             console.error('Login error:', err);
             Alert.alert('Login Failed', err.message || 'Invalid credentials');
