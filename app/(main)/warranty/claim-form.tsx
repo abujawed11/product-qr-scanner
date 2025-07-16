@@ -711,7 +711,7 @@ import {
 } from 'react-native';
 
 export default function WarrantyForm() {
-  const [customerName, setCustomerName] = useState('');
+  const [clientName, setClientName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [orderId, setOrderId] = useState('');
@@ -805,7 +805,7 @@ export default function WarrantyForm() {
   };
 
   const handleSubmit = () => {
-    if (!customerName || !phone || !orderId || !kitId || !serialNumber || !issue) {
+    if (!clientName || !phone || !orderId || !kitId || !serialNumber || !issue) {
       Alert.alert('Error', 'Please fill in all required fields.');
       return;
     }
@@ -836,10 +836,10 @@ export default function WarrantyForm() {
           </Text>
 
           {/* Input fields */}
-          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>Customer Name *</Text>
+          <Text style={{ color: '#FAD90E', fontWeight: '600', marginBottom: 4 }}>Client Name *</Text>
           <TextInput
-            value={customerName}
-            onChangeText={setCustomerName}
+            value={clientName}
+            onChangeText={setClientName}
             placeholder="Enter your name"
             placeholderTextColor="#888"
             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"

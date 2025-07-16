@@ -706,13 +706,13 @@ const QRScanner = () => {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
-            const { customerId, orderId, locationId } = response.data;
+            const { clientId, orderId, locationId } = response.data;
 
             // if (!customerId || !orderId || !locationId) {
             //   throw new Error('Missing required fields');
             // }
 
-            console.log(`Uploaded data: ${JSON.stringify({ customerId, orderId, locationId })}`);
+            console.log(`Uploaded data: ${JSON.stringify({ clientId, orderId, locationId })}`);
 
             // Try saving
             // const saveRes = await api.post('/save-order/', {
@@ -726,7 +726,7 @@ const QRScanner = () => {
             // if (message === 'Order already scanned and saved' || saveRes.status === 200 || saveRes.status === 201) {
             router.push({
                 pathname: '/(main)/order-details',
-                params: { customerId, orderId },
+                params: { clientId, orderId },
             });
         }
 

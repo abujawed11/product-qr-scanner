@@ -821,7 +821,7 @@ export default function OrderDetailsScreen() {
       <View className="mb-6">
         <Text className="text-lg font-semibold text-white mb-2">Order Info</Text>
         <Text className="text-white">Order ID: {order.order_id}</Text>
-        <Text className="text-white">Customer ID: {order.customer}</Text>
+        {/* <Text className="text-white">Client ID: {order}</Text> */}
         <Text className="text-white">Status: {order.status}</Text>
         {/* <Text className="text-white">Order Date: {new Date(order.order_date).toDateString()}</Text> */}
          <Text className="text-white">Order Date: {formatDateTime(order.order_date)}</Text>

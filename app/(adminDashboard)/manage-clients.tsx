@@ -434,7 +434,7 @@ export default function ManageClients() {
                 <View key={user.id} className="bg-white rounded-xl p-4 mb-4">
                     <Text className="font-bold">{user.username} ({user.account_type})</Text>
                     <Text>{user.email}</Text>
-                    <Text>ID: {user.customer_id}</Text>
+                    <Text>ID: {user.client_id}</Text>
                     <View className="flex-row justify-between mt-3">
                         <TouchableOpacity
                             onPress={() => openEditModal(user)}
@@ -458,8 +458,8 @@ export default function ManageClients() {
                         {editUser ? 'Edit User' : 'Add User'}
                     </Text>
 
-                    {editUser?.customer_id && (
-                        <Text className="text-white text-sm mb-2">Customer ID: {editUser.customer_id}</Text>
+                    {editUser?.client_id && (
+                        <Text className="text-white text-sm mb-2">Client ID: {editUser.client_id}</Text>
                     )}
 
                     <Controller

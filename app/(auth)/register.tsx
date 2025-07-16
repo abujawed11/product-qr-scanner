@@ -235,7 +235,7 @@ const FloatingInput = ({
 };
 
 export default function RegisterScreen() {
-    const [customerId, setCustomerId] = useState('');
+    const [clientId, setClientId] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -269,7 +269,7 @@ export default function RegisterScreen() {
         try {
             setLoading(true);
             await axios.post(`${BASE_URL}/register/`, {
-                customer_id: customerId,
+                client_id: clientId,
                 username,
                 email,
                 password,
@@ -316,7 +316,7 @@ export default function RegisterScreen() {
                         Register
                     </Text>
 
-                    <FloatingInput label="Customer ID" value={customerId} setValue={setCustomerId} />
+                    <FloatingInput label="Client ID" value={clientId} setValue={setClientId} />
                     <FloatingInput label="Username" value={username} setValue={setUsername} />
                     <FloatingInput label="Email" value={email} setValue={setEmail} />
                     <FloatingInput label="Password" value={password} setValue={setPassword} secureTextEntry />

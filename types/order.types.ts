@@ -19,21 +19,6 @@ export interface OrderItem {
   total_price: string;
 }
 
-// export interface Order {
-//   order_id: string;
-//   order_date: string;
-//   status: string;
-//   manufacturing_location: string;
-//   dispatch_location: string;
-//   expected_delivery_date?: string;
-//   delivery_date?: string;
-//   remarks?: string;
-//   items: OrderItem[];
-//   total_quantity: number;
-//   kit_count: number;
-//   customer_id: string; // ✅ newly added
-// }
-
 export interface Order {
   order_id: string;
   order_date: string;
@@ -46,5 +31,5 @@ export interface Order {
   items: OrderItem[];
   total_quantity: number;
   kit_count: number;
-  customer_id: string; // ✅ include this
+  client_id: string;  // ✅ updated from customer_id
 }
