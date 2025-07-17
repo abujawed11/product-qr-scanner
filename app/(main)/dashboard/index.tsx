@@ -46,7 +46,7 @@ import { useNavigation } from 'expo-router'; // ✅ use expo-router's hook
 // import MyTaskScreen from './my-tasks';
 
 import HomeScreen from './home';
-import MyOrdersScreen from './my-orders';
+import MyScansScreen from './my-scans';
 
 
 const Tab = createMaterialTopTabNavigator();
@@ -71,10 +71,10 @@ export default function DashboardTabs() {
         }}
       />
       <Tab.Screen
-        name="My Orders"
-        component={MyOrdersScreen}
+        name="My Scans"
+        component={MyScansScreen}
         listeners={{
-          focus: () => navigation.setOptions({ title: 'My Orders' }),
+          focus: () => navigation.setOptions({ title: 'My Scans' }),
         }}
       />
       {/* <Tab.Screen
