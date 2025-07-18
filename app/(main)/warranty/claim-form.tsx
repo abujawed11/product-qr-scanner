@@ -1087,7 +1087,7 @@ export default function WarrantyCustomerInfoPage() {
       return;
     }
     router.replace({
-      pathname: '/',
+      pathname: '/(main)/warranty/claim-media-wizard',
       params: {
         clientId, clientName, phone, email, orderId, kitId, kitNo, projectId, purchaseDate,
         stepIdx: 0,

@@ -256,122 +256,277 @@
 
 // export default MyScansScreen;
 
+// import { useAuth } from '@/context/AuthContext';
+// import api from '@/utils/api';
+// import { useRouter } from 'expo-router';
+// import React, { useEffect, useState } from 'react';
+// import {
+//     RefreshControl,
+//     ScrollView,
+//     Text,
+//     View
+// } from 'react-native';
+
+// interface SavedOrder {
+//     scan_id: string;
+//     kit_id: string;
+//     prod_unit: string;
+//     warehouse: string;
+//     project_id: string;
+//     kit_no: number;
+//     date: string;
+//     scanned_at: string;
+//     order_id: string
+// }
+
+// const MyScansScreen = () => {
+//     const { user } = useAuth();
+//     const router = useRouter();
+//     const [scans, setScans] = useState<SavedOrder[]>([]);
+//     const [refreshing, setRefreshing] = useState(false);
+//     const [loading, setLoading] = useState(true);
+
+//     const fetchScans = async () => {
+//         try {
+//             const res = await api.get('/saved-orders/');
+//             setScans(res.data);
+//         } catch (err) {
+//             console.error('Failed to fetch scans:', err);
+//         } finally {
+//             setLoading(false);
+//             setRefreshing(false);
+//         }
+//     };
+
+//     useEffect(() => {
+//         fetchScans();
+//     }, []);
+
+//     const onRefresh = () => {
+//         setRefreshing(true);
+//         fetchScans();
+//     };
+
+//     const goToKitDetails = (scanId: string) => {
+//         router.push({
+//             pathname: '/(main)/kit-details',
+//             params: { scan_id: scanId },
+//         });
+//     };
+
+//     // const isClientMatch = (projectId: string): boolean => {
+//     //     const prefix = projectId.split('/')[0].trim(); // Get "CUST0001" from "CUST0001/ 03"
+//     //     return user?.client_id === prefix;
+//     // };
+
+//     // const latestScans = scans.slice().reverse();
+
+//     return (
+//         <ScrollView
+//             className="flex-1 bg-black px-4 py-2"
+//             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+//         >
+//             {scans.length === 0 ? (
+//                 <Text className="text-white text-center mt-8 text-lg">No scans found.</Text>
+//             ) : (
+//                 scans.map((scan) => (
+//                     <View key={scan.scan_id} className="bg-white rounded-2xl p-4 mb-4 shadow">
+//                         <Text className="text-black text-lg font-bold">🔍 Order ID: {scan.order_id}</Text>
+//                         <Text className="text-gray-600 text-sm mt-1">
+//                             🗓️ {new Date(scan.scanned_at).toLocaleString()}
+//                         </Text>
+
+//                         {/* QR Details */}
+//                         <View className="mt-3 mb-2">
+//                             <Text className="text-black font-semibold text-sm mb-1">📦 Kit Info:</Text>
+//                             <Text className="ml-2 text-sm text-black">• Kit ID: {scan.kit_id}</Text>
+//                             <Text className="ml-2 text-sm text-black">• Kit No: {scan.kit_no}</Text>
+//                             <Text className="ml-2 text-sm text-black">• Prod Unit: {scan.prod_unit}</Text>
+//                             <Text className="ml-2 text-sm text-black">• Warehouse: {scan.warehouse}</Text>
+//                             <Text className="ml-2 text-sm text-black">• Project ID: {scan.project_id}</Text>
+//                             <Text className="ml-2 text-sm text-black">• Date: {scan.date}</Text>
+//                         </View>
+
+//                         {/* Request Warranty Button */}
+//                         {/* <View className="mt-4">
+//                             <Text
+//                                 onPress={() => goToKitDetails(scan.scan_id)}
+//                                 className="text-center bg-yellow-400 text-black font-bold py-2 rounded-xl"
+//                             >
+//                                 🛡️ Request Warranty
+//                             </Text>
+//                         </View> */}
+//                         {/* Conditionally Render Button */}
+//                         {/* {isClientMatch(scan.project_id) && ( */}
+//                             <View className="mt-4">
+//                                 <Text
+//                                     onPress={() => goToKitDetails(scan.scan_id)}
+//                                     className="text-center bg-yellow-400 text-black font-bold py-2 rounded-xl"
+//                                 >
+//                                     🛡️ Request Warranty
+//                                 </Text>
+//                             </View>
+//                         {/* )} */}
+//                     </View>
+//                 ))
+//             )}
+//         </ScrollView>
+//     );
+// };
+
+// export default MyScansScreen;
+
 import { useAuth } from '@/context/AuthContext';
 import api from '@/utils/api';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
+    Alert,
+    BackHandler,
     RefreshControl,
     ScrollView,
     Text,
-    View
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 interface SavedOrder {
-    scan_id: string;
-    kit_id: string;
-    prod_unit: string;
-    warehouse: string;
-    project_id: string;
-    kit_no: number;
-    date: string;
-    scanned_at: string;
+  scan_id: string;
+  kit_id: string;
+  prod_unit: string;
+  warehouse: string;
+  project_id: string;
+  kit_no: number;
+  date: string;
+  scanned_at: string;
+  order_id: string;
+}
+
+function groupBy<T, K extends keyof any>(array: T[], getKey: (item: T) => K) {
+  return array.reduce((result, item) => {
+    const key = getKey(item);
+    if (!result[key]) result[key] = [];
+    result[key].push(item);
+    return result;
+  }, {} as Record<K, T[]>);
 }
 
 const MyScansScreen = () => {
-    const { user } = useAuth();
-    const router = useRouter();
-    const [scans, setScans] = useState<SavedOrder[]>([]);
-    const [refreshing, setRefreshing] = useState(false);
-    const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const router = useRouter();
+  const [scans, setScans] = useState<SavedOrder[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState<{ [orderId: string]: boolean }>({});
 
-    const fetchScans = async () => {
-        try {
-            const res = await api.get('/saved-orders/');
-            setScans(res.data);
-        } catch (err) {
-            console.error('Failed to fetch scans:', err);
-        } finally {
-            setLoading(false);
-            setRefreshing(false);
-        }
-    };
+      useFocusEffect(() => {
+      const onBackPress = () => {
+        Alert.alert(
+          'Exit App',
+          'Are you sure you want to exit?',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Exit', onPress: () => BackHandler.exitApp() },
+          ],
+          { cancelable: true }
+        );
+        return true; // prevent default behavior (going back)
+      };
+  
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => subscription.remove();
+    });
 
-    useEffect(() => {
-        fetchScans();
-    }, []);
+  const fetchScans = async () => {
+    try {
+      const res = await api.get('/saved-orders/');
+      setScans(res.data);
+    } catch (err) {
+      console.error('Failed to fetch scans:', err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
-    const onRefresh = () => {
-        setRefreshing(true);
-        fetchScans();
-    };
+  useEffect(() => {
+    fetchScans();
+  }, []);
 
-    const goToKitDetails = (scanId: string) => {
-        router.push({
-            pathname: '/(main)/kit-details',
-            params: { scan_id: scanId },
-        });
-    };
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchScans();
+  };
 
-    // const isClientMatch = (projectId: string): boolean => {
-    //     const prefix = projectId.split('/')[0].trim(); // Get "CUST0001" from "CUST0001/ 03"
-    //     return user?.client_id === prefix;
-    // };
+  const goToKitDetails = (scanId: string) => {
+    router.push({
+      pathname: '/(main)/kit-details',
+      params: { scan_id: scanId },
+    });
+  };
 
-    // const latestScans = scans.slice().reverse();
+  // --- Group scans by order_id
+  const grouped = groupBy(scans, scan => scan.order_id);
+  const orderIds = Object.keys(grouped);
 
-    return (
-        <ScrollView
-            className="flex-1 bg-black px-4 py-2"
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-        >
-            {scans.length === 0 ? (
-                <Text className="text-white text-center mt-8 text-lg">No scans found.</Text>
-            ) : (
-                scans.map((scan) => (
-                    <View key={scan.scan_id} className="bg-white rounded-2xl p-4 mb-4 shadow">
-                        <Text className="text-black text-lg font-bold">🔍 Scan ID: {scan.scan_id}</Text>
-                        <Text className="text-gray-600 text-sm mt-1">
-                            🗓️ {new Date(scan.scanned_at).toLocaleString()}
-                        </Text>
+  return (
+    <ScrollView
+      className="flex-1 bg-black px-4 py-2"
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    >
+      {scans.length === 0 ? (
+        <Text className="text-white text-center mt-8 text-lg">No scans found.</Text>
+      ) : (
+        orderIds.map(orderId => (
+          <View key={orderId} className="bg-white rounded-2xl p-3 mb-4 shadow">
+            {/* Order Card Header */}
+            <TouchableOpacity
+              onPress={() =>
+                setExpanded(current => ({ ...current, [orderId]: !current[orderId] }))
+              }
+              activeOpacity={0.7}
+              className="flex-row items-center justify-between"
+            >
+              <Text className="text-black text-lg font-bold">
+                📦 Order ID: {orderId}
+              </Text>
+              <Text className="text-yellow-400 font-bold text-2xl">
+                {expanded[orderId] ? '−' : '+'}
+              </Text>
+            </TouchableOpacity>
 
-                        {/* QR Details */}
-                        <View className="mt-3 mb-2">
-                            <Text className="text-black font-semibold text-sm mb-1">📦 Kit Info:</Text>
-                            <Text className="ml-2 text-sm text-black">• Kit ID: {scan.kit_id}</Text>
-                            <Text className="ml-2 text-sm text-black">• Kit No: {scan.kit_no}</Text>
-                            <Text className="ml-2 text-sm text-black">• Prod Unit: {scan.prod_unit}</Text>
-                            <Text className="ml-2 text-sm text-black">• Warehouse: {scan.warehouse}</Text>
-                            <Text className="ml-2 text-sm text-black">• Project ID: {scan.project_id}</Text>
-                            <Text className="ml-2 text-sm text-black">• Date: {scan.date}</Text>
-                        </View>
-
-                        {/* Request Warranty Button */}
-                        {/* <View className="mt-4">
-                            <Text
-                                onPress={() => goToKitDetails(scan.scan_id)}
-                                className="text-center bg-yellow-400 text-black font-bold py-2 rounded-xl"
-                            >
-                                🛡️ Request Warranty
-                            </Text>
-                        </View> */}
-                        {/* Conditionally Render Button */}
-                        {/* {isClientMatch(scan.project_id) && ( */}
-                            <View className="mt-4">
-                                <Text
-                                    onPress={() => goToKitDetails(scan.scan_id)}
-                                    className="text-center bg-yellow-400 text-black font-bold py-2 rounded-xl"
-                                >
-                                    🛡️ Request Warranty
-                                </Text>
-                            </View>
-                        {/* )} */}
-                    </View>
-                ))
+            {/* Kits list (collapsed/expanded) */}
+            {expanded[orderId] && (
+              <View className="mt-2">
+                {grouped[orderId].map(scan => (
+                  <View
+                    key={scan.scan_id}
+                    className="bg-gray-100 rounded-xl px-2 py-2 mb-3"
+                  >
+                    <Text className="text-black font-semibold">Kit ID: {scan.kit_id}</Text>
+                    <Text className="text-sm text-black ml-2">• Kit No: {scan.kit_no}</Text>
+                    <Text className="text-sm text-black ml-2">• Prod Unit: {scan.prod_unit}</Text>
+                    <Text className="text-sm text-black ml-2">• Warehouse: {scan.warehouse}</Text>
+                    <Text className="text-sm text-black ml-2">• Project ID: {scan.project_id}</Text>
+                    <Text className="text-sm text-black ml-2">• Date: {scan.date}</Text>
+                    <Text className="text-gray-700 text-xs ml-2 mt-1">
+                      🗓️ {new Date(scan.scanned_at).toLocaleString()}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => goToKitDetails(scan.scan_id)}
+                      className="bg-yellow-400 mt-3 rounded-xl"
+                    >
+                      <Text className="text-center text-black font-bold py-2">🛡️ Request Warranty</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
             )}
-        </ScrollView>
-    );
+          </View>
+        ))
+      )}
+    </ScrollView>
+  );
 };
 
 export default MyScansScreen;
-
