@@ -77,7 +77,7 @@ const HomeScreen = () => {
   const openScanner = () => {
     router.push('/(main)/dashboard/qr-scanner');
   };
-  console.log(user)
+  // console.log(user)
 
   return (
     <View className="flex-1 bg-black px-6 pt-14">

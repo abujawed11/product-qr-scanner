@@ -313,22 +313,22 @@ const MyScansScreen = () => {
         });
     };
 
-    const isClientMatch = (projectId: string): boolean => {
-        const prefix = projectId.split('/')[0].trim(); // Get "CUST0001" from "CUST0001/ 03"
-        return user?.client_id === prefix;
-    };
+    // const isClientMatch = (projectId: string): boolean => {
+    //     const prefix = projectId.split('/')[0].trim(); // Get "CUST0001" from "CUST0001/ 03"
+    //     return user?.client_id === prefix;
+    // };
 
-    const latestScans = scans.slice().reverse();
+    // const latestScans = scans.slice().reverse();
 
     return (
         <ScrollView
             className="flex-1 bg-black px-4 py-2"
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
-            {latestScans.length === 0 ? (
+            {scans.length === 0 ? (
                 <Text className="text-white text-center mt-8 text-lg">No scans found.</Text>
             ) : (
-                latestScans.map((scan) => (
+                scans.map((scan) => (
                     <View key={scan.scan_id} className="bg-white rounded-2xl p-4 mb-4 shadow">
                         <Text className="text-black text-lg font-bold">🔍 Scan ID: {scan.scan_id}</Text>
                         <Text className="text-gray-600 text-sm mt-1">
@@ -356,7 +356,7 @@ const MyScansScreen = () => {
                             </Text>
                         </View> */}
                         {/* Conditionally Render Button */}
-                        {isClientMatch(scan.project_id) && (
+                        {/* {isClientMatch(scan.project_id) && ( */}
                             <View className="mt-4">
                                 <Text
                                     onPress={() => goToKitDetails(scan.scan_id)}
@@ -365,7 +365,7 @@ const MyScansScreen = () => {
                                     🛡️ Request Warranty
                                 </Text>
                             </View>
-                        )}
+                        {/* )} */}
                     </View>
                 ))
             )}
