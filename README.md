@@ -389,3 +389,94 @@ react-native-qr-scanner
    └─ taskUtils.ts
 
 ```
+```
+react_qr_scanner
+├─ app
+│  ├─ (adminDashboard)
+│  │  ├─ index.tsx
+│  │  ├─ manage-clients.tsx
+│  │  ├─ manage-kits.tsx
+│  │  ├─ manage-orders.tsx
+│  │  ├─ review-claims.tsx
+│  │  └─ _layout.tsx
+│  ├─ (auth)
+│  │  ├─ forgot-password.tsx
+│  │  ├─ login.tsx
+│  │  ├─ register.tsx
+│  │  └─ _layout.tsx
+│  ├─ (main)
+│  │  ├─ about.tsx
+│  │  ├─ all-orders.tsx
+│  │  ├─ dashboard
+│  │  │  ├─ home.tsx
+│  │  │  ├─ index.tsx
+│  │  │  ├─ my-orders.tsx
+│  │  │  ├─ my-scans.tsx
+│  │  │  ├─ qr-scanner.tsx
+│  │  │  └─ _layout.tsx
+│  │  ├─ kit-details.tsx
+│  │  ├─ notifications.tsx
+│  │  ├─ order-details.tsx
+│  │  ├─ product-info.tsx
+│  │  ├─ profile.tsx
+│  │  ├─ settings.tsx
+│  │  ├─ support.tsx
+│  │  ├─ warranty
+│  │  │  ├─ claim-form.tsx
+│  │  │  ├─ claim-media-wizard.tsx
+│  │  │  ├─ claim-status.tsx
+│  │  │  ├─ claim-steps.ts
+│  │  │  ├─ index.tsx
+│  │  │  ├─ warranty-card.tsx
+│  │  │  └─ _layout.tsx
+│  │  └─ _layout.tsx
+│  ├─ index.tsx
+│  └─ _layout.tsx
+├─ app.json
+├─ assets
+│  ├─ fonts
+│  │  └─ SpaceMono-Regular.ttf
+│  └─ images
+│     ├─ adaptive-icon.png
+│     ├─ favicon.png
+│     ├─ icon.png
+│     ├─ partial-react-logo.png
+│     ├─ react-logo.png
+│     ├─ react-logo@2x.png
+│     ├─ react-logo@3x.png
+│     └─ splash-icon.png
+├─ babel.config.js
+├─ components
+│  ├─ CustomAdminDrawer.tsx
+│  ├─ CustomDrawer.tsx
+│  ├─ FloatingInput.tsx
+│  ├─ FloatingPicker.tsx
+│  └─ NotificationBell.tsx
+├─ context
+│  ├─ AuthContext.tsx
+│  ├─ NotificationContext.tsx
+│  └─ ThemeContext.tsx
+├─ eslint.config.js
+├─ global.css
+├─ metro.config.js
+├─ nativewind-env.d.ts
+├─ package-lock.json
+├─ package.json
+├─ README.md
+├─ services
+├─ tailwind.config.js
+├─ tsconfig.json
+├─ types
+│  ├─ kit.types.ts
+│  ├─ order.types.ts
+│  └─ user.types.ts
+└─ utils
+   ├─ api.ts
+   ├─ color.ts
+   ├─ constants.ts
+   ├─ downloadExcel.ts
+   ├─ formatDate.ts
+   ├─ statusColor.ts
+   └─ taskUtils.ts
+
+```

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
     Alert,
+    BackHandler,
     Modal,
     ScrollView,
     Text,
@@ -85,6 +86,16 @@ export default function ManageKits() {
     useEffect(() => {
         fetchKits();
     }, []);
+
+    useEffect(() => {
+        if (!modalVisible) return;
+        const handleBack = () => {
+            setModalVisible(false);
+            return true;
+        };
+        const sub = BackHandler.addEventListener('hardwareBackPress', handleBack);
+        return () => sub.remove();
+    }, [modalVisible]);
 
     return (
         <ScrollView className="flex-1 bg-black px-6 pt-10" contentContainerStyle={{ paddingBottom: 40 }}>
