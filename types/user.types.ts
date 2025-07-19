@@ -38,6 +38,7 @@ export interface User {
   client_id: string;  // ✅ updated from customer_id
   account_type: 'admin' | 'client';
   is_active: boolean;
+  company_name: string
 }
 
 // Form data sent from frontend to backend for registration

@@ -85,6 +85,7 @@ const HomeScreen = () => {
       <Text className="text-white text-xl font-bold">Hi {user?.username}</Text>
       <Text className="text-white text-lg">Welcome to Sunrack Warranty Portal</Text>
       <Text className="text-yellow-400 text-base font-semibold mt-1">Client ID: {user?.client_id}</Text>
+      <Text className="text-yellow-400 text-base font-semibold mt-1">Client Company: {user?.company_name}</Text>
 
       {/* Order Summary */}
       <View className="mt-10 bg-yellow-400 rounded-2xl p-6">
