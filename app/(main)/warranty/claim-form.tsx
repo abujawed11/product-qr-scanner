@@ -1036,9 +1036,9 @@ export default function WarrantyCustomerInfoPage() {
   // --- Get params for autofill ---
   const params = useLocalSearchParams<{
     client_id?: string;
-    clientName?: string;
-    phone?: string;
-    email?: string;
+    company_name?: string;
+    // phone?: string;
+    // email?: string;
     order_id?: string;
     kit_id?: string;
     kit_no?: string;
@@ -1048,6 +1048,7 @@ export default function WarrantyCustomerInfoPage() {
 
   const [clientId, setClientId] = useState('');
   const [clientName, setClientName] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [orderId, setOrderId] = useState('');
@@ -1071,9 +1072,10 @@ export default function WarrantyCustomerInfoPage() {
 
   useEffect(() => {
     if (params.client_id) setClientId(params.client_id);
-    if (params.clientName) setClientName(params.clientName);
-    if (params.phone) setPhone(params.phone);
-    if (params.email) setEmail(params.email);
+    // if (params.clientName) setClientName(params.clientName);
+    if (params.company_name) setCompanyName(params.company_name)
+    // if (params.phone) setPhone(params.phone);
+    // if (params.email) setEmail(params.email);
     if (params.order_id) setOrderId(params.order_id);
     if (params.kit_id) setKitId(params.kit_id);
     if (params.kit_no) setKitNo(params.kit_no);
@@ -1082,7 +1084,7 @@ export default function WarrantyCustomerInfoPage() {
   }, [params]);
 
   const handleNext = () => {
-    if (!clientId || !clientName || !phone || !orderId || !kitId || !kitNo || !projectId) {
+    if (!clientId || !companyName || !clientName || !phone || !email || !orderId || !kitId || !kitNo || !projectId) {
       Alert.alert('Validation Error', 'Please fill out all required fields.');
       return;
     }
@@ -1118,15 +1120,23 @@ export default function WarrantyCustomerInfoPage() {
             placeholderTextColor="#888"
             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
           />
-          <Text className="text-yellow-400 font-semibold mb-1">Client Name *</Text>
+          <Text className="text-yellow-400 font-semibold mb-1">Client Company Name *</Text>
           <TextInput
-            value={clientName}
-            onChangeText={setClientName}
+            value={companyName}
+            onChangeText={setCompanyName}
             placeholder="Client Name"
             placeholderTextColor="#888"
             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
           />
-          <Text className="text-yellow-400 font-semibold mb-1">Phone *</Text>
+          <Text className="text-yellow-400 font-semibold mb-1">Contact Name *</Text>
+          <TextInput
+            value={clientName}
+            onChangeText={setClientName}
+            placeholder="Contact Name"
+            placeholderTextColor="#888"
+            className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+          />
+          <Text className="text-yellow-400 font-semibold mb-1">Contact Phone *</Text>
           <TextInput
             value={phone}
             onChangeText={setPhone}
@@ -1135,7 +1145,7 @@ export default function WarrantyCustomerInfoPage() {
             placeholderTextColor="#888"
             className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
           />
-          <Text className="text-yellow-400 font-semibold mb-1">Email</Text>
+          <Text className="text-yellow-400 font-semibold mb-1">Email *</Text>
           <TextInput
             value={email}
             onChangeText={setEmail}

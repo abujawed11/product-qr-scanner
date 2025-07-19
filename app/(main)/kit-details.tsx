@@ -29,7 +29,7 @@ export default function KitDetailsScreen() {
     const fetchDetails = async () => {
       try {
         const res = await api.get(`/kit-scan-details/${scan_id}/`);
-        // console.log("kit-details................")
+        console.log("kit-details................",res.data)
         setData(res.data);
       } catch (err: any) {
         console.error(err);
@@ -63,6 +63,7 @@ export default function KitDetailsScreen() {
   const { kit_id, prod_unit, warehouse, project_id, kit_no, date, kit, order_id } = data;
 
   const client_id = project_id.split('/')[0].trim();
+  const comapny_name = user?.company_name;
   //   console.log(client_id)
 
   const handleClaimWarranty = () => {
@@ -75,7 +76,8 @@ export default function KitDetailsScreen() {
         kit_no: kit_no ?? '',
         project_id: project_id ?? '',
         purchase_date: date ?? '',
-        client_id: client_id ?? ''
+        client_id: client_id ?? '',
+        company_name: comapny_name
       },
     });
   };
