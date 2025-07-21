@@ -106,3 +106,15 @@ export const claimSteps: ClaimStep[] = [
     mediaTypes: ['image', 'video'],
   },
 ];
+
+export const checklistItems = [
+  { key: 'materials_tools_prepared', question: 'Materials & Tools Prepared' },
+  { key: 'layout_marked', question: 'Layout Marked Correctly' },
+  { key: 'columns_installed', question: 'Columns Installed & Aligned' },
+  { key: 'rcc_cured', question: 'RCC Pedestals Cured' },
+  { key: 'rafters_fixed', question: 'Rafters Fixed & Tilt Verified' },
+  { key: 'bracing_installed', question: 'All Bracing Installed' },
+  { key: 'purlins_secured', question: 'Purlins Secured with Washers' },
+  { key: 'pv_installed', question: 'PV Modules Installed & Torqued' },
+  { key: 'qa_done', question: 'Final QA & Safety Checks Done' },
+];

@@ -9,9 +9,25 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app needs camera access to let you scan QR codes, take photos or videos for warranty claims.",
+        "NSMicrophoneUsageDescription": "This app uses the microphone when you record a video.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to pick or save media.",
+        "NSPhotoLibraryAddUsageDescription": "This app saves photos or videos you take for your warranty claim.",
+        "NSLocationWhenInUseUsageDescription": "Your location is required for warranty claim submission."
+      }
     },
     "android": {
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "ACCESS_MEDIA_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -42,3 +58,4 @@
     }
   }
 }
+

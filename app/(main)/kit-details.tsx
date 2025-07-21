@@ -222,14 +222,14 @@ export default function KitDetailsScreen() {
             </Text>
           </View>
 
-          <View className="flex-row">
+          {/* <View className="flex-row">
             <Text className="text-base font-medium" style={{ color: COLORS.text, minWidth: 140 }}>
               Price:
             </Text>
             <Text className="text-base font-bold" style={{ color: COLORS.text }}>
               ₹{kit.price}
             </Text>
-          </View>
+          </View> */}
         </View>
       </ScrollView>
 

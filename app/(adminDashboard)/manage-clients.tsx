@@ -452,7 +452,7 @@ export default function ManageClients() {
                 </View>
             ))}
 
-            <Modal visible={modalVisible} animationType="slide">
+            <Modal visible={modalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
                 <ScrollView className="flex-1 bg-black px-6 pt-10">
                     <Text className="text-2xl font-bold text-yellow-400 text-center mb-6">
                         {editUser ? 'Edit User' : 'Add User'}

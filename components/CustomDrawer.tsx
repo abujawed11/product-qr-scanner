@@ -45,8 +45,8 @@ const CustomDrawer = (props: any) => {
         />
 
         <DrawerItem
-          label="Warranty"
-          onPress={() => router.push('/warranty')}
+          label="Warranty Status"
+          onPress={() => router.push('/warranty-status')}
           icon={({ size }) => <FontAwesome name="id-card-o" size={24} color="#facc15" />}
           labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
           style={{ backgroundColor: 'transparent' }}
