@@ -1917,6 +1917,8 @@
 // }
 
 
+import api from '@/utils/api';
+import { AxiosError } from 'axios';
 import { ResizeMode, Video } from 'expo-av';
 import Checkbox from 'expo-checkbox';
 import * as ImagePicker from 'expo-image-picker';
@@ -1925,6 +1927,16 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, BackHandler, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { checklistItems, claimSteps } from './claim-steps';
+// import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+// import * as ImageManipulator from 'expo-image-manipulator';
+import * as ImageManipulator from 'expo-image-manipulator';
+
+// const result = await ImageManipulator.manipulateAsync(uri, actions, saveOptions);
+
+
+
+
+
 
 // Type for our step media
 type StepMedia = {
@@ -1949,6 +1961,20 @@ export default function ClaimMediaWizard() {
     const checklistStepIdx = claimSteps.length;
     const reviewStepIdx = claimSteps.length + 1;
     const lastStepIdx = reviewStepIdx;
+
+
+    async function compressImage(imageUri: string): Promise<string> {
+        try {
+            const manipResult = await ImageManipulator.manipulateAsync(
+                imageUri,
+                [{ resize: { width: 1280 } }],
+                { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+            );
+            return manipResult.uri;
+        } catch (err) {
+            return imageUri;
+        }
+    }
 
     function resetWizard() {
         setStepIdx(0);
@@ -2061,17 +2087,45 @@ export default function ClaimMediaWizard() {
     // Media step logic
     const step = claimSteps[stepIdx];
 
+    // async function pickImageFromGallery() {
+    //     const result = await ImagePicker.launchImageLibraryAsync({
+    //         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    //         allowsEditing: true,
+    //         quality: 0.7,
+    //     });
+    //     if (!result.canceled && result.assets?.length) {
+    //         setMedia(m => ({ ...m, [step.key]: { ...m[step.key], image: result.assets[0].uri } }));
+    //     }
+    // }
     async function pickImageFromGallery() {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
-            quality: 0.7,
+            quality: 1, // Get highest quality, then compress later
         });
         if (!result.canceled && result.assets?.length) {
-            setMedia(m => ({ ...m, [step.key]: { ...m[step.key], image: result.assets[0].uri } }));
+            const originalUri = result.assets[0].uri;
+            const compressedUri = await compressImage(originalUri);
+            setMedia(m => ({ ...m, [step.key]: { ...m[step.key], image: compressedUri } }));
         }
     }
     // async function takeImageWithCamera() {
+    //     const result = await ImagePicker.launchCameraAsync({
+    //         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    //         allowsEditing: true,
+    //         quality: 0.7,
+    //     });
+    //     if (!result.canceled && result.assets?.length) {
+    //         setMedia(m => ({ ...m, [step.key]: { ...m[step.key], image: result.assets[0].uri } }));
+    //     }
+    // }
+
+    // async function takeImageWithCamera() {
+    //     const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    //     if (status !== 'granted') {
+    //         Alert.alert('Camera permission is required to take a picture.');
+    //         return;
+    //     }
     //     const result = await ImagePicker.launchCameraAsync({
     //         mediaTypes: ImagePicker.MediaTypeOptions.Images,
     //         allowsEditing: true,
@@ -2091,12 +2145,17 @@ export default function ClaimMediaWizard() {
         const result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
-            quality: 0.7,
+            quality: 1,
         });
         if (!result.canceled && result.assets?.length) {
-            setMedia(m => ({ ...m, [step.key]: { ...m[step.key], image: result.assets[0].uri } }));
+            const originalUri = result.assets[0].uri;
+            const compressedUri = await compressImage(originalUri);
+            setMedia(m => ({ ...m, [step.key]: { ...m[step.key], image: compressedUri } }));
         }
     }
+
+
+
     async function pickVideoFromGallery() {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Videos,
@@ -2160,18 +2219,105 @@ export default function ClaimMediaWizard() {
         }
     }
 
-    function handleSubmit() {
-        const payload = {
-            ...params,
-            media,
-            location,
-            checklist: checklistAnswers,
-        };
-        // TODO: upload payload to API if needed
-        resetWizard();
-        Alert.alert('Submitted!', 'Your warranty claim has been submitted.');
-        router.replace('/(main)/warranty/claim-status');
+
+    async function handleSubmit() {
+        // Build FormData for fields
+        const formData = new FormData();
+
+        // Add all text fields (from params)
+        formData.append('clientId', params.clientId || '');
+        formData.append('companyName', params.companyName || '');
+        formData.append('clientName', params.clientName || '');
+        formData.append('phone', params.phone || '');
+        formData.append('email', params.email || '');
+        formData.append('orderId', params.orderId || '');
+        formData.append('kitId', params.kitId || '');
+        formData.append('kitNo', params.kitNo || '');
+        formData.append('projectId', params.projectId || '');
+        formData.append('purchaseDate', params.purchaseDate || '');
+        formData.append('accepted_statement', accepted ? 'true' : 'false');
+
+        // Add location
+        if (location) {
+            formData.append('latitude', String(location.latitude));
+            formData.append('longitude', String(location.longitude));
+        }
+
+        // Checklist (must be stringified for backend JSONField)
+        formData.append('checklist', JSON.stringify(checklistAnswers || {}));
+
+        // --- Flatten and append all media ---
+        // media: { stepKey: { image, video } }
+        Object.entries(media).forEach(([stepKey, mediaObject]) => {
+            Object.entries(mediaObject).forEach(([mediaType, uri]) => {
+                if (!uri) return;
+                const fileExt = mediaType === 'image'
+                    ? uri.split('.').pop() || 'jpg'
+                    : uri.split('.').pop() || 'mp4';
+                const mime =
+                    mediaType === 'image'
+                        ? 'image/jpeg' // You could try guessing from ext, but jpeg is safest for mobile/Expo.
+                        : 'video/mp4';
+                formData.append('files', {
+                    uri,
+                    name: `step_${stepKey}_${mediaType}.${fileExt}`,
+                    type: mime,
+                } as any);
+                formData.append('step_key', stepKey);
+                formData.append('media_type', mediaType);
+            });
+        });
+
+        // ---- API SUBMIT ----
+        try {
+            const response = await api.post(
+                '/warranty-claims/', // <--- CHANGE to your backend!
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        // 'Authorization': `Bearer ${token}`      // If you need auth
+                    },
+                    timeout: 120000 // Optional, long timeout for big uploads
+                }
+            );
+
+            if (response.status === 201 || response.status === 200) {
+                resetWizard();
+                Alert.alert('Submitted!', 'Your warranty claim has been submitted.');
+                router.replace('/warranty-status');
+            } else {
+                Alert.alert('Error', 'Unexpected server response. Please try again.');
+            }
+        } catch (error) {
+            const err = error as AxiosError;
+            if (err.response && err.response.data && typeof err.response.data === "object") {
+                const data = err.response.data as any;
+                Alert.alert('Submission Error', data.detail || JSON.stringify(data));
+            } else {
+                Alert.alert('Submission Error', 'Could not submit your claim. Please check your network or try again.');
+            }
+            // console.error('Warranty submit failed:', error, error?.response?.data);
+            // if (error?.response?.data?.detail) {
+            //     Alert.alert('Submission Error', error.response.data.detail);
+            // } else {
+            //     Alert.alert('Submission Error', 'Could not submit your claim. Please check your network or try again.');
+            // }
+        }
     }
+
+    // function handleSubmit() {
+    //     const payload = {
+    //         ...params,
+    //         media,
+    //         location,
+    //         checklist: checklistAnswers,
+    //     };
+    //     // TODO: upload payload to API if needed
+    //     resetWizard();
+    //     Alert.alert('Submitted!', 'Your warranty claim has been submitted.');
+    //     router.replace('/warranty-status');
+    // }
 
     // ======= Media Upload Steps =======
     if (stepIdx < checklistStepIdx) {

@@ -1028,6 +1028,190 @@
 //   );
 // }
 
+
+//-----------------------working------------------------------
+// import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+// import React, { useEffect, useState } from 'react';
+// import { Alert, BackHandler, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+// export default function WarrantyCustomerInfoPage() {
+//   // --- Get params for autofill ---
+//   const params = useLocalSearchParams<{
+//     client_id?: string;
+//     company_name?: string;
+//     // phone?: string;
+//     // email?: string;
+//     order_id?: string;
+//     kit_id?: string;
+//     kit_no?: string;
+//     project_id?: string;
+//     purchase_date?: string;
+//   }>();
+
+//   const [clientId, setClientId] = useState('');
+//   const [clientName, setClientName] = useState('');
+//   const [companyName, setCompanyName] = useState('');
+//   const [phone, setPhone] = useState('');
+//   const [email, setEmail] = useState('');
+//   const [orderId, setOrderId] = useState('');
+//   const [kitId, setKitId] = useState('');
+//   const [kitNo, setKitNo] = useState('');
+//   const [projectId, setProjectId] = useState('');
+//   const [purchaseDate, setPurchaseDate] = useState('');
+
+//   useFocusEffect(
+//     React.useCallback(() => {
+
+//       const onBackPress = () => {
+//         router.replace('/(main)/dashboard');
+//         return true;
+//       };
+//       const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+//       return () => subscription.remove();
+//     }, [])
+//   );
+
+
+//   useEffect(() => {
+//     if (params.client_id) setClientId(params.client_id);
+//     // if (params.clientName) setClientName(params.clientName);
+//     if (params.company_name) setCompanyName(params.company_name)
+//     // if (params.phone) setPhone(params.phone);
+//     // if (params.email) setEmail(params.email);
+//     if (params.order_id) setOrderId(params.order_id);
+//     if (params.kit_id) setKitId(params.kit_id);
+//     if (params.kit_no) setKitNo(params.kit_no);
+//     if (params.project_id) setProjectId(params.project_id);
+//     if (params.purchase_date) setPurchaseDate(params.purchase_date);
+//   }, [params]);
+
+//   const handleNext = () => {
+//     if (!clientId || !companyName || !clientName || !phone || !email || !orderId || !kitId || !kitNo || !projectId) {
+//       Alert.alert('Validation Error', 'Please fill out all required fields.');
+//       return;
+//     }
+//     router.replace({
+//       pathname: '/(main)/warranty/claim-media-wizard',
+//       params: {
+//         clientId, clientName, phone, email, orderId, kitId, kitNo, projectId, purchaseDate,
+//         stepIdx: 0,
+//       }
+//     });
+//   };
+
+//   return (
+//     <>
+//       {/* <Stack.Screen options={{ title: "Request Warranty" }} /> */}
+//       <View className="flex-1 bg-black">
+//         <KeyboardAvoidingView
+//           behavior={Platform.OS === "ios" ? "padding" : "height"}
+//           style={{ flex: 1 }}
+//           keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+//         >
+//           <ScrollView
+//             contentContainerStyle={{ padding: 24, paddingBottom: 32 }}
+//             keyboardShouldPersistTaps="handled"
+//             showsVerticalScrollIndicator={false}
+//           >
+//             {/* <Text className="text-2xl font-bold text-yellow-400 text-center mb-8">
+//               Warranty Request Form
+//             </Text> */}
+//             <Text className="text-yellow-400 font-semibold mb-1">Client ID *</Text>
+//             <TextInput
+//               value={clientId}
+//               onChangeText={setClientId}
+//               placeholder="Client ID"
+//               placeholderTextColor="#888"
+//               className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//             />
+//             <Text className="text-yellow-400 font-semibold mb-1">Client Company Name *</Text>
+//             <TextInput
+//               value={companyName}
+//               onChangeText={setCompanyName}
+//               placeholder="Client Name"
+//               placeholderTextColor="#888"
+//               className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//             />
+//             <Text className="text-yellow-400 font-semibold mb-1">Contact Name *</Text>
+//             <TextInput
+//               value={clientName}
+//               onChangeText={setClientName}
+//               placeholder="Contact Name"
+//               placeholderTextColor="#888"
+//               className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//             />
+//             <Text className="text-yellow-400 font-semibold mb-1">Contact Phone *</Text>
+//             <TextInput
+//               value={phone}
+//               onChangeText={setPhone}
+//               placeholder="Phone"
+//               keyboardType="phone-pad"
+//               placeholderTextColor="#888"
+//               className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//             />
+//             <Text className="text-yellow-400 font-semibold mb-1">Email *</Text>
+//             <TextInput
+//               value={email}
+//               onChangeText={setEmail}
+//               placeholder="Email"
+//               keyboardType="email-address"
+//               placeholderTextColor="#888"
+//               className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//             />
+//             <Text className="text-yellow-400 font-semibold mb-1">Order ID *</Text>
+//             <TextInput
+//               value={orderId}
+//               onChangeText={setOrderId}
+//               placeholder="Order ID"
+//               placeholderTextColor="#888"
+//               className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//             />
+//             <Text className="text-yellow-400 font-semibold mb-1">Kit ID *</Text>
+//             <TextInput
+//               value={kitId}
+//               onChangeText={setKitId}
+//               placeholder="Kit ID"
+//               placeholderTextColor="#888"
+//               className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//             />
+//             <Text className="text-yellow-400 font-semibold mb-1">Kit Number *</Text>
+//             <TextInput
+//               value={kitNo}
+//               onChangeText={setKitNo}
+//               placeholder="Kit No"
+//               placeholderTextColor="#888"
+//               className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//             />
+//             <Text className="text-yellow-400 font-semibold mb-1">Project ID *</Text>
+//             <TextInput
+//               value={projectId}
+//               onChangeText={setProjectId}
+//               placeholder="Project ID"
+//               placeholderTextColor="#888"
+//               className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+//             />
+//             <Text className="text-yellow-400 font-semibold mb-1">Purchase Date</Text>
+//             <TextInput
+//               value={purchaseDate}
+//               onChangeText={setPurchaseDate}
+//               placeholder="Purchase Date"
+//               placeholderTextColor="#888"
+//               className="bg-white rounded-xl px-4 py-3 mb-8 text-black"
+//             />
+//             <TouchableOpacity
+//               className="bg-yellow-400 py-4 rounded-xl"
+//               onPress={handleNext}
+//             >
+//               <Text className="text-black font-bold text-center text-lg">Next: Start Warranty Photo/Video Steps</Text>
+//             </TouchableOpacity>
+//           </ScrollView>
+//         </KeyboardAvoidingView>
+//       </View>
+//     </>
+//   );
+// }
+
+
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, BackHandler, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -1037,8 +1221,6 @@ export default function WarrantyCustomerInfoPage() {
   const params = useLocalSearchParams<{
     client_id?: string;
     company_name?: string;
-    // phone?: string;
-    // email?: string;
     order_id?: string;
     kit_id?: string;
     kit_no?: string;
@@ -1059,7 +1241,6 @@ export default function WarrantyCustomerInfoPage() {
 
   useFocusEffect(
     React.useCallback(() => {
-
       const onBackPress = () => {
         router.replace('/(main)/dashboard');
         return true;
@@ -1069,13 +1250,9 @@ export default function WarrantyCustomerInfoPage() {
     }, [])
   );
 
-
   useEffect(() => {
     if (params.client_id) setClientId(params.client_id);
-    // if (params.clientName) setClientName(params.clientName);
-    if (params.company_name) setCompanyName(params.company_name)
-    // if (params.phone) setPhone(params.phone);
-    // if (params.email) setEmail(params.email);
+    if (params.company_name) setCompanyName(params.company_name);
     if (params.order_id) setOrderId(params.order_id);
     if (params.kit_id) setKitId(params.kit_id);
     if (params.kit_no) setKitNo(params.kit_no);
@@ -1091,7 +1268,7 @@ export default function WarrantyCustomerInfoPage() {
     router.replace({
       pathname: '/(main)/warranty/claim-media-wizard',
       params: {
-        clientId, clientName, phone, email, orderId, kitId, kitNo, projectId, purchaseDate,
+        clientId, companyName, clientName, phone, email, orderId, kitId, kitNo, projectId, purchaseDate,
         stepIdx: 0,
       }
     });
@@ -1099,8 +1276,12 @@ export default function WarrantyCustomerInfoPage() {
 
   return (
     <>
-      {/* <Stack.Screen options={{ title: "Request Warranty" }} /> */}
-      <View className="flex-1 bg-black">
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#000',
+        }}
+      >
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
@@ -1111,96 +1292,296 @@ export default function WarrantyCustomerInfoPage() {
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            {/* <Text className="text-2xl font-bold text-yellow-400 text-center mb-8">
+            {/* <Text style={{ color: '#FACC15', fontWeight: '700', fontSize: 24, textAlign: 'center', marginBottom: 30 }}>
               Warranty Request Form
             </Text> */}
-            <Text className="text-yellow-400 font-semibold mb-1">Client ID *</Text>
+
+            {/* Client ID */}
+            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Client ID *</Text>
             <TextInput
               value={clientId}
               onChangeText={setClientId}
               placeholder="Client ID"
-              placeholderTextColor="#888"
-              className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+              placeholderTextColor="#BBB"
+              style={{
+                backgroundColor: '#FFF',
+                borderRadius: 9,
+                borderWidth: 2,
+                borderColor: '#FACC15',
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                marginBottom: 16,
+                fontSize: 16,
+                color: '#222',
+                fontWeight: '500',
+                shadowColor: '#FACC15',
+                shadowOpacity: 0.08,
+                shadowRadius: 6,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 2,
+              }}
             />
-            <Text className="text-yellow-400 font-semibold mb-1">Client Company Name *</Text>
+
+            {/* Client Company Name */}
+            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Client Company Name *</Text>
             <TextInput
               value={companyName}
               onChangeText={setCompanyName}
-              placeholder="Client Name"
-              placeholderTextColor="#888"
-              className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+              placeholder="Company Name"
+              placeholderTextColor="#BBB"
+              style={{
+                backgroundColor: '#FFF',
+                borderRadius: 9,
+                borderWidth: 2,
+                borderColor: '#FACC15',
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                marginBottom: 16,
+                fontSize: 16,
+                color: '#222',
+                fontWeight: '500',
+                shadowColor: '#FACC15',
+                shadowOpacity: 0.08,
+                shadowRadius: 6,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 2,
+              }}
             />
-            <Text className="text-yellow-400 font-semibold mb-1">Contact Name *</Text>
+
+            {/* Contact Name */}
+            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Contact Name *</Text>
             <TextInput
               value={clientName}
               onChangeText={setClientName}
               placeholder="Contact Name"
-              placeholderTextColor="#888"
-              className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+              placeholderTextColor="#BBB"
+              style={{
+                backgroundColor: '#FFF',
+                borderRadius: 9,
+                borderWidth: 2,
+                borderColor: '#FACC15',
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                marginBottom: 16,
+                fontSize: 16,
+                color: '#222',
+                fontWeight: '500',
+                shadowColor: '#FACC15',
+                shadowOpacity: 0.08,
+                shadowRadius: 6,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 2,
+              }}
             />
-            <Text className="text-yellow-400 font-semibold mb-1">Contact Phone *</Text>
+
+            {/* Phone */}
+            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Contact Phone *</Text>
             <TextInput
               value={phone}
               onChangeText={setPhone}
               placeholder="Phone"
+              placeholderTextColor="#BBB"
               keyboardType="phone-pad"
-              placeholderTextColor="#888"
-              className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+              style={{
+                backgroundColor: '#FFF',
+                borderRadius: 9,
+                borderWidth: 2,
+                borderColor: '#FACC15',
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                marginBottom: 16,
+                fontSize: 16,
+                color: '#222',
+                fontWeight: '500',
+                shadowColor: '#FACC15',
+                shadowOpacity: 0.08,
+                shadowRadius: 6,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 2,
+              }}
             />
-            <Text className="text-yellow-400 font-semibold mb-1">Email *</Text>
+
+            {/* Email */}
+            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Email *</Text>
             <TextInput
               value={email}
               onChangeText={setEmail}
               placeholder="Email"
+              placeholderTextColor="#BBB"
               keyboardType="email-address"
-              placeholderTextColor="#888"
-              className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+              autoCapitalize="none"
+              style={{
+                backgroundColor: '#FFF',
+                borderRadius: 9,
+                borderWidth: 2,
+                borderColor: '#FACC15',
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                marginBottom: 16,
+                fontSize: 16,
+                color: '#222',
+                fontWeight: '500',
+                shadowColor: '#FACC15',
+                shadowOpacity: 0.08,
+                shadowRadius: 6,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 2,
+              }}
             />
-            <Text className="text-yellow-400 font-semibold mb-1">Order ID *</Text>
+
+            {/* Order ID */}
+            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Order ID *</Text>
             <TextInput
               value={orderId}
               onChangeText={setOrderId}
               placeholder="Order ID"
-              placeholderTextColor="#888"
-              className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+              placeholderTextColor="#BBB"
+              style={{
+                backgroundColor: '#FFF',
+                borderRadius: 9,
+                borderWidth: 2,
+                borderColor: '#FACC15',
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                marginBottom: 16,
+                fontSize: 16,
+                color: '#222',
+                fontWeight: '500',
+                shadowColor: '#FACC15',
+                shadowOpacity: 0.08,
+                shadowRadius: 6,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 2,
+              }}
             />
-            <Text className="text-yellow-400 font-semibold mb-1">Kit ID *</Text>
+
+            {/* Kit ID */}
+            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Kit ID *</Text>
             <TextInput
               value={kitId}
               onChangeText={setKitId}
               placeholder="Kit ID"
-              placeholderTextColor="#888"
-              className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+              placeholderTextColor="#BBB"
+              style={{
+                backgroundColor: '#FFF',
+                borderRadius: 9,
+                borderWidth: 2,
+                borderColor: '#FACC15',
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                marginBottom: 16,
+                fontSize: 16,
+                color: '#222',
+                fontWeight: '500',
+                shadowColor: '#FACC15',
+                shadowOpacity: 0.08,
+                shadowRadius: 6,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 2,
+              }}
             />
-            <Text className="text-yellow-400 font-semibold mb-1">Kit Number *</Text>
+
+            {/* Kit Number */}
+            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Kit Number *</Text>
             <TextInput
               value={kitNo}
               onChangeText={setKitNo}
               placeholder="Kit No"
-              placeholderTextColor="#888"
-              className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+              placeholderTextColor="#BBB"
+              style={{
+                backgroundColor: '#FFF',
+                borderRadius: 9,
+                borderWidth: 2,
+                borderColor: '#FACC15',
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                marginBottom: 16,
+                fontSize: 16,
+                color: '#222',
+                fontWeight: '500',
+                shadowColor: '#FACC15',
+                shadowOpacity: 0.08,
+                shadowRadius: 6,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 2,
+              }}
             />
-            <Text className="text-yellow-400 font-semibold mb-1">Project ID *</Text>
+
+            {/* Project ID */}
+            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Project ID *</Text>
             <TextInput
               value={projectId}
               onChangeText={setProjectId}
               placeholder="Project ID"
-              placeholderTextColor="#888"
-              className="bg-white rounded-xl px-4 py-3 mb-4 text-black"
+              placeholderTextColor="#BBB"
+              style={{
+                backgroundColor: '#FFF',
+                borderRadius: 9,
+                borderWidth: 2,
+                borderColor: '#FACC15',
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                marginBottom: 16,
+                fontSize: 16,
+                color: '#222',
+                fontWeight: '500',
+                shadowColor: '#FACC15',
+                shadowOpacity: 0.08,
+                shadowRadius: 6,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 2,
+              }}
             />
-            <Text className="text-yellow-400 font-semibold mb-1">Purchase Date</Text>
+
+            {/* Purchase Date */}
+            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Purchase Date</Text>
             <TextInput
               value={purchaseDate}
               onChangeText={setPurchaseDate}
               placeholder="Purchase Date"
-              placeholderTextColor="#888"
-              className="bg-white rounded-xl px-4 py-3 mb-8 text-black"
+              placeholderTextColor="#BBB"
+              style={{
+                backgroundColor: '#FFF',
+                borderRadius: 9,
+                borderWidth: 2,
+                borderColor: '#FACC15',
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+                marginBottom: 32,
+                fontSize: 16,
+                color: '#222',
+                fontWeight: '500',
+                shadowColor: '#FACC15',
+                shadowOpacity: 0.08,
+                shadowRadius: 6,
+                shadowOffset: { width: 0, height: 2 },
+                elevation: 2,
+              }}
             />
+
             <TouchableOpacity
-              className="bg-yellow-400 py-4 rounded-xl"
+              style={{
+                backgroundColor: '#FACC15',
+                paddingVertical: 18,
+                borderRadius: 9,
+                shadowColor: '#000',
+                shadowOpacity: 0.18,
+                shadowRadius: 8,
+                shadowOffset: { width: 0, height: 4 },
+                elevation: 3,
+                marginTop: 8,
+              }}
               onPress={handleNext}
             >
-              <Text className="text-black font-bold text-center text-lg">Next: Start Warranty Photo/Video Steps</Text>
+              <Text style={{
+                color: "#111",
+                fontWeight: 'bold',
+                textAlign: 'center',
+                fontSize: 15,
+                letterSpacing: 0.5
+              }}>
+                Next: Start Warranty Photo/Video Steps
+              </Text>
             </TouchableOpacity>
           </ScrollView>
         </KeyboardAvoidingView>
