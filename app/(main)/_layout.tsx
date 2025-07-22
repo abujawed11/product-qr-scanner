@@ -1,21 +1,19 @@
 import CustomDrawer from '@/components/CustomDrawer';
 import BellWithNotification from '@/components/NotificationBell';
 import { useAuth } from '@/context/AuthContext';
-import * as NavigationBar from 'expo-navigation-bar';
 import { Redirect } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
-import { useEffect } from 'react';
-import { ActivityIndicator, Platform, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 
 export default function DashboardLayout() {
   const { user, loading } = useAuth();
 
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      NavigationBar.setVisibilityAsync('hidden');
-      NavigationBar.setBehaviorAsync('overlay-swipe');
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (Platform.OS === 'android') {
+  //     NavigationBar.setVisibilityAsync('hidden');
+  //     NavigationBar.setBehaviorAsync('overlay-swipe');
+  //   }
+  // }, []);
 
   if (loading) {
     return (

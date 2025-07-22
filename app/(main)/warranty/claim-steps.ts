@@ -107,14 +107,34 @@ export const claimSteps: ClaimStep[] = [
   },
 ];
 
+
 export const checklistItems = [
-  { key: 'materials_tools_prepared', question: 'Materials & Tools Prepared' },
-  { key: 'layout_marked', question: 'Layout Marked Correctly' },
-  { key: 'columns_installed', question: 'Columns Installed & Aligned' },
-  { key: 'rcc_cured', question: 'RCC Pedestals Cured' },
-  { key: 'rafters_fixed', question: 'Rafters Fixed & Tilt Verified' },
-  { key: 'bracing_installed', question: 'All Bracing Installed' },
-  { key: 'purlins_secured', question: 'Purlins Secured with Washers' },
-  { key: 'pv_installed', question: 'PV Modules Installed & Torqued' },
-  { key: 'qa_done', question: 'Final QA & Safety Checks Done' },
+  { key: 'surface_level', question: 'Installation surface is fairly level and not inclined towards any side.' },
+  { key: 'no_unauthorized_substitution', question: 'No component (including fasteners) is substituted with any other material that is not part of kit supplied' },
+  { key: 'no_modification', question: 'No component is modified or tampered like cutting, drilling or bending, etc., during installation' },
+  { key: 'no_visible_rust', question: 'There are no visible signs of rust on the members' },
+  { key: 'mother_slab_thickness', question: 'Mother other slab thickness is ≥ 90mm at installation location.' },
+  { key: 'columns_on_mother_slab', question: 'Installation of Column post is done only on mother slab and not on weathering course or water proofing layer.' },
+  { key: 'proper_anchor_drilling', question: 'Hole for anchor bolt hole is drilled to correct size, and hole is cleaned of any dust and debris before pouring Chemical' },
+  { key: 'anchor_embedment_length', question: 'Embedment length of Anchor Bolts inside mother slab is done as per installation manual.' },
+  { key: 'fastener_sequence', question: 'Fasteners are installed in correct sequence as shown in manual' },
+  { key: 'fastener_torqued', question: 'All fasteners are torqued to right torque value mentioned in manual and torque marking is done as shown.' },
+  { key: 'no_overtightening', question: 'No fastener is overtightened such that it deforms the Structure member or fastener.' },
+  { key: 'chamfered_ballast_top', question: 'Top of the Civil Ballast is chamfered around the column to avoid the water stagnation.' },
+  { key: 'chamfered_ballast_bottom', question: 'Bottom of the Civil Ballast is chamfered to avoid water trapping between Civil Ballast and Roof' },
+  { key: 'pv_within_layout', question: 'All PV modules are strictly within the marked layout boundary' },
+  { key: 'no_extra_weight', question: 'No additional weight is added to the structure apart from solar modules' },
 ];
+
+
+// export const checklistItems = [
+//   { key: 'materials_tools_prepared', question: 'Materials & Tools Prepared' },
+//   { key: 'layout_marked', question: 'Layout Marked Correctly' },
+//   { key: 'columns_installed', question: 'Columns Installed & Aligned' },
+//   { key: 'rcc_cured', question: 'RCC Pedestals Cured' },
+//   { key: 'rafters_fixed', question: 'Rafters Fixed & Tilt Verified' },
+//   { key: 'bracing_installed', question: 'All Bracing Installed' },
+//   { key: 'purlins_secured', question: 'Purlins Secured with Washers' },
+//   { key: 'pv_installed', question: 'PV Modules Installed & Torqued' },
+//   { key: 'qa_done', question: 'Final QA & Safety Checks Done' },
+// ];
