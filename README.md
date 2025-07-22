@@ -145,3 +145,102 @@ react-native-qr-scanner
    └─ taskUtils.ts
 
 ```
+```
+react_qr_scanner
+├─ app
+│  ├─ (adminDashboard)
+│  │  ├─ index.tsx
+│  │  ├─ manage-clients.tsx
+│  │  ├─ manage-kits.tsx
+│  │  ├─ manage-orders.tsx
+│  │  ├─ review-req-warranty.tsx
+│  │  └─ _layout.tsx
+│  ├─ (auth)
+│  │  ├─ forgot-password.tsx
+│  │  ├─ login.tsx
+│  │  ├─ register.tsx
+│  │  └─ _layout.tsx
+│  ├─ (main)
+│  │  ├─ about.tsx
+│  │  ├─ all-orders.tsx
+│  │  ├─ dashboard
+│  │  │  ├─ home.tsx
+│  │  │  ├─ index.tsx
+│  │  │  ├─ my-orders.tsx
+│  │  │  ├─ my-scans.tsx
+│  │  │  ├─ qr-scanner.tsx
+│  │  │  └─ _layout.tsx
+│  │  ├─ kit-details.tsx
+│  │  ├─ notifications.tsx
+│  │  ├─ order-details.tsx
+│  │  ├─ product-info.tsx
+│  │  ├─ profile.tsx
+│  │  ├─ settings.tsx
+│  │  ├─ support.tsx
+│  │  ├─ warranty
+│  │  │  ├─ claim-form.tsx
+│  │  │  ├─ claim-media-wizard.tsx
+│  │  │  ├─ claim-steps.ts
+│  │  │  ├─ index.tsx
+│  │  │  ├─ warranty-card.tsx
+│  │  │  └─ _layout.tsx
+│  │  ├─ warranty-status.tsx
+│  │  └─ _layout.tsx
+│  ├─ index.tsx
+│  └─ _layout.tsx
+├─ app.json
+├─ assets
+│  ├─ fonts
+│  │  └─ SpaceMono-Regular.ttf
+│  └─ images
+│     ├─ adaptive-icon.png
+│     ├─ favicon.png
+│     ├─ icon.png
+│     ├─ partial-react-logo.png
+│     ├─ react-logo.png
+│     ├─ react-logo@2x.png
+│     ├─ react-logo@3x.png
+│     └─ splash-icon.png
+├─ babel.config.js
+├─ components
+│  ├─ ChecklistStep.tsx
+│  ├─ CustomAdminDrawer.tsx
+│  ├─ CustomDrawer.tsx
+│  ├─ FloatingInput.tsx
+│  ├─ FloatingPicker.tsx
+│  ├─ MediaStep.tsx
+│  ├─ NotificationBell.tsx
+│  ├─ ReviewStep.tsx
+│  └─ UploadModal.tsx
+├─ context
+│  ├─ AuthContext.tsx
+│  ├─ NotificationContext.tsx
+│  ├─ RefreshContext.tsx
+│  └─ ThemeContext.tsx
+├─ eslint.config.js
+├─ global.css
+├─ metro.config.js
+├─ nativewind-env.d.ts
+├─ package-lock.json
+├─ package.json
+├─ README.md
+├─ services
+├─ tailwind.config.js
+├─ tsconfig.json
+├─ types
+│  ├─ kit.types.ts
+│  ├─ order.types.ts
+│  ├─ StepMedia.ts
+│  └─ user.types.ts
+└─ utils
+   ├─ api.ts
+   ├─ color.ts
+   ├─ constants.ts
+   ├─ downloadExcel.ts
+   ├─ formatDate.ts
+   ├─ locationUtils.ts
+   ├─ mediaUtils.ts
+   ├─ statusColor.ts
+   └─ taskUtils.ts
+
+```

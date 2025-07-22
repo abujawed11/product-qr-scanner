@@ -3850,6 +3850,7 @@ import { ChecklistStep } from "@/components/ChecklistStep";
 import { MediaStep } from "@/components/MediaStep";
 import { ReviewStep } from "@/components/ReviewStep";
 import { UploadModal } from "@/components/UploadModal"; // <-- this!
+import { useRefresh } from "@/context/RefreshContext";
 import { StepMedia } from "@/types/StepMedia";
 import api from "@/utils/api";
 import { getLocationWithPermission } from "@/utils/locationUtils";
@@ -3877,6 +3878,9 @@ export default function ClaimMediaWizard() {
     const checklistStepIdx = claimSteps.length;
     const reviewStepIdx = claimSteps.length + 1;
     const lastStepIdx = reviewStepIdx;
+
+    //Refresh
+    const { triggerRefresh } = useRefresh();
 
     function resetWizard() {
         setStepIdx(0);
@@ -4027,6 +4031,7 @@ export default function ClaimMediaWizard() {
 
             setIsSubmitting(false);
             setUploadProgress(0);
+            triggerRefresh();
 
             if (response.status === 201 || response.status === 200) {
                 resetWizard();

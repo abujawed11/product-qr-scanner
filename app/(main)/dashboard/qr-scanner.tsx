@@ -585,6 +585,7 @@
 
 // export default QRScanner;
 
+import { useRefresh } from '@/context/RefreshContext';
 import api from '@/utils/api';
 import { Entypo, Feather } from '@expo/vector-icons';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
@@ -615,6 +616,8 @@ const QRScanner = () => {
     const isFocused = useIsFocused();
     const router = useRouter();
 
+    const { triggerRefresh } = useRefresh();
+
     useFocusEffect(
         React.useCallback(() => {
             setScanned(false); // Reset scanner on focus
@@ -632,92 +635,6 @@ const QRScanner = () => {
     useEffect(() => {
         requestPermission();
     }, []);
-
-    // const handleBarcodeScanned = async (result: BarcodeScanningResult) => {
-    //     if (scanned) return;
-    //     setScanned(true);
-
-    //     try {
-    //         const parsed = JSON.parse(result.data);
-    //         // const { customerId, orderId, locationId } = parsed;
-    //         const { kit_id, prod_unit, warehouse, project_id, kit_no, date } = parsed
-
-    //         if (!kit_id || !prod_unit || !warehouse || !project_id) {
-    //             throw new Error('Missing required fields in QR code.');
-    //         }
-
-    //         // if (!customerId || !orderId || !locationId) {
-    //         //     throw new Error('Missing required fields');
-    //         // }
-
-    //         console.log(`Scanned data: ${JSON.stringify(parsed)}`);
-
-    //         //✅ Call backend API to save scanned order
-    //         await api.post('/save-order/', {
-    //             customerId,
-    //             orderId,
-    //             locationId
-    //         });
-
-    //         router.back()
-
-    //         // ✅ Navigate to details page
-    //         // router.push({
-    //         //     pathname: '/(main)/order-details',
-    //         //     params: { customerId, orderId }
-    //         // });
-
-    //     } catch (err) {
-    //         console.error(err);
-    //         //   Alert.alert('Error', 'Invalid QR code or server error.');
-    //         let errorMessage = 'Invalid QR code or server error.';
-    //         if (axios.isAxiosError(err) && err.response?.data?.error) {
-    //             errorMessage = err.response.data.error;
-    //         }
-    //         Alert.alert('Error', errorMessage);
-    //         setScanned(false);
-    //     }
-    // };
-
-    // const handleBarcodeScanned = async (result: BarcodeScanningResult) => {
-    //     if (scanned) return;
-    //     setScanned(true);
-
-    //     try {
-    //         const parsed = JSON.parse(result.data);
-    //         const { kit_id, prod_unit, warehouse, project_id, kit_no, date } = parsed;
-
-    //         if (!kit_id || !prod_unit || !warehouse || !project_id || !kit_no || !date) {
-    //             throw new Error('Missing required fields in QR code.');
-    //         }
-
-    //         console.log(`Scanned QR Data: ${JSON.stringify(parsed)}`);
-
-    //         // ✅ Send to backend
-    //         const res = await api.post('/save-order/', {
-    //             kit_id,
-    //             prod_unit,
-    //             warehouse,
-    //             project_id,
-    //             kit_no,
-    //             date
-    //         });
-
-    //         console.log("Saved successfully:", res.data);
-
-    //         // ✅ Navigate back or to another page
-    //         router.back();
-
-    //     } catch (err) {
-    //         console.error(err);
-    //         let errorMessage = 'Invalid QR code or server error.';
-    //         if (axios.isAxiosError(err) && err.response?.data?.error) {
-    //             errorMessage = err.response.data.error;
-    //         }
-    //         Alert.alert('Error', errorMessage);
-    //         setScanned(false);
-    //     }
-    // };
 
     const handleBarcodeScanned = async (result: BarcodeScanningResult) => {
         if (scanned) return;
@@ -748,7 +665,7 @@ const QRScanner = () => {
             if (!scan_id) {
                 throw new Error('Scan ID not returned from server.');
             }
-
+            triggerRefresh();
             // ✅ Navigate to kit-details page with scan_id
             router.push({
                 pathname: '/(main)/kit-details',
@@ -809,6 +726,8 @@ const QRScanner = () => {
             if (!scan_id) {
                 throw new Error('Scan ID not returned from server.');
             }
+
+            triggerRefresh();
 
             // ✅ Navigate to kit-details page with scan_id
             router.push({

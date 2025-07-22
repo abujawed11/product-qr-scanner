@@ -14,7 +14,7 @@ export default function AdminDashboard() {
     }: {
         icon: string;
         label: string;
-        route: '/(adminDashboard)/manage-clients' | '/(adminDashboard)/manage-orders' | '/(adminDashboard)/manage-kits' | '/(adminDashboard)/review-claims';
+        route: '/(adminDashboard)/manage-clients' | '/(adminDashboard)/manage-orders' | '/(adminDashboard)/manage-kits' | '/(adminDashboard)/warranty-clients';
         IconComponent: any;
     }) => (
         <TouchableOpacity
@@ -72,8 +72,8 @@ export default function AdminDashboard() {
 
             <Card
                 icon="shield-checkmark"
-                label="Review Claims"
-                route="/(adminDashboard)/review-claims"
+                label="Review Requested Warranty"
+                route="/(adminDashboard)/warranty-clients"
                 IconComponent={Ionicons}
             />
         </ScrollView>

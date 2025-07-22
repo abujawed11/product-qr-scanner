@@ -49,7 +49,7 @@ export default function AdminDashboardLayout() {
         { name: 'manage-clients', title: 'Manage Clients' },
         { name: 'manage-orders', title: 'Manage Orders' },
         { name: 'manage-kits', title: 'Manage Kits' },
-        { name: 'review-claims', title: 'Review Claims' },
+        // { name: 'review-claims', title: 'Review Claims' },
       ].map(({ name, title }) => (
         <Drawer.Screen
           key={name}

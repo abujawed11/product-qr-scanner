@@ -376,20 +376,593 @@
 
 // export default MyScansScreen;
 
+// import { useAuth } from '@/context/AuthContext';
+// import api from '@/utils/api';
+// import { useFocusEffect, useRouter } from 'expo-router';
+// import React, { useEffect, useState } from 'react';
+// import {
+//     Alert,
+//     BackHandler,
+//     RefreshControl,
+//     ScrollView,
+//     Text,
+//     TouchableOpacity,
+//     View,
+// } from 'react-native';
+
+// interface SavedOrder {
+//   scan_id: string;
+//   kit_id: string;
+//   prod_unit: string;
+//   warehouse: string;
+//   project_id: string;
+//   kit_no: number;
+//   date: string;
+//   scanned_at: string;
+//   order_id: string;
+// }
+
+// function groupBy<T, K extends keyof any>(array: T[], getKey: (item: T) => K) {
+//   return array.reduce((result, item) => {
+//     const key = getKey(item);
+//     if (!result[key]) result[key] = [];
+//     result[key].push(item);
+//     return result;
+//   }, {} as Record<K, T[]>);
+// }
+
+// const MyScansScreen = () => {
+//   const { user } = useAuth();
+//   const router = useRouter();
+//   const [scans, setScans] = useState<SavedOrder[]>([]);
+//   const [refreshing, setRefreshing] = useState(false);
+//   const [loading, setLoading] = useState(true);
+//   const [expanded, setExpanded] = useState<{ [orderId: string]: boolean }>({});
+
+//       useFocusEffect(() => {
+//       const onBackPress = () => {
+//         Alert.alert(
+//           'Exit App',
+//           'Are you sure you want to exit?',
+//           [
+//             { text: 'Cancel', style: 'cancel' },
+//             { text: 'Exit', onPress: () => BackHandler.exitApp() },
+//           ],
+//           { cancelable: true }
+//         );
+//         return true; // prevent default behavior (going back)
+//       };
+
+//       const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+//       return () => subscription.remove();
+//     });
+
+//   const fetchScans = async () => {
+//     try {
+//       const res = await api.get('/saved-orders/');
+//       setScans(res.data);
+//     } catch (err) {
+//       console.error('Failed to fetch scans:', err);
+//     } finally {
+//       setLoading(false);
+//       setRefreshing(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchScans();
+//   }, []);
+
+//   const onRefresh = () => {
+//     setRefreshing(true);
+//     fetchScans();
+//   };
+
+//   const goToKitDetails = (scanId: string) => {
+//     router.push({
+//       pathname: '/(main)/kit-details',
+//       params: { scan_id: scanId },
+//     });
+//   };
+
+//   // --- Group scans by order_id
+//   const grouped = groupBy(scans, scan => scan.order_id);
+//   const orderIds = Object.keys(grouped);
+
+//   return (
+//     <ScrollView
+//       className="flex-1 bg-black px-4 py-2"
+//       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+//     >
+//       {scans.length === 0 ? (
+//         <Text className="text-white text-center mt-8 text-lg">No scans found.</Text>
+//       ) : (
+//         orderIds.map(orderId => (
+//           <View key={orderId} className="bg-white rounded-2xl p-3 mb-4 shadow">
+//             {/* Order Card Header */}
+//             <TouchableOpacity
+//               onPress={() =>
+//                 setExpanded(current => ({ ...current, [orderId]: !current[orderId] }))
+//               }
+//               activeOpacity={0.7}
+//               className="flex-row items-center justify-between"
+//             >
+//               <Text className="text-black text-lg font-bold">
+//                 📦 Order ID: {orderId}
+//               </Text>
+//               <Text className="text-yellow-400 font-bold text-2xl">
+//                 {expanded[orderId] ? '−' : '+'}
+//               </Text>
+//             </TouchableOpacity>
+
+//             {/* Kits list (collapsed/expanded) */}
+//             {expanded[orderId] && (
+//               <View className="mt-2">
+//                 {grouped[orderId].map(scan => (
+//                   <View
+//                     key={scan.scan_id}
+//                     className="bg-gray-100 rounded-xl px-2 py-2 mb-3"
+//                   >
+//                     <Text className="text-black font-semibold">Kit ID: {scan.kit_id}</Text>
+//                     <Text className="text-sm text-black ml-2">• Kit No: {scan.kit_no}</Text>
+//                     <Text className="text-sm text-black ml-2">• Prod Unit: {scan.prod_unit}</Text>
+//                     <Text className="text-sm text-black ml-2">• Warehouse: {scan.warehouse}</Text>
+//                     <Text className="text-sm text-black ml-2">• Project ID: {scan.project_id}</Text>
+//                     <Text className="text-sm text-black ml-2">• Date: {scan.date}</Text>
+//                     <Text className="text-gray-700 text-xs ml-2 mt-1">
+//                       🗓️ {new Date(scan.scanned_at).toLocaleString()}
+//                     </Text>
+//                     <TouchableOpacity
+//                       onPress={() => goToKitDetails(scan.scan_id)}
+//                       className="bg-yellow-400 mt-3 rounded-xl"
+//                     >
+//                       <Text className="text-center text-black font-bold py-2">🛡️ Request Warranty</Text>
+//                     </TouchableOpacity>
+//                   </View>
+//                 ))}
+//               </View>
+//             )}
+//           </View>
+//         ))
+//       )}
+//     </ScrollView>
+//   );
+// };
+
+// export default MyScansScreen;
+
+
+// import { useAuth } from '@/context/AuthContext';
+// import api from '@/utils/api';
+// import { useFocusEffect, useRouter } from 'expo-router';
+// import React, { useEffect, useState } from 'react';
+// import {
+//   Alert,
+//   BackHandler,
+//   RefreshControl,
+//   ScrollView,
+//   Text,
+//   TouchableOpacity,
+//   View,
+// } from 'react-native';
+
+// interface SavedOrder {
+//   scan_id: string;
+//   kit_id: string;
+//   prod_unit: string;
+//   warehouse: string;
+//   project_id: string;
+//   kit_no: number;
+//   date: string;
+//   scanned_at: string;
+//   order_id: string;
+// }
+
+// function groupBy<T, K extends keyof any>(array: T[], getKey: (item: T) => K) {
+//   return array.reduce((result, item) => {
+//     const key = getKey(item);
+//     if (!result[key]) result[key] = [];
+//     result[key].push(item);
+//     return result;
+//   }, {} as Record<K, T[]>);
+// }
+
+// const MyScansScreen: React.FC = () => {
+//   const { user } = useAuth();
+//   const router = useRouter();
+//   const [scans, setScans] = useState<SavedOrder[]>([]);
+//   const [claimedKitIds, setClaimedKitIds] = useState<string[]>([]);
+//   const [refreshing, setRefreshing] = useState(false);
+//   const [loading, setLoading] = useState(true);
+//   const [expanded, setExpanded] = useState<{ [orderId: string]: boolean }>({});
+
+//   useFocusEffect(() => {
+//     const onBackPress = () => {
+//       Alert.alert(
+//         'Exit App',
+//         'Are you sure you want to exit?',
+//         [
+//           { text: 'Cancel', style: 'cancel' },
+//           { text: 'Exit', onPress: () => BackHandler.exitApp() },
+//         ],
+//         { cancelable: true }
+//       );
+//       return true;
+//     };
+//     const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+//     return () => subscription.remove();
+//   });
+
+//   // Fetch both scans & claims and update claimedKitIds
+//   const fetchScansAndClaims = async () => {
+//     setLoading(true);
+//     setRefreshing(true);
+//     try {
+//       const [scansRes, claimsRes] = await Promise.all([
+//         api.get('/saved-orders/'),
+//         api.get('/warranty-claims-status/')
+//       ]);
+//       const claimed = claimsRes.data.map((claim: { kit: string }) => claim.kit);
+//       setScans(scansRes.data);
+//       setClaimedKitIds(claimed);
+//     } catch (err) {
+//       console.error('Failed to fetch scans or claims:', err);
+//     } finally {
+//       setLoading(false);
+//       setRefreshing(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchScansAndClaims();
+//   }, []);
+
+//   const onRefresh = () => {
+//     setRefreshing(true);
+//     fetchScansAndClaims();
+//   };
+
+//   const goToKitDetails = (scanId: string) => {
+//     router.push({
+//       pathname: '/(main)/kit-details',
+//       params: { scan_id: scanId },
+//     });
+//   };
+
+//   // --- Group scans by order_id for display
+//   const grouped = groupBy(scans, scan => scan.order_id);
+//   const orderIds = Object.keys(grouped);
+
+//   if (loading) {
+//     return (
+//       <View className="flex-1 justify-center items-center bg-black">
+//         <Text className="text-lg text-white">Loading...</Text>
+//       </View>
+//     );
+//   }
+
+//   return (
+//     <ScrollView
+//       className="flex-1 bg-black px-4 py-2"
+//       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+//     >
+//       {scans.length === 0 ? (
+//         <Text className="text-white text-center mt-8 text-lg">No scans found.</Text>
+//       ) : (
+//         orderIds.map(orderId => (
+//           <View key={orderId} className="bg-white rounded-2xl p-3 mb-4 shadow">
+//             {/* Order Card Header */}
+//             <TouchableOpacity
+//               onPress={() =>
+//                 setExpanded(current => ({ ...current, [orderId]: !current[orderId] }))
+//               }
+//               activeOpacity={0.7}
+//               className="flex-row items-center justify-between"
+//             >
+//               <Text className="text-black text-lg font-bold">
+//                 📦 Order ID: {orderId}
+//               </Text>
+//               <Text className="text-yellow-400 font-bold text-2xl">
+//                 {expanded[orderId] ? '−' : '+'}
+//               </Text>
+//             </TouchableOpacity>
+
+//             {/* Kits list (collapsed/expanded) */}
+//             {expanded[orderId] && (
+//               <View className="mt-2">
+//                 {grouped[orderId].map(scan => (
+//                   <View
+//                     key={scan.scan_id}
+//                     className="bg-gray-100 rounded-xl px-2 py-2 mb-3"
+//                   >
+//                     <Text className="text-black font-semibold">Kit ID: {scan.kit_id}</Text>
+//                     <Text className="text-sm text-black ml-2">• Kit No: {scan.kit_no}</Text>
+//                     <Text className="text-sm text-black ml-2">• Prod Unit: {scan.prod_unit}</Text>
+//                     <Text className="text-sm text-black ml-2">• Warehouse: {scan.warehouse}</Text>
+//                     <Text className="text-sm text-black ml-2">• Project ID: {scan.project_id}</Text>
+//                     <Text className="text-sm text-black ml-2">• Date: {scan.date}</Text>
+//                     <Text className="text-gray-700 text-xs ml-2 mt-1">
+//                       🗓️ {new Date(scan.scanned_at).toLocaleString()}
+//                     </Text>
+
+//                     {claimedKitIds.includes(scan.kit_id) ? (
+//                       <View className="bg-gray-400 mt-3 rounded-xl opacity-70">
+//                         <Text className="text-center text-black font-bold py-2">
+//                           ✅ Warranty Applied
+//                         </Text>
+//                       </View>
+//                     ) : (
+//                       <TouchableOpacity
+//                         onPress={() => goToKitDetails(scan.scan_id)}
+//                         className="bg-yellow-400 mt-3 rounded-xl"
+//                       >
+//                         <Text className="text-center text-black font-bold py-2">
+//                           🛡️ Request Warranty
+//                         </Text>
+//                       </TouchableOpacity>
+//                     )}
+//                   </View>
+//                 ))}
+//               </View>
+//             )}
+//           </View>
+//         ))
+//       )}
+//     </ScrollView>
+//   );
+// };
+
+// export default MyScansScreen;
+
+
+// import { useAuth } from '@/context/AuthContext';
+// import api from '@/utils/api';
+// import { useFocusEffect, useRouter } from 'expo-router';
+// import React, { useEffect, useState } from 'react';
+// import {
+//   Alert,
+//   BackHandler,
+//   RefreshControl,
+//   ScrollView,
+//   Text,
+//   TouchableOpacity,
+//   View,
+// } from 'react-native';
+
+// // Types
+// interface SavedOrder {
+//   scan_id: string;
+//   kit_id: string;
+//   prod_unit: string;
+//   warehouse: string;
+//   project_id: string;
+//   kit_no: number;
+//   date: string;
+//   scanned_at: string;
+//   order_id: string;
+// }
+// interface WarrantyClaim {
+//   kit_id: string;
+//   order: { order_id: string } | null;
+//   // ...other fields but not needed for the button logic
+// }
+
+// function groupBy<T, K extends keyof any>(array: T[], getKey: (item: T) => K) {
+//   return array.reduce((result, item) => {
+//     const key = getKey(item);
+//     if (!result[key]) result[key] = [];
+//     result[key].push(item);
+//     return result;
+//   }, {} as Record<K, T[]>);
+// }
+
+// const MyScansScreen: React.FC = () => {
+//   const { user } = useAuth();
+//   const router = useRouter();
+//   const [scans, setScans] = useState<SavedOrder[]>([]);
+//   const [claimedPairs, setClaimedPairs] = useState<Set<string>>(new Set());
+//   const [refreshing, setRefreshing] = useState(false);
+//   const [loading, setLoading] = useState(true);
+//   const [expanded, setExpanded] = useState<{ [orderId: string]: boolean }>({});
+
+//   useFocusEffect(() => {
+//     const onBackPress = () => {
+//       Alert.alert(
+//         'Exit App',
+//         'Are you sure you want to exit?',
+//         [
+//           { text: 'Cancel', style: 'cancel' },
+//           { text: 'Exit', onPress: () => BackHandler.exitApp() },
+//         ],
+//         { cancelable: true }
+//       );
+//       return true;
+//     };
+//     const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+//     return () => subscription.remove();
+//   });
+
+//   // Fetch saved orders and warranty claims, build Set for quick check
+
+//   const fetchScansAndClaims = async () => {
+//     setLoading(true);
+//     setRefreshing(true);
+//     try {
+//       const [scansRes, claimsRes] = await Promise.all([
+//         api.get('/saved-orders/'),
+//         api.get('/warranty-claims-status/')
+//       ]);
+
+//       // --- DEBUG CLAIMS ---
+//       (claimsRes.data as WarrantyClaim[]).forEach((claim, i) => {
+//         console.log(
+//           "Claim Pair",
+//           i,
+//           "|",
+//           claim.order?.order_id,
+//           "|",
+//           claim.kit_id,
+//           "|",
+//           typeof claim.order?.order_id,
+//           typeof claim.kit_id
+//         );
+//       });
+
+//       // --- DEBUG SCANS ---
+//       scansRes.data.forEach((scan: SavedOrder, i: number) => {
+//         console.log(
+//           "Scan",
+//           i,
+//           "|",
+//           scan.order_id,
+//           "|",
+//           scan.kit_id,
+//           "|",
+//           typeof scan.order_id,
+//           typeof scan.kit_id
+//         );
+//       });
+
+//       setScans(scansRes.data);
+
+//       const set = new Set<string>();
+//       (claimsRes.data as WarrantyClaim[]).forEach(claim => {
+//         if (claim.kit_id && claim.order && claim.order.order_id) {
+//           set.add(`${claim.order.order_id}|${claim.kit_id}`);
+//         }
+//       });
+//       setClaimedPairs(set);
+
+//     } catch (err) {
+//       console.error('Failed to fetch scans or claims:', err);
+//     } finally {
+//       setLoading(false);
+//       setRefreshing(false);
+//     }
+//   };
+
+
+
+//   useEffect(() => {
+//     fetchScansAndClaims();
+//   }, []);
+
+//   const onRefresh = () => {
+//     setRefreshing(true);
+//     fetchScansAndClaims();
+//   };
+
+//   const goToKitDetails = (scanId: string) => {
+//     router.push({
+//       pathname: '/(main)/kit-details',
+//       params: { scan_id: scanId },
+//     });
+//   };
+
+//   // Group scans by order_id for display
+//   const grouped = groupBy(scans, scan => scan.order_id);
+//   const orderIds = Object.keys(grouped);
+
+//   if (loading) {
+//     return (
+//       <View className="flex-1 justify-center items-center bg-black">
+//         <Text className="text-lg text-white">Loading...</Text>
+//       </View>
+//     );
+//   }
+
+//   return (
+//     <ScrollView
+//       className="flex-1 bg-black px-4 py-2"
+//       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+//     >
+//       {scans.length === 0 ? (
+//         <Text className="text-white text-center mt-8 text-lg">No scans found.</Text>
+//       ) : (
+//         orderIds.map(orderId => (
+//           <View key={orderId} className="bg-white rounded-2xl p-3 mb-4 shadow">
+//             {/* Order Card Header */}
+//             <TouchableOpacity
+//               onPress={() =>
+//                 setExpanded(current => ({ ...current, [orderId]: !current[orderId] }))
+//               }
+//               activeOpacity={0.7}
+//               className="flex-row items-center justify-between"
+//             >
+//               <Text className="text-black text-lg font-bold">
+//                 📦 Order ID: {orderId}
+//               </Text>
+//               <Text className="text-yellow-400 font-bold text-2xl">
+//                 {expanded[orderId] ? '−' : '+'}
+//               </Text>
+//             </TouchableOpacity>
+
+//             {/* Kits list (collapsed/expanded) */}
+//             {expanded[orderId] && (
+//               <View className="mt-2">
+//                 {grouped[orderId].map(scan => {
+//                   const isClaimed = claimedPairs.has(`${scan.order_id}|${scan.kit_id}`);
+//                   return (
+//                     <View
+//                       key={scan.scan_id}
+//                       className="bg-gray-100 rounded-xl px-2 py-2 mb-3"
+//                     >
+//                       <Text className="text-black font-semibold">Kit ID: {scan.kit_id}</Text>
+//                       <Text className="text-sm text-black ml-2">• Kit No: {scan.kit_no}</Text>
+//                       <Text className="text-sm text-black ml-2">• Prod Unit: {scan.prod_unit}</Text>
+//                       <Text className="text-sm text-black ml-2">• Warehouse: {scan.warehouse}</Text>
+//                       <Text className="text-sm text-black ml-2">• Project ID: {scan.project_id}</Text>
+//                       <Text className="text-sm text-black ml-2">• Date: {scan.date}</Text>
+//                       <Text className="text-gray-700 text-xs ml-2 mt-1">
+//                         🗓️ {new Date(scan.scanned_at).toLocaleString()}
+//                       </Text>
+//                       {isClaimed ? (
+//                         <View className="bg-gray-400 mt-3 rounded-xl opacity-70">
+//                           <Text className="text-center text-black font-bold py-2">
+//                             ✅ Warranty Applied
+//                           </Text>
+//                         </View>
+//                       ) : (
+//                         <TouchableOpacity
+//                           onPress={() => goToKitDetails(scan.scan_id)}
+//                           className="bg-yellow-400 mt-3 rounded-xl"
+//                         >
+//                           <Text className="text-center text-black font-bold py-2">
+//                             🛡️ Request Warranty
+//                           </Text>
+//                         </TouchableOpacity>
+//                       )}
+//                     </View>
+//                   );
+//                 })}
+//               </View>
+//             )}
+//           </View>
+//         ))
+//       )}
+//     </ScrollView>
+//   );
+// };
+
+// export default MyScansScreen;
+
 import { useAuth } from '@/context/AuthContext';
+import { useRefresh } from '@/context/RefreshContext';
 import api from '@/utils/api';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
-    BackHandler,
-    RefreshControl,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  BackHandler,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
+
+// Types
 interface SavedOrder {
   scan_id: string;
   kit_id: string;
@@ -401,6 +974,12 @@ interface SavedOrder {
   scanned_at: string;
   order_id: string;
 }
+interface WarrantyClaim {
+  kit_id: string;
+  kit_number: number;
+  order: { order_id: string } | null;
+  // ...other fields but not needed for the button logic
+}
 
 function groupBy<T, K extends keyof any>(array: T[], getKey: (item: T) => K) {
   return array.reduce((result, item) => {
@@ -411,51 +990,82 @@ function groupBy<T, K extends keyof any>(array: T[], getKey: (item: T) => K) {
   }, {} as Record<K, T[]>);
 }
 
-const MyScansScreen = () => {
+const MyScansScreen: React.FC = () => {
   const { user } = useAuth();
   const router = useRouter();
   const [scans, setScans] = useState<SavedOrder[]>([]);
+  const [claimedTriples, setClaimedTriples] = useState<Set<string>>(new Set());
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<{ [orderId: string]: boolean }>({});
 
-      useFocusEffect(() => {
-      const onBackPress = () => {
-        Alert.alert(
-          'Exit App',
-          'Are you sure you want to exit?',
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Exit', onPress: () => BackHandler.exitApp() },
-          ],
-          { cancelable: true }
-        );
-        return true; // prevent default behavior (going back)
-      };
-  
-      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-      return () => subscription.remove();
-    });
+  const { refreshKey } = useRefresh();
 
-  const fetchScans = async () => {
+  useFocusEffect(() => {
+    const onBackPress = () => {
+      Alert.alert(
+        'Exit App',
+        'Are you sure you want to exit?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Exit', onPress: () => BackHandler.exitApp() },
+        ],
+        { cancelable: true }
+      );
+      return true;
+    };
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => subscription.remove();
+  });
+
+  // Fetch saved orders and warranty claims, build Set for quick check
+  const fetchScansAndClaims = async () => {
+    setLoading(true);
+    setRefreshing(true);
     try {
-      const res = await api.get('/saved-orders/');
-      setScans(res.data);
+      const [scansRes, claimsRes] = await Promise.all([
+        api.get('/saved-orders/'),
+        api.get('/warranty-claims-status/')
+      ]);
+      setScans(scansRes.data);
+
+      const set = new Set<string>();
+      (claimsRes.data as WarrantyClaim[]).forEach(claim => {
+        if (
+          claim.kit_id &&
+          claim.kit_number !== undefined &&
+          claim.order &&
+          claim.order.order_id
+        ) {
+          // All as string for safety
+          const kitId = String(claim.kit_id).trim().toLowerCase();
+          const orderId = String(claim.order.order_id).trim().toLowerCase();
+          const kitNo = String(claim.kit_number).trim();
+          set.add(`${orderId}|${kitId}|${kitNo}`);
+        }
+      });
+      setClaimedTriples(set);
     } catch (err) {
-      console.error('Failed to fetch scans:', err);
+      console.error('Failed to fetch scans or claims:', err);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
 
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     fetchScansAndClaims();
+  //   }, [])
+  // );
+
   useEffect(() => {
-    fetchScans();
-  }, []);
+    fetchScansAndClaims();
+  }, [refreshKey]);
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchScans();
+    fetchScansAndClaims();
   };
 
   const goToKitDetails = (scanId: string) => {
@@ -465,9 +1075,17 @@ const MyScansScreen = () => {
     });
   };
 
-  // --- Group scans by order_id
+  // Group scans by order_id for display
   const grouped = groupBy(scans, scan => scan.order_id);
   const orderIds = Object.keys(grouped);
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center bg-black">
+        <Text className="text-lg text-white">Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -498,28 +1116,45 @@ const MyScansScreen = () => {
             {/* Kits list (collapsed/expanded) */}
             {expanded[orderId] && (
               <View className="mt-2">
-                {grouped[orderId].map(scan => (
-                  <View
-                    key={scan.scan_id}
-                    className="bg-gray-100 rounded-xl px-2 py-2 mb-3"
-                  >
-                    <Text className="text-black font-semibold">Kit ID: {scan.kit_id}</Text>
-                    <Text className="text-sm text-black ml-2">• Kit No: {scan.kit_no}</Text>
-                    <Text className="text-sm text-black ml-2">• Prod Unit: {scan.prod_unit}</Text>
-                    <Text className="text-sm text-black ml-2">• Warehouse: {scan.warehouse}</Text>
-                    <Text className="text-sm text-black ml-2">• Project ID: {scan.project_id}</Text>
-                    <Text className="text-sm text-black ml-2">• Date: {scan.date}</Text>
-                    <Text className="text-gray-700 text-xs ml-2 mt-1">
-                      🗓️ {new Date(scan.scanned_at).toLocaleString()}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => goToKitDetails(scan.scan_id)}
-                      className="bg-yellow-400 mt-3 rounded-xl"
+                {grouped[orderId].map(scan => {
+                  // Compare all as string for maximum safety
+                  const kitId = String(scan.kit_id).trim().toLowerCase();
+                  const orderIdStr = String(scan.order_id).trim().toLowerCase();
+                  const kitNo = String(scan.kit_no).trim();
+                  const isClaimed = claimedTriples.has(`${orderIdStr}|${kitId}|${kitNo}`);
+                  return (
+                    <View
+                      key={scan.scan_id}
+                      className="bg-gray-100 rounded-xl px-2 py-2 mb-3"
                     >
-                      <Text className="text-center text-black font-bold py-2">🛡️ Request Warranty</Text>
-                    </TouchableOpacity>
-                  </View>
-                ))}
+                      <Text className="text-black font-semibold">Kit ID: {scan.kit_id}</Text>
+                      <Text className="text-sm text-black ml-2">• Kit No: {scan.kit_no}</Text>
+                      <Text className="text-sm text-black ml-2">• Prod Unit: {scan.prod_unit}</Text>
+                      <Text className="text-sm text-black ml-2">• Warehouse: {scan.warehouse}</Text>
+                      <Text className="text-sm text-black ml-2">• Project ID: {scan.project_id}</Text>
+                      <Text className="text-sm text-black ml-2">• Date: {scan.date}</Text>
+                      <Text className="text-gray-700 text-xs ml-2 mt-1">
+                        🗓️ {new Date(scan.scanned_at).toLocaleString()}
+                      </Text>
+                      {isClaimed ? (
+                        <View className="bg-gray-400 mt-3 rounded-xl opacity-70">
+                          <Text className="text-center text-black font-bold py-2">
+                            ✅ Warranty Applied
+                          </Text>
+                        </View>
+                      ) : (
+                        <TouchableOpacity
+                          onPress={() => goToKitDetails(scan.scan_id)}
+                          className="bg-yellow-400 mt-3 rounded-xl"
+                        >
+                          <Text className="text-center text-black font-bold py-2">
+                            🛡️ Request Warranty
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  );
+                })}
               </View>
             )}
           </View>
