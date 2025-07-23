@@ -1,5 +1,6 @@
 import { checklistItems, claimSteps } from "@/app/(main)/warranty/claim-steps"; // adjust path
 import api from "@/utils/api";
+import { doc_url } from "@/utils/constants";
 import { useQuery } from "@tanstack/react-query";
 import { ResizeMode, Video } from "expo-av";
 import { useLocalSearchParams } from "expo-router";
@@ -30,11 +31,14 @@ export default function AdminReviewClaimScreen() {
     enabled: !!war_req_id,
   });
 
+  // const base_url = "http://192.168.1.110";
+
   function getMediaUrl(media_file: string): string {
     if (media_file.startsWith("http")) return media_file;
-    if (media_file.startsWith("/media/")) return "http://10.20.2.78:8000" + media_file;
-    return "http://10.20.2.78:8000/media/" + media_file.replace(/^\/+/, "");
+    if (media_file.startsWith("/media/")) return (doc_url + media_file);
+    return `${doc_url}/media/` + media_file.replace(/^\/+/, "");
   }
+
 
   if (isLoading)
     return (

@@ -123,6 +123,7 @@
 
 
 import api from "@/utils/api";
+import { doc_url } from "@/utils/constants";
 import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -163,16 +164,29 @@ type WarrantyReqRow = {
 // }
 
 
+// function getAbsolutePdfUrl(pdf_url?: string): string | undefined {
+//     if (!pdf_url) return undefined;
+//     if (pdf_url.startsWith("http")) return pdf_url;
+//     // If the pdf_url already starts with /media/, just add SITE_BASE
+//     // const SITE_BASE = "http://10.20.2.78:8000";
+//     const SITE_BASE = doc_url;
+//     if (pdf_url.startsWith("/media/")) return SITE_BASE + pdf_url;
+//     // If it starts with / and NOT /media/, prefix /media
+//     if (pdf_url.startsWith("/")) return SITE_BASE + "/media" + pdf_url;
+//     // If it does not start with /, add /media/ at the front.
+//     return `${SITE_BASE}/media/${pdf_url}`;
+// }
+
+function joinUrl(base: string, path: string): string {
+    return `${base.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
+}
+
 function getAbsolutePdfUrl(pdf_url?: string): string | undefined {
-    if (!pdf_url) return undefined;
+    if (!pdf_url || pdf_url === "") return undefined;
     if (pdf_url.startsWith("http")) return pdf_url;
-    // If the pdf_url already starts with /media/, just add SITE_BASE
-    const SITE_BASE = "http://10.20.2.78:8000";
-    if (pdf_url.startsWith("/media/")) return SITE_BASE + pdf_url;
-    // If it starts with / and NOT /media/, prefix /media
-    if (pdf_url.startsWith("/")) return SITE_BASE + "/media" + pdf_url;
-    // If it does not start with /, add /media/ at the front.
-    return `${SITE_BASE}/media/${pdf_url}`;
+    if (pdf_url.startsWith("/media/")) return joinUrl(doc_url, pdf_url);
+    if (pdf_url.startsWith("/")) return joinUrl(doc_url, "/media" + pdf_url);
+    return joinUrl(doc_url, "/media/" + pdf_url);
 }
 
 

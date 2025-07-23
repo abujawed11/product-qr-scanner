@@ -636,10 +636,18 @@ const QRScanner = () => {
         requestPermission();
     }, []);
 
+
     const handleBarcodeScanned = async (result: BarcodeScanningResult) => {
         if (scanned) return;
         setScanned(true);
 
+        // Simulate that QR is only valid when inside the yellow box
+        setTimeout(() => {
+            processScannedData(result);
+        }, 900); // Wait 700ms for user to center QR
+    };
+
+    const processScannedData = async (result: BarcodeScanningResult) => {
         try {
             const parsed = JSON.parse(result.data);
             const { kit_id, prod_unit, warehouse, project_id, kit_no, date } = parsed;
@@ -650,7 +658,7 @@ const QRScanner = () => {
 
             console.log(`Scanned QR Data: ${JSON.stringify(parsed)}`);
 
-            // ✅ Send to backend
+            // Send to backend
             const res = await api.post('/save-order/', {
                 kit_id,
                 prod_unit,
@@ -665,8 +673,10 @@ const QRScanner = () => {
             if (!scan_id) {
                 throw new Error('Scan ID not returned from server.');
             }
+
             triggerRefresh();
-            // ✅ Navigate to kit-details page with scan_id
+
+            // Navigate to kit-details page with scan_id
             router.push({
                 pathname: '/(main)/kit-details',
                 params: { scan_id }
@@ -682,6 +692,53 @@ const QRScanner = () => {
             setScanned(false);
         }
     };
+
+    // const handleBarcodeScanned = async (result: BarcodeScanningResult) => {
+    //     if (scanned) return;
+    //     setScanned(true);
+
+    //     try {
+    //         const parsed = JSON.parse(result.data);
+    //         const { kit_id, prod_unit, warehouse, project_id, kit_no, date } = parsed;
+
+    //         if (!kit_id || !prod_unit || !warehouse || !project_id || !kit_no || !date) {
+    //             throw new Error('Missing required fields in QR code.');
+    //         }
+
+    //         console.log(`Scanned QR Data: ${JSON.stringify(parsed)}`);
+
+    //         // Send to backend
+    //         const res = await api.post('/save-order/', {
+    //             kit_id,
+    //             prod_unit,
+    //             warehouse,
+    //             project_id,
+    //             kit_no,
+    //             date
+    //         });
+
+    //         const { scan_id } = res.data;
+
+    //         if (!scan_id) {
+    //             throw new Error('Scan ID not returned from server.');
+    //         }
+    //         triggerRefresh();
+    //         // Navigate to kit-details page with scan_id
+    //         router.push({
+    //             pathname: '/(main)/kit-details',
+    //             params: { scan_id }
+    //         });
+
+    //     } catch (err) {
+    //         console.error(err);
+    //         let errorMessage = 'Invalid QR code or server error.';
+    //         if (axios.isAxiosError(err) && err.response?.data?.error) {
+    //             errorMessage = err.response.data.error;
+    //         }
+    //         Alert.alert('Error', errorMessage);
+    //         setScanned(false);
+    //     }
+    // };
 
 
 
