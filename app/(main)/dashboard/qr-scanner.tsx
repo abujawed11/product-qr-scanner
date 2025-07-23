@@ -589,6 +589,7 @@ import { useRefresh } from '@/context/RefreshContext';
 import api from '@/utils/api';
 import { Entypo, Feather } from '@expo/vector-icons';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
 import * as DocumentPicker from 'expo-document-picker'; // Import document picker
@@ -615,6 +616,7 @@ const QRScanner = () => {
     const [torchEnabled, setTorchEnabled] = useState(false); // State for torch
     const isFocused = useIsFocused();
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     const { triggerRefresh } = useRefresh();
 
@@ -674,7 +676,10 @@ const QRScanner = () => {
                 throw new Error('Scan ID not returned from server.');
             }
 
-            triggerRefresh();
+            // triggerRefresh();
+            // Invalidate React Query caches for the my-scans page
+            queryClient.invalidateQueries({ queryKey: ["myScans_savedOrders"] });
+            queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
 
             // Navigate to kit-details page with scan_id
             router.push({
@@ -784,7 +789,10 @@ const QRScanner = () => {
                 throw new Error('Scan ID not returned from server.');
             }
 
-            triggerRefresh();
+            // triggerRefresh();
+            queryClient.invalidateQueries({ queryKey: ["myScans_savedOrders"] });
+            queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
+
 
             // ✅ Navigate to kit-details page with scan_id
             router.push({

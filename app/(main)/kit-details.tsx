@@ -266,6 +266,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRefresh } from '@/context/RefreshContext';
 import api from '@/utils/api';
 import { COLORS } from '@/utils/color';
+import { mapCodeToCity } from '@/utils/mapCodeToCity';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -440,7 +441,7 @@ export default function KitDetailsScreen() {
               Production Unit:
             </Text>
             <Text className="text-base font-bold flex-shrink" style={{ color: COLORS.text }}>
-              {prod_unit}
+              {mapCodeToCity(prod_unit)}
             </Text>
           </View>
 
@@ -450,7 +451,7 @@ export default function KitDetailsScreen() {
               Warehouse:
             </Text>
             <Text className="text-base font-bold flex-shrink" style={{ color: COLORS.text }}>
-              {warehouse}
+              {mapCodeToCity(warehouse)}
             </Text>
           </View>
 

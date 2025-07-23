@@ -1,5 +1,4 @@
 import CustomDrawer from '@/components/CustomDrawer';
-import BellWithNotification from '@/components/NotificationBell';
 import { useAuth } from '@/context/AuthContext';
 import { Redirect } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
@@ -54,7 +53,7 @@ export default function DashboardLayout() {
           name={name}
           options={{
             drawerItemStyle: { display: 'none' },
-            headerRight: () => <BellWithNotification />,
+            // headerRight: () => <BellWithNotification />,
             title,
             drawerLabel: title,
           }}

@@ -49,6 +49,10 @@ export default function AdminDashboardLayout() {
         { name: 'manage-clients', title: 'Manage Clients' },
         { name: 'manage-orders', title: 'Manage Orders' },
         { name: 'manage-kits', title: 'Manage Kits' },
+        { name: 'review-req-dashboard', title: 'Warranty Dashboard' },
+        { name: 'review-req-warranty-status', title: 'Requests' },
+        { name: 'review-claim-fulldetails', title: 'Complete Details' },
+        { name: 'review-claim-update', title: 'Update Status' },
         // { name: 'review-claims', title: 'Review Claims' },
       ].map(({ name, title }) => (
         <Drawer.Screen

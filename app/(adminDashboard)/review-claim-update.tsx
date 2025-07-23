@@ -373,7 +373,7 @@
 // }
 
 import api from "@/utils/api";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -420,6 +420,8 @@ export default function ReviewClaimUpdateScreen() {
     from?: string;
     status?: string;
   }>();
+
+  const queryClient = useQueryClient();
 
   // Fetch claim detail
   const { data, isLoading, isError, error, refetch: refetchDetail } = useQuery<ClaimDetail>({
@@ -469,16 +471,18 @@ export default function ReviewClaimUpdateScreen() {
   );
 
   // PATCH mutation
-  const mutation = useMutation({
+    const mutation = useMutation({
     mutationFn: async (values: { status: Status; review_comment: string }) => {
       setLoading(true);
-      const res = await api.patch(`/warranty-claims/${war_req_id}/`, values);
+      const res = await api.patch(`/warranty-claims/${war_req_id}/update/`, values);
       return res.data;
     },
     onSuccess: () => {
       Alert.alert("Success", "Claim updated.");
       refetchDetail();
       setLoading(false);
+      // 👇 Invalidate summary so React Query will refetch it on dashboard
+      queryClient.invalidateQueries({ queryKey: ["warrantySummary"] });
       router.back();
     },
     onError: (e: any) => {
@@ -486,6 +490,23 @@ export default function ReviewClaimUpdateScreen() {
       setLoading(false);
     },
   });
+  // const mutation = useMutation({
+  //   mutationFn: async (values: { status: Status; review_comment: string }) => {
+  //     setLoading(true);
+  //     const res = await api.patch(`/warranty-claims/${war_req_id}/update/`, values);
+  //     return res.data;
+  //   },
+  //   onSuccess: () => {
+  //     Alert.alert("Success", "Claim updated.");
+  //     refetchDetail();
+  //     setLoading(false);
+  //     router.back();
+  //   },
+  //   onError: (e: any) => {
+  //     Alert.alert("Error", "Failed to update claim.\n" + (e?.message ?? String(e)));
+  //     setLoading(false);
+  //   },
+  // });
 
   if (isLoading) {
     return (
@@ -588,7 +609,7 @@ export default function ReviewClaimUpdateScreen() {
           className="mb-10 rounded-lg"
           onPress={() => mutation.mutate({ status: status as Status, review_comment: comment })}
         >
-          Update Claim
+          Update Warranty Status
         </Button>
       </ScrollView>
     </KeyboardAvoidingView>
