@@ -1,9 +1,9 @@
 // app/(adminDashboard)/review-req-warranty.tsx
 import api from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
-import { RefreshControl, ScrollView, Text, View } from "react-native";
+import { BackHandler, RefreshControl, ScrollView, Text, View } from "react-native";
 import { ActivityIndicator, Button } from "react-native-paper";
 
 type WarrantyReqRow = {
@@ -26,6 +26,20 @@ export default function ReviewReqWarrantyList() {
   const { status } = useLocalSearchParams<{ status?: string }>();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        router.replace("/(adminDashboard)/review-req-dashboard");
+        return true; // prevent default back behavior
+      };
+      const subscription = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+      // Clean up the subscription when the screen loses focus
+      return () => subscription.remove();
+    }, [])
+  );
 
   const { data, isLoading, isError, error, refetch } = useQuery<WarrantyReqRow[]>({
     queryKey: ["warrantyRequests", status],
@@ -73,7 +87,7 @@ export default function ReviewReqWarrantyList() {
       <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         {data.map((req) => (
           <View key={req.war_req_id} className="bg-white rounded-xl px-5 py-5 mb-5 shadow">
-            <Text className="text-lg font-extrabold mb-1">Claim #{req.war_req_id}</Text>
+            <Text className="text-lg font-extrabold mb-1">Request ID #{req.war_req_id}</Text>
             <Text className="mb-0.5">Client ID: <Text className="font-bold">{req.client_id}</Text></Text>
             <Text className="mb-0.5">Company: <Text className="font-bold">{req.company_name}</Text></Text>
             <Text className="mb-0.5">Order ID: <Text className="font-bold">{req.order_id}</Text></Text>
@@ -105,9 +119,17 @@ export default function ReviewReqWarrantyList() {
               <Button
                 mode="outlined"
                 onPress={() =>
+                  // router.push({
+                  //   pathname: "/(adminDashboard)/review-claim-fulldetails",
+                  //   params: { war_req_id: req.war_req_id },
+                  // })
                   router.push({
                     pathname: "/(adminDashboard)/review-claim-fulldetails",
-                    params: { war_req_id: req.war_req_id },
+                    params: {
+                      war_req_id: req.war_req_id,
+                      from: "review-req-warranty-status", // Or whatever filename
+                      status, // add any additional context needed for correct back
+                    },
                   })
                 }
                 style={{ flex: 1 }}
@@ -119,9 +141,17 @@ export default function ReviewReqWarrantyList() {
                 buttonColor="#facc15"
                 textColor="black"
                 onPress={() =>
+                  // router.push({
+                  //   pathname: "/(adminDashboard)/review-claim-update",
+                  //   params: { war_req_id: req.war_req_id },
+                  // })
                   router.push({
                     pathname: "/(adminDashboard)/review-claim-update",
-                    params: { war_req_id: req.war_req_id },
+                    params: {
+                      war_req_id: req.war_req_id,
+                      from: "review-req-warranty-status", // Or whatever filename
+                      status, // add any additional context needed for correct back
+                    },
                   })
                 }
                 style={{ flex: 1 }}

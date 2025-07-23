@@ -811,6 +811,274 @@
 // }
 
 
+// import { useRefresh } from "@/context/RefreshContext";
+// import api from "@/utils/api";
+// import { router, useFocusEffect } from "expo-router";
+// import React, { useCallback, useEffect, useState } from "react";
+// import {
+//   ActivityIndicator,
+//   BackHandler,
+//   FlatList,
+//   LayoutAnimation,
+//   Platform,
+//   RefreshControl,
+//   Text,
+//   TouchableOpacity,
+//   UIManager,
+//   View
+// } from "react-native";
+
+// // --- TYPES ---
+// type WarrantyClaim = {
+//   war_req_id: string;
+//   order: { order_id: string } | null;
+//   kit_id: string;
+//   status: string;
+//   status_updated_at: string;
+//   review_comment?: string | null;
+//   created_at: string;
+//   kit_number: string;
+// };
+
+// type GroupedClaims = [string, WarrantyClaim[]];
+
+// // --- NAV BAR / LAYOUT ---
+// if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+//   UIManager.setLayoutAnimationEnabledExperimental(true);
+// }
+
+// // --- STATUS COLORS/labels ---
+// const STATUS_DISPLAY: Record<string, { label: string; color: string }> = {
+//   pending: { label: "Pending", color: "#facc15" },
+//   under_review: { label: "Under Review", color: "#3b82f6" },
+//   approved: { label: "Approved", color: "#22c55e" },
+//   rejected: { label: "Rejected", color: "#f87171" },
+//   cancelled: { label: "Cancelled", color: "#9ca3af" },
+// };
+
+// // --- GROUPING ---
+// function groupClaimsByOrder(claims: WarrantyClaim[]): GroupedClaims[] {
+//   const map = new Map<string, WarrantyClaim[]>();
+//   for (const claim of claims) {
+//     const orderId = claim.order?.order_id ?? "Unknown";
+//     if (!map.has(orderId)) map.set(orderId, []);
+//     map.get(orderId)!.push(claim);
+//   }
+//   return Array.from(map.entries());
+// }
+
+// export default function ClaimStatusScreen() {
+//   const [isLoading, setIsLoading] = useState<boolean>(true);
+//   const [claims, setClaims] = useState<WarrantyClaim[]>([]);
+//   const [refreshing, setRefreshing] = useState<boolean>(false);
+//   const [error, setError] = useState<string | null>(null);
+//   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
+//   const { refreshKey } = useRefresh();
+
+
+//   useFocusEffect(
+//     React.useCallback(() => {
+
+//       const onBackPress = () => {
+//         router.replace('/(main)/dashboard');
+//         return true;
+//       };
+//       const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+//       return () => subscription.remove();
+//     }, [])
+//   );
+
+
+//   const fetchClaims = useCallback(async () => {
+//     setError(null);
+//     setRefreshing(true);
+//     try {
+//       const response = await api.get<WarrantyClaim[]>("/warranty-claims-status/");
+//       setClaims(response.data);
+//     } catch (e) {
+//       setError("Failed to load warranty claims. Please try again.");
+//     } finally {
+//       setIsLoading(false);
+//       setRefreshing(false);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     fetchClaims();
+//   }, [fetchClaims,refreshKey]);
+
+//   const onRefresh = () => {
+//     setRefreshing(true);
+//     fetchClaims();
+//   };
+
+//   const grouped = groupClaimsByOrder(claims);
+
+//   const toggleExpand = (orderId: string) => {
+//     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+//     setExpanded(prev => ({
+//       ...prev,
+//       [orderId]: !prev[orderId]
+//     }));
+//   };
+
+//   if (isLoading) {
+//     return (
+//       <View style={{
+//         flex: 1,
+//         backgroundColor: "#000",
+//         justifyContent: "center",
+//         alignItems: "center"
+//       }}>
+//         <ActivityIndicator size="large" color="#facc15" />
+//       </View>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <View style={{
+//         flex: 1,
+//         backgroundColor: "#000",
+//         justifyContent: "center",
+//         alignItems: "center",
+//         paddingHorizontal: 20
+//       }}>
+//         <Text style={{ color: "#f87171", fontSize: 16, marginBottom: 16 }}>{error}</Text>
+//         <TouchableOpacity
+//           onPress={fetchClaims}
+//           style={{
+//             backgroundColor: "#facc15",
+//             paddingHorizontal: 20,
+//             paddingVertical: 10,
+//             borderRadius: 8,
+//           }}
+//         >
+//           <Text style={{ color: "#000", fontWeight: "bold" }}>Retry</Text>
+//         </TouchableOpacity>
+//       </View>
+//     );
+//   }
+
+//   return (
+//     <View style={{ flex: 1, backgroundColor: "#000", padding: 16 }}>
+//       <FlatList<GroupedClaims>
+//         keyExtractor={([orderId]) => orderId}
+//         data={grouped}
+//         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+//         ListEmptyComponent={
+//           <Text style={{ color: "#fff", textAlign: "center", marginTop: 40, fontSize: 16 }}>
+//             No warranty claims found.
+//           </Text>
+//         }
+//         renderItem={({ item }) => {
+//           const [orderId, claimsForOrder] = item;
+//           const isOpen = !!expanded[orderId];
+//           return (
+//             <View
+//               key={orderId}
+//               style={{
+//                 backgroundColor: "#18181b",
+//                 borderRadius: 18,
+//                 marginBottom: 20,
+//                 overflow: "hidden",
+//                 // NO borderLeftColor here any more!
+//               }}
+//             >
+//               {/* Order Card Header (NO status color!) */}
+//               <TouchableOpacity
+//                 activeOpacity={0.8}
+//                 onPress={() => toggleExpand(orderId)}
+//                 style={{
+//                   padding: 18,
+//                   flexDirection: "row",
+//                   alignItems: "center",
+//                   justifyContent: "space-between"
+//                 }}
+//               >
+//                 <View>
+//                   <Text style={{
+//                     color: "#fff",
+//                     fontWeight: "bold",
+//                     fontSize: 18,
+//                     marginBottom: 5
+//                   }}>
+//                     Order ID: {orderId}
+//                   </Text>
+//                   <Text style={{
+//                     color: "#a1a1aa",
+//                     fontSize: 14,
+//                   }}>
+//                     Number of Kits Orderd: {claimsForOrder.length}
+//                   </Text>
+//                 </View>
+//                 <Text style={{
+//                   fontSize: 32,
+//                   color: "#fff"
+//                 }}>{isOpen ? "▲" : "▼"}</Text>
+//               </TouchableOpacity>
+
+//               {/* Expanded Claim List */}
+//               {isOpen && (
+//                 <View style={{ backgroundColor: "#23232c", paddingVertical: 8, paddingHorizontal: 12 }}>
+//                   {claimsForOrder.map((claim, idx) => {
+//                     const statusObj = STATUS_DISPLAY[claim.status] ?? { label: claim.status, color: "#fff" };
+//                     return (
+//                       <View
+//                         key={claim.war_req_id}
+//                         style={{
+//                           marginBottom: idx !== claimsForOrder.length - 1 ? 15 : 0,
+//                           backgroundColor: "#23232c",
+//                           borderRadius: 12,
+//                           padding: 12,
+//                           borderLeftWidth: 5,
+//                           borderLeftColor: statusObj.color, // <-- Only here!
+//                         }}
+//                       >
+//                         <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 5 }}>
+//                           <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 15 }}>
+//                             Request ID: {claim.war_req_id}
+//                           </Text>
+//                           <Text style={{ color: statusObj.color, fontWeight: "bold", fontSize: 14 }}>
+//                             {statusObj.label}
+//                           </Text>
+//                         </View>
+//                         <Text style={{ color: "#d4d4d8", marginBottom: 4 }}>
+//                           Kit ID: {claim.kit_id}
+//                         </Text>
+//                         <Text style={{ color: "#d4d4d8", marginBottom: 4 }}>
+//                           Kit Number: {claim.kit_number}
+//                         </Text>
+//                         <Text style={{ color: "#a1a1aa", fontSize: 13, marginBottom: 4 }}>
+//                           Last Updated: {new Date(claim.status_updated_at).toLocaleString()}
+//                         </Text>
+//                         {claim.review_comment ? (
+//                           <Text style={{
+//                             color: "#f87171",
+//                             fontStyle: "italic",
+//                             marginBottom: 4
+//                           }}>
+//                             Reviewer: {claim.review_comment}
+//                           </Text>
+//                         ) : null}
+//                         <Text style={{ color: "#a1a1aa", fontSize: 13 }}>
+//                           Submitted: {new Date(claim.created_at).toLocaleString()}
+//                         </Text>
+//                       </View>
+//                     );
+//                   })}
+//                 </View>
+//               )}
+//             </View>
+//           );
+//         }}
+//       />
+//     </View>
+//   );
+// }
+
+
 import { useRefresh } from "@/context/RefreshContext";
 import api from "@/utils/api";
 import { router, useFocusEffect } from "expo-router";
@@ -825,7 +1093,7 @@ import {
   Text,
   TouchableOpacity,
   UIManager,
-  View
+  View,
 } from "react-native";
 
 // --- TYPES ---
@@ -839,21 +1107,26 @@ type WarrantyClaim = {
   created_at: string;
   kit_number: string;
 };
-
 type GroupedClaims = [string, WarrantyClaim[]];
 
 // --- NAV BAR / LAYOUT ---
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
 // --- STATUS COLORS/labels ---
-const STATUS_DISPLAY: Record<string, { label: string; color: string }> = {
-  pending: { label: "Pending", color: "#facc15" },
-  under_review: { label: "Under Review", color: "#3b82f6" },
-  approved: { label: "Approved", color: "#22c55e" },
-  rejected: { label: "Rejected", color: "#f87171" },
-  cancelled: { label: "Cancelled", color: "#9ca3af" },
+const STATUS_DISPLAY: Record<
+  string,
+  { label: string; color: string; faded: string }
+> = {
+  pending: { label: "Pending", color: "#facc15", faded: "#18181b" },
+  under_review: { label: "Under Review", color: "#3b82f6", faded: "#18181b" },
+  approved: { label: "Approved", color: "#22c55e", faded: "#18181b" },
+  rejected: { label: "Rejected", color: "#f87171", faded: "#18181b" },
+  cancelled: { label: "Cancelled", color: "#9ca3af", faded: "#18181b" },
 };
 
 // --- GROUPING ---
@@ -868,36 +1141,37 @@ function groupClaimsByOrder(claims: WarrantyClaim[]): GroupedClaims[] {
 }
 
 export default function ClaimStatusScreen() {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [claims, setClaims] = useState<WarrantyClaim[]>([]);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-
   const { refreshKey } = useRefresh();
-
 
   useFocusEffect(
     React.useCallback(() => {
-
       const onBackPress = () => {
-        router.replace('/(main)/dashboard');
+        router.replace("/(main)/dashboard");
         return true;
       };
-      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
       return () => subscription.remove();
     }, [])
   );
-
 
   const fetchClaims = useCallback(async () => {
     setError(null);
     setRefreshing(true);
     try {
-      const response = await api.get<WarrantyClaim[]>("/warranty-claims-status/");
+      const response = await api.get<WarrantyClaim[]>(
+        "/warranty-claims-status/"
+      );
       setClaims(response.data);
     } catch (e) {
-      setError("Failed to load warranty claims. Please try again.");
+      setError("Failed to load warranty requests. Please try again.");
     } finally {
       setIsLoading(false);
       setRefreshing(false);
@@ -906,7 +1180,7 @@ export default function ClaimStatusScreen() {
 
   useEffect(() => {
     fetchClaims();
-  }, [fetchClaims,refreshKey]);
+  }, [fetchClaims, refreshKey]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -917,154 +1191,151 @@ export default function ClaimStatusScreen() {
 
   const toggleExpand = (orderId: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setExpanded(prev => ({
+    setExpanded((prev) => ({
       ...prev,
-      [orderId]: !prev[orderId]
+      [orderId]: !prev[orderId],
     }));
   };
 
   if (isLoading) {
     return (
-      <View style={{
-        flex: 1,
-        backgroundColor: "#000",
-        justifyContent: "center",
-        alignItems: "center"
-      }}>
+      <View className="flex-1 bg-black justify-center items-center">
         <ActivityIndicator size="large" color="#facc15" />
+        <Text className="text-yellow-400 mt-4 font-bold">Loading...</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={{
-        flex: 1,
-        backgroundColor: "#000",
-        justifyContent: "center",
-        alignItems: "center",
-        paddingHorizontal: 20
-      }}>
-        <Text style={{ color: "#f87171", fontSize: 16, marginBottom: 16 }}>{error}</Text>
+      <View className="flex-1 bg-black justify-center items-center px-6">
+        <Text className="text-red-400 text-base mb-4 font-bold">{error}</Text>
         <TouchableOpacity
           onPress={fetchClaims}
-          style={{
-            backgroundColor: "#facc15",
-            paddingHorizontal: 20,
-            paddingVertical: 10,
-            borderRadius: 8,
-          }}
+          className="bg-yellow-400 px-6 py-3 rounded-xl"
         >
-          <Text style={{ color: "#000", fontWeight: "bold" }}>Retry</Text>
+          <Text className="text-black font-bold">Retry</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#000", padding: 16 }}>
-      <FlatList<GroupedClaims>
+    <View className="flex-1 bg-black p-4">
+      <Text className="text-white text-3xl font-extrabold text-center mb-2 mt-4">
+        Warranty Requests
+      </Text>
+      <FlatList
         keyExtractor={([orderId]) => orderId}
         data={grouped}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         ListEmptyComponent={
-          <Text style={{ color: "#fff", textAlign: "center", marginTop: 40, fontSize: 16 }}>
-            No warranty claims found.
+          <Text className="text-zinc-400 text-center mt-16 text-lg font-semibold">
+            No warranty Request found.
           </Text>
         }
         renderItem={({ item }) => {
           const [orderId, claimsForOrder] = item;
           const isOpen = !!expanded[orderId];
+
           return (
-            <View
-              key={orderId}
-              style={{
-                backgroundColor: "#18181b",
-                borderRadius: 18,
-                marginBottom: 20,
-                overflow: "hidden",
-                // NO borderLeftColor here any more!
-              }}
-            >
-              {/* Order Card Header (NO status color!) */}
+            <View className="bg-[#18181b] rounded-2xl mb-5 overflow-hidden border border-[#23232b]">
+              {/* Order header */}
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => toggleExpand(orderId)}
-                style={{
-                  padding: 18,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between"
-                }}
+                className="px-5 py-4 flex-row items-center justify-between bg-[#18181b]"
               >
                 <View>
-                  <Text style={{
-                    color: "#fff",
-                    fontWeight: "bold",
-                    fontSize: 18,
-                    marginBottom: 5
-                  }}>
-                    Order ID: {orderId}
+                  <Text className="text-white font-bold text-lg">
+                    Order ID: <Text className="font-bold">{orderId}</Text>
                   </Text>
-                  <Text style={{
-                    color: "#a1a1aa",
-                    fontSize: 14,
-                  }}>
-                    Number of Kits Orderd: {claimsForOrder.length}
+                  <Text className="text-[#a3a3a6] text-sm">
+                    Number of Kits Ordered:{" "}
+                    <Text className="font-bold">{claimsForOrder.length}</Text>
                   </Text>
                 </View>
-                <Text style={{
-                  fontSize: 32,
-                  color: "#fff"
-                }}>{isOpen ? "▲" : "▼"}</Text>
+                <Text className="text-white text-[28px] font-bold">
+                  {isOpen ? "▾" : "▸"}
+                </Text>
               </TouchableOpacity>
-
-              {/* Expanded Claim List */}
               {isOpen && (
-                <View style={{ backgroundColor: "#23232c", paddingVertical: 8, paddingHorizontal: 12 }}>
+                <View className="bg-[#23232c] pt-2 pb-2 px-2 rounded-b-2xl">
                   {claimsForOrder.map((claim, idx) => {
-                    const statusObj = STATUS_DISPLAY[claim.status] ?? { label: claim.status, color: "#fff" };
+                    const statusObj = STATUS_DISPLAY[claim.status] ?? {
+                      label: claim.status,
+                      color: "#facc15",
+                      faded: "#18181b",
+                    };
                     return (
                       <View
                         key={claim.war_req_id}
+                        className="mb-4 rounded-xl px-4 py-3"
                         style={{
-                          marginBottom: idx !== claimsForOrder.length - 1 ? 15 : 0,
-                          backgroundColor: "#23232c",
-                          borderRadius: 12,
-                          padding: 12,
                           borderLeftWidth: 5,
-                          borderLeftColor: statusObj.color, // <-- Only here!
+                          borderLeftColor: statusObj.color,
                         }}
                       >
-                        <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 5 }}>
-                          <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 15 }}>
-                            Request ID: {claim.war_req_id}
+                        <View className="flex-row justify-between items-center mb-2">
+                          <Text className="text-white font-bold text-base">
+                            Request:{" "}
+                            <Text className="font-extrabold text-yellow-400">
+                              {claim.war_req_id}
+                            </Text>
                           </Text>
-                          <Text style={{ color: statusObj.color, fontWeight: "bold", fontSize: 14 }}>
-                            {statusObj.label}
-                          </Text>
+                          <View
+                            className="rounded-full px-3 py-1"
+                            style={{
+                              backgroundColor: "#18181b",
+                              borderWidth: 1,
+                              borderColor: statusObj.color,
+                            }}
+                          >
+                            <Text
+                              className="font-bold text-xs"
+                              style={{
+                                color: statusObj.color,
+                              }}
+                            >
+                              {statusObj.label}
+                            </Text>
+                          </View>
                         </View>
-                        <Text style={{ color: "#d4d4d8", marginBottom: 4 }}>
-                          Kit ID: {claim.kit_id}
+                        <Text className="text-zinc-200 mb-[1px]">
+                          Kit ID:{" "}
+                          <Text className="text-yellow-400 font-bold">
+                            {claim.kit_id}
+                          </Text>
                         </Text>
-                        <Text style={{ color: "#d4d4d8", marginBottom: 4 }}>
-                          Kit Number: {claim.kit_number}
+                        <Text className="text-zinc-200 mb-[1px]">
+                          Kit Number:{" "}
+                          <Text className="text-yellow-400 font-bold">
+                            {claim.kit_number}
+                          </Text>
                         </Text>
-                        <Text style={{ color: "#a1a1aa", fontSize: 13, marginBottom: 4 }}>
-                          Last Updated: {new Date(claim.status_updated_at).toLocaleString()}
+                        <Text className="text-zinc-400 text-xs mb-[1px]">
+                          Last Updated:{" "}
+                          {new Date(claim.status_updated_at).toLocaleString()}
                         </Text>
                         {claim.review_comment ? (
-                          <Text style={{
-                            color: "#f87171",
-                            fontStyle: "italic",
-                            marginBottom: 4
-                          }}>
-                            Reviewer: {claim.review_comment}
-                          </Text>
+                          <View className="bg-[#18181b] border border-[#f87171] rounded-lg mt-2 mb-1 px-3 py-2">
+                            <Text className="text-[#f87171] font-bold text-xs mb-1">
+                              Reviewer Comment
+                            </Text>
+                            <Text className="text-[#f87171] italic text-sm">
+                              {claim.review_comment}
+                            </Text>
+                          </View>
                         ) : null}
-                        <Text style={{ color: "#a1a1aa", fontSize: 13 }}>
-                          Submitted: {new Date(claim.created_at).toLocaleString()}
+                        <Text className="text-zinc-400 text-xs">
+                          Submitted:{" "}
+                          {new Date(claim.created_at).toLocaleString()}
                         </Text>
+                        {idx !== claimsForOrder.length - 1 && (
+                          <View className="h-[1px] bg-[#23232c] opacity-40 mt-3" />
+                        )}
                       </View>
                     );
                   })}
