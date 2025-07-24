@@ -190,7 +190,7 @@ type WarrantyReqRow = {
   war_req_id: string;
   client_id: string;
   company_name: string;
-  order_id: string;
+  order:{ order_id: string } | null;
   kit_id: string;
   kit_number: string;
   project_id: string;
@@ -223,6 +223,7 @@ export default function ReviewReqWarrantyList() {
     queryKey: ["warrantyRequests", status],
     queryFn: async () => {
       const res = await api.get(`/warranty-claims-by-status/?status=${status}`);
+      // console.log(res.data)
       return res.data;
     },
     enabled: !!status,
@@ -298,7 +299,7 @@ export default function ReviewReqWarrantyList() {
 
               <Text className="mb-0.5">Client ID: <Text className="font-bold">{req.client_id}</Text></Text>
               <Text className="mb-0.5">Company: <Text className="font-bold">{req.company_name}</Text></Text>
-              <Text className="mb-0.5">Order ID: <Text className="font-bold">{req.order_id}</Text></Text>
+              <Text className="mb-0.5">Order ID: <Text className="font-bold">{req.order?.order_id}</Text></Text>
               <Text className="mb-0.5">Kit ID: <Text className="font-bold">{req.kit_id}</Text></Text>
               <Text className="mb-0.5">Kit #: <Text className="font-bold">{req.kit_number}</Text></Text>
               <Text className="mb-0.5">Project ID: <Text className="font-bold">{req.project_id}</Text></Text>

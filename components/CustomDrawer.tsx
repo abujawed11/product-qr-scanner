@@ -53,6 +53,14 @@ const CustomDrawer = (props: any) => {
         />
 
         <DrawerItem
+          label="Warranty Cards"
+          onPress={() => router.push('/(main)/warranty/my-cards')}
+          icon={({ size }) => <FontAwesome name="id-card-o" size={24} color="#facc15" />}
+          labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
+          style={{ backgroundColor: 'transparent' }}
+        />
+
+        <DrawerItem
           label="About Product"
           onPress={() => router.push('/(main)/product-info')}
           icon={({ size }) => <AntDesign name="shoppingcart" size={24} color="#facc15" />}
