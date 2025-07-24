@@ -391,7 +391,7 @@ export default function ReviewClaimFullDetailsScreen() {
         {/* Header */}
         <View className="flex-row items-center mb-4">
           <MaterialIcons name="info" size={20} color="#2563eb" />
-          <Text className="ml-2 text-xl font-bold text-blue-700">Claim Details</Text>
+          <Text className="ml-2 text-xl font-bold text-blue-700">Warranty Request Details</Text>
         </View>
 
         {/* Info Card */}
@@ -452,7 +452,7 @@ export default function ReviewClaimFullDetailsScreen() {
         {/* Device Location Section */}
         <View className="flex-row items-center mb-2">
           <Feather name="map-pin" size={18} color="green" />
-          <Text className="ml-2 text-base font-semibold text-gray-700">Device Location</Text>
+          <Text className="ml-2 text-base font-semibold text-gray-700">Client Location</Text>
         </View>
         <DeviceLocationCard />
 

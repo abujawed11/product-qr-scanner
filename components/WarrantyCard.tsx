@@ -25,7 +25,25 @@ const typeDisplay = (type: string) =>
             ? "Partial Coverage"
             : type.charAt(0).toUpperCase() + type.slice(1);
 
+function getWarrantyStatus(card: WarrantyCardProps): { label: string; color: string } {
+    const now = new Date();
+    const start = new Date(card.warranty_started_at);
+    const end = new Date(card.expires_at);
+
+    if (now < start) {
+        return { label: "Not Yet Active", color: "#77777aff" }; // yellow
+    }
+    if (now > end) {
+        return { label: "Expired", color: "#ef4444" }; // red
+    }
+    return { label: "Active", color: "#22c55e" }; // green
+}
+
 export const WarrantyCard: FC<{ card: WarrantyCardProps }> = ({ card }) => {
+
+    const statusObj = getWarrantyStatus(card);
+
+
     return (
         <View className="rounded-2xl border-2 border-black bg-yellow-300 shadow-xl mx-4 my-4 p-0 overflow-hidden">
             {/* --- Card header --- */}
@@ -46,9 +64,9 @@ export const WarrantyCard: FC<{ card: WarrantyCardProps }> = ({ card }) => {
                     <Text
                         // className="ml-2 text-black font-semibold"
                         className="ml-2 text-black font-semibold flex-1"
-                        ellipsizeMode="middle"
+                        // ellipsizeMode="middle"
                         numberOfLines={1}
-                        selectable
+                    // selectable
 
                     >{card.certificate_no}</Text>
                 </View>
@@ -62,9 +80,15 @@ export const WarrantyCard: FC<{ card: WarrantyCardProps }> = ({ card }) => {
                         {typeDisplay(card.warranty_type)}
                     </Text>
                 </View>
-                <View className="flex-row items-center gap-4 mt-2">
+                {/* <View className="flex-row items-center gap-4 mt-2">
                     <Text className="text-sm text-black font-medium">Status:</Text>
                     <Text className="ml-2 font-bold text-green-700">Active</Text>
+                </View> */}
+                <View className="flex-row items-center gap-4 mt-2">
+                    <Text className="text-sm text-black font-medium">Status:</Text>
+                    <Text className="ml-2 font-bold" style={{ color: statusObj.color }}>
+                        {statusObj.label}
+                    </Text>
                 </View>
                 <View className="flex-row items-center">
                     <Text className="text-sm text-black font-medium">Coverage:</Text>
@@ -72,10 +96,10 @@ export const WarrantyCard: FC<{ card: WarrantyCardProps }> = ({ card }) => {
                         {card.coverage_description || "Standard manufacturer warranty"}
                     </Text>
                 </View>
-                {/* <View className="flex-row items-center">
-          <Text className="text-sm text-black font-medium">Serial Number:</Text>
-          <Text className="ml-2 text-black">{card.serial_number || "--"}</Text>
-        </View> */}
+                <View className="flex-row items-center">
+                    <Text className="text-sm text-black font-medium">Serial Number:</Text>
+                    <Text className="ml-2 text-black">{card.serial_number || "--"}</Text>
+                </View>
                 <View className="flex-row items-center">
                     <Text className="text-sm text-black font-medium">Transferable:</Text>
                     <Text className="ml-2 text-black">{card.is_transferable ? "Yes" : "No"}</Text>
