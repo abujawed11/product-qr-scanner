@@ -180,3 +180,619 @@ export default function ReviewClaimFullDetailsScreen() {
         </ScrollView>
     );
 }
+
+
+// import { doc_url } from "@/utils/constants";
+// import { Feather, Ionicons, MaterialIcons } from "@expo/vector-icons";
+// import { useQuery } from "@tanstack/react-query";
+// import dayjs from "dayjs";
+// import relativeTime from "dayjs/plugin/relativeTime";
+// import { ResizeMode, Video } from "expo-av";
+// import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+// import React, { useEffect, useRef, useState } from "react";
+// import {
+//     BackHandler,
+//     Image,
+//     Pressable,
+//     ScrollView,
+//     Text,
+//     View,
+// } from "react-native";
+// import MapView, { Marker } from "react-native-maps";
+// import { ActivityIndicator } from "react-native-paper";
+
+// dayjs.extend(relativeTime);
+
+// import { checklistItems, claimSteps } from "@/app/(main)/warranty/claim-steps";
+// import api from "@/utils/api";
+
+// type Upload = {
+//   id: number;
+//   step_key: string;
+//   media_type: "image" | "video";
+//   media_file: string;
+// };
+
+// type ClaimDetail = {
+//   war_req_id: string;
+//   status: string;
+//   review_comment?: string;
+//   company_name: string;
+//   client_id: string;
+//   order_id: string;
+//   kit_id: string;
+//   kit_number: string;
+//   project_id: string;
+//   purchase_date: string | null;
+//   device_latitude?: number | null;
+//   device_longitude?: number | null;
+//   created_at: string;
+//   updated_at: string;
+//   checklist_answers: Record<string, boolean>;
+//   uploads: Upload[];
+// };
+
+// function getMediaUrl(media_file: string) {
+//   if (media_file.startsWith("http")) return media_file;
+//   if (media_file.startsWith("/media/")) return doc_url + media_file;
+//   return doc_url + media_file.replace(/^\/+/, "");
+// }
+
+// export default function ReviewClaimFullDetailsScreen() {
+//   const { war_req_id } = useLocalSearchParams<{ war_req_id: string }>();
+//   const { from, status } = useLocalSearchParams<{ from?: string; status?: string }>();
+//   const router = useRouter();
+
+//   const { data, isLoading, isError, error } = useQuery<ClaimDetail>({
+//     queryKey: ["claimDetail", war_req_id],
+//     queryFn: async () => {
+//       const res = await api.get(`/warranty-claims/${war_req_id}/`);
+//       return res.data;
+//     },
+//     enabled: !!war_req_id,
+//   });
+
+//   // --------- Media Preview Handling ---------- (Moved up to fix scope error)
+//   const scrollRef = useRef<ScrollView>(null);
+//   const [previewMedia, setPreviewMedia] = useState<{
+//     uri: string;
+//     type: "image" | "video";
+//   } | null>(null);
+
+//   function handleBack() {
+//     if (from === "review-req-warranty-status" && status) {
+//       router.replace({
+//         pathname: "/(adminDashboard)/review-req-warranty-status",
+//         params: { status },
+//       });
+//     } else {
+//       router.back();
+//     }
+//   }
+
+//   useFocusEffect(
+//     React.useCallback(() => {
+//       const onBackPress = () => {
+//         if (previewMedia) {
+//           setPreviewMedia(null);
+//           return true;
+//         }
+//         handleBack();
+//         return true;
+//       };
+//       const subscription = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+//       return () => subscription.remove();
+//     }, [from, status, previewMedia])
+//   );
+
+//   const checklistAnswers = data?.checklist_answers || {};
+
+//   useEffect(() => {
+//     if (scrollRef.current) {
+//       scrollRef.current.setNativeProps({
+//         scrollEnabled: previewMedia === null,
+//       });
+//     }
+//   }, [previewMedia]);
+
+//   if (isLoading)
+//     return <View className="flex-1 items-center justify-center"><ActivityIndicator /></View>;
+//   if (isError || !data)
+//     return <View className="flex-1 items-center justify-center"><Text className="text-red-500">{String(error) || "No data"}</Text></View>;
+
+//   return (
+//     <>
+//       <ScrollView
+//         ref={scrollRef}
+//         className="flex-1 bg-gray-50"
+//         contentContainerStyle={{ padding: 18 }}
+//         showsVerticalScrollIndicator={false}
+//       >
+//         {/* Header */}
+//         <View className="flex-row items-center mb-4">
+//           <MaterialIcons name="info" size={20} color="#2563eb" />
+//           <Text className="ml-2 text-xl font-bold text-blue-700">Claim Details</Text>
+//         </View>
+
+//         {/* Info Card */}
+//         <View className="bg-white rounded-xl shadow-md border border-gray-200 px-4 py-5 mb-6">
+//           <Text className="text-lg font-extrabold mb-1">Request ID#{data.war_req_id}</Text>
+//           <Text className="mb-1">Status:
+//             <Text className={`ml-2 px-2 py-1 text-white rounded-full text-xs font-bold ${
+//               data.status === "Approved" ? "bg-green-600" :
+//               data.status === "Rejected" ? "bg-red-600" : "bg-blue-600"
+//             }`}>
+//               {data.status}
+//             </Text>
+//           </Text>
+//           <Text>Company: <Text className="font-bold">{data.company_name}</Text></Text>
+//           <Text>Client ID: <Text className="font-bold">{data.client_id}</Text></Text>
+//           <Text>Order ID: <Text className="font-bold">{data.order_id}</Text></Text>
+//           <Text>Kit ID: <Text className="font-bold">{data.kit_id}</Text></Text>
+//           <Text>Kit #: <Text className="font-bold">{data.kit_number}</Text></Text>
+//           <Text>Project ID: <Text className="font-bold">{data.project_id}</Text></Text>
+//           <Text>Purchase Date: <Text className="font-bold">{data.purchase_date ? new Date(data.purchase_date).toLocaleDateString() : "--"}</Text></Text>
+//           <Text>Requested: <Text className="font-bold">{dayjs(data.created_at).fromNow()}</Text></Text>
+//           <Text>Updated: <Text className="font-bold">{dayjs(data.updated_at).fromNow()}</Text></Text>
+//           {data.review_comment && (
+//             <Text>Admin Comment: <Text className="font-bold text-blue-700">{data.review_comment}</Text></Text>
+//           )}
+//         </View>
+
+//         {/* Location Map */}
+//         {data.device_latitude && data.device_longitude && (
+//           <>
+//             <View className="flex-row items-center mb-2">
+//               <Feather name="map-pin" size={18} color="green" />
+//               <Text className="ml-2 text-base font-semibold text-gray-700">Device Location</Text>
+//             </View>
+//             <View className="h-48 rounded-lg overflow-hidden mb-5">
+//               <MapView
+//                 style={{ flex: 1 }}
+//                 initialRegion={{
+//                   latitude: data.device_latitude,
+//                   longitude: data.device_longitude,
+//                   latitudeDelta: 0.01,
+//                   longitudeDelta: 0.01,
+//                 }}
+//               >
+//                 <Marker
+//                   coordinate={{
+//                     latitude: data.device_latitude,
+//                     longitude: data.device_longitude,
+//                   }}
+//                 />
+//               </MapView>
+//             </View>
+//           </>
+//         )}
+
+//         {/* Checklist */}
+//         <View className="mb-4">
+//           <View className="flex-row items-center mb-2">
+//             <Feather name="check-square" size={18} color="#2563eb" />
+//             <Text className="ml-2 text-base font-semibold">Checklist Submitted by User</Text>
+//           </View>
+
+//           <View className="bg-white rounded-xl border border-gray-200 shadow-sm">
+//             {checklistItems.map((item, index) => {
+//               const isChecked = checklistAnswers[item.key];
+//               return (
+//                 <View
+//                   key={item.key}
+//                   className={`flex-row justify-between items-center px-3 py-2 border-b border-gray-100 ${
+//                     index % 2 === 0 ? "bg-gray-50" : "bg-white"
+//                   }`}
+//                 >
+//                   <Text className="flex-1 text-[15px] pr-2">{item.question}</Text>
+//                   <Text
+//                     className={`w-6 text-right font-bold text-lg ${
+//                       isChecked ? "text-green-700" : "text-red-600"
+//                     }`}
+//                   >
+//                     {isChecked ? "✓" : "✗"}
+//                   </Text>
+//                 </View>
+//               );
+//             })}
+//           </View>
+//         </View>
+
+//         {/* Uploads */}
+//         <View className="mb-4">
+//           <View className="flex-row items-center mb-2">
+//             <Feather name="upload-cloud" size={18} color="#2563eb" />
+//             <Text className="ml-2 text-base font-semibold">Uploads By Step</Text>
+//           </View>
+//           {claimSteps.map((step) => {
+//             const uploads = data.uploads?.filter((up) => up.step_key === step.key) || [];
+//             if (uploads.length === 0) return null;
+//             return (
+//               <View key={step.key} className="mb-5">
+//                 <View className="flex-row items-center mb-1">
+//                   <Text className="font-bold text-lg">{step.title}</Text>
+//                   <Text
+//                     className={`ml-2 font-bold ${
+//                       uploads.length > 0 ? "text-green-600" : "text-red-600"
+//                     }`}
+//                   >
+//                     {uploads.length > 0 ? "✓ Done" : "✗ Missing"}
+//                   </Text>
+//                 </View>
+//                 <Text className="mb-1 text-xs text-gray-600">{step.instruction}</Text>
+//                 <View className="flex-row flex-wrap">
+//                   {uploads.map((up) => {
+//                     const uri = getMediaUrl(up.media_file);
+//                     return (
+//                       <Pressable
+//                         key={up.id}
+//                         onPress={() =>
+//                           setPreviewMedia({ uri, type: up.media_type === "video" ? "video" : "image" })
+//                         }
+//                       >
+//                         {up.media_type === "image" ? (
+//                           <Image
+//                             source={{ uri }}
+//                             className="w-32 h-32 rounded-lg m-1 bg-gray-100"
+//                             resizeMode="cover"
+//                           />
+//                         ) : (
+//                           <Video
+//                             source={{ uri }}
+//                             style={{ width: 130, height: 130, margin: 4, borderRadius: 12 }}
+//                             useNativeControls={false}
+//                             isLooping
+//                             resizeMode={ResizeMode.COVER}
+//                           />
+//                         )}
+//                       </Pressable>
+//                     );
+//                   })}
+//                 </View>
+//               </View>
+//             );
+//           })}
+//         </View>
+//       </ScrollView>
+
+//       {/* Fullscreen Media Preview */}
+//       {previewMedia && (
+//         <View className="absolute top-0 left-0 right-0 bottom-0 z-50 bg-black/90 items-center justify-center">
+//           <Pressable
+//             onPress={() => setPreviewMedia(null)}
+//             className="absolute top-0 left-0 right-0 bottom-0"
+//           />
+//           {previewMedia.type === "image" ? (
+//             <Image
+//               source={{ uri: previewMedia.uri }}
+//               className="w-full h-full"
+//               resizeMode="contain"
+//             />
+//           ) : (
+//             <Video
+//               source={{ uri: previewMedia.uri }}
+//               style={{ width: "100%", height: "100%" }}
+//               resizeMode={ResizeMode.CONTAIN}
+//               useNativeControls
+//               shouldPlay
+//             />
+//           )}
+//           <Pressable
+//             onPress={() => setPreviewMedia(null)}
+//             className="absolute top-5 left-5 bg-white/90 p-2 rounded-full"
+//           >
+//             <Ionicons name="arrow-back" size={24} color="black" />
+//           </Pressable>
+//         </View>
+//       )}
+//     </>
+//   );
+// }
+
+
+// import { doc_url } from "@/utils/constants";
+// import { Feather, Ionicons, MaterialIcons } from "@expo/vector-icons";
+// import { useQuery } from "@tanstack/react-query";
+// import dayjs from "dayjs";
+// import relativeTime from "dayjs/plugin/relativeTime";
+// import { ResizeMode, Video } from "expo-av";
+// import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+// import React, { useEffect, useRef, useState } from "react";
+// import {
+//     BackHandler,
+//     Image,
+//     Pressable,
+//     ScrollView,
+//     Text,
+//     View,
+// } from "react-native";
+// import MapView, { Marker } from "react-native-maps"; // Updated
+// import { ActivityIndicator } from "react-native-paper";
+
+// dayjs.extend(relativeTime);
+
+// import { checklistItems, claimSteps } from "@/app/(main)/warranty/claim-steps";
+// import api from "@/utils/api";
+
+// type Upload = {
+//   id: number;
+//   step_key: string;
+//   media_type: "image" | "video";
+//   media_file: string;
+// };
+
+// type ClaimDetail = {
+//   war_req_id: string;
+//   status: string;
+//   review_comment?: string;
+//   company_name: string;
+//   client_id: string;
+//   order_id: string;
+//   kit_id: string;
+//   kit_number: string;
+//   project_id: string;
+//   purchase_date: string | null;
+//   device_latitude?: number | null;
+//   device_longitude?: number | null;
+//   created_at: string;
+//   updated_at: string;
+//   checklist_answers: Record<string, boolean>;
+//   uploads: Upload[];
+// };
+
+// function getMediaUrl(media_file: string) {
+//   if (media_file.startsWith("http")) return media_file;
+//   if (media_file.startsWith("/media/")) return doc_url + media_file;
+//   return doc_url + media_file.replace(/^\/+/, "");
+// }
+
+// export default function ReviewClaimFullDetailsScreen() {
+//   const { war_req_id } = useLocalSearchParams<{ war_req_id: string }>();
+//   const { from, status } = useLocalSearchParams<{ from?: string; status?: string }>();
+//   const router = useRouter();
+
+//   const { data, isLoading, isError, error } = useQuery<ClaimDetail>({
+//     queryKey: ["claimDetail", war_req_id],
+//     queryFn: async () => {
+//       const res = await api.get(`/warranty-claims/${war_req_id}/`);
+//       return res.data;
+//     },
+//     enabled: !!war_req_id,
+//   });
+
+//   // --------- Media Preview Handling ---------- (Moved up to fix scope error)
+//   const scrollRef = useRef<ScrollView>(null);
+//   const [previewMedia, setPreviewMedia] = useState<{
+//     uri: string;
+//     type: "image" | "video";
+//   } | null>(null);
+
+//   function handleBack() {
+//     if (from === "review-req-warranty-status" && status) {
+//       router.replace({
+//         pathname: "/(adminDashboard)/review-req-warranty-status",
+//         params: { status },
+//       });
+//     } else {
+//       router.back();
+//     }
+//   }
+
+//   useFocusEffect(
+//     React.useCallback(() => {
+//       const onBackPress = () => {
+//         if (previewMedia) {
+//           setPreviewMedia(null);
+//           return true;
+//         }
+//         handleBack();
+//         return true;
+//       };
+//       const subscription = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+//       return () => subscription.remove();
+//     }, [from, status, previewMedia])
+//   );
+
+//   const checklistAnswers = data?.checklist_answers || {};
+
+//   useEffect(() => {
+//     if (scrollRef.current) {
+//       scrollRef.current.setNativeProps({
+//         scrollEnabled: previewMedia === null,
+//       });
+//     }
+//   }, [previewMedia]);
+
+//   if (isLoading)
+//     return <View className="flex-1 items-center justify-center"><ActivityIndicator /></View>;
+//   if (isError || !data)
+//     return <View className="flex-1 items-center justify-center"><Text className="text-red-500">{String(error) || "No data"}</Text></View>;
+
+//   return (
+//     <>
+//       <ScrollView
+//         ref={scrollRef}
+//         className="flex-1 bg-gray-50"
+//         contentContainerStyle={{ padding: 18 }}
+//         showsVerticalScrollIndicator={false}
+//       >
+//         {/* Header */}
+//         <View className="flex-row items-center mb-4">
+//           <MaterialIcons name="info" size={20} color="#2563eb" />
+//           <Text className="ml-2 text-xl font-bold text-blue-700">Claim Details</Text>
+//         </View>
+
+//         {/* Info Card */}
+//         <View className="bg-white rounded-xl shadow-md border border-gray-200 px-4 py-5 mb-6">
+//           <Text className="text-lg font-extrabold mb-1">Request ID#{data.war_req_id}</Text>
+//           <Text className="mb-1">Status:
+//             <Text className={`ml-2 px-2 py-1 text-white rounded-full text-xs font-bold ${
+//               data.status === "Approved" ? "bg-green-600" :
+//               data.status === "Rejected" ? "bg-red-600" : "bg-blue-600"
+//             }`}>
+//               {data.status}
+//             </Text>
+//           </Text>
+//           <Text>Company: <Text className="font-bold">{data.company_name}</Text></Text>
+//           <Text>Client ID: <Text className="font-bold">{data.client_id}</Text></Text>
+//           <Text>Order ID: <Text className="font-bold">{data.order_id}</Text></Text>
+//           <Text>Kit ID: <Text className="font-bold">{data.kit_id}</Text></Text>
+//           <Text>Kit #: <Text className="font-bold">{data.kit_number}</Text></Text>
+//           <Text>Project ID: <Text className="font-bold">{data.project_id}</Text></Text>
+//           <Text>Purchase Date: <Text className="font-bold">{data.purchase_date ? new Date(data.purchase_date).toLocaleDateString() : "--"}</Text></Text>
+//           <Text>Requested: <Text className="font-bold">{dayjs(data.created_at).fromNow()}</Text></Text>
+//           <Text>Updated: <Text className="font-bold">{dayjs(data.updated_at).fromNow()}</Text></Text>
+//           {data.review_comment && (
+//             <Text>Admin Comment: <Text className="font-bold text-blue-700">{data.review_comment}</Text></Text>
+//           )}
+//         </View>
+
+//         {/* Location Map */}
+//         {data.device_latitude && data.device_longitude && (
+//           <>
+//             <View className="flex-row items-center mb-2">
+//               <Feather name="map-pin" size={18} color="green" />
+//               <Text className="ml-2 text-base font-semibold text-gray-700">Device Location</Text>
+//             </View>
+//             <View className="h-48 rounded-lg overflow-hidden mb-5">
+//               <MapView
+//                 style={{ flex: 1 }}
+//                 // provider={PROVIDER_GOOGLE}
+//                 initialRegion={{
+//                   latitude: data.device_latitude,
+//                   longitude: data.device_longitude,
+//                   latitudeDelta: 0.01,
+//                   longitudeDelta: 0.01,
+//                 }}
+//               >
+//                 <Marker
+//                   coordinate={{
+//                     latitude: data.device_latitude,
+//                     longitude: data.device_longitude,
+//                   }}
+//                 />
+//               </MapView>
+//             </View>
+//           </>
+//         )}
+
+//         {/* Checklist */}
+//         <View className="mb-4">
+//           <View className="flex-row items-center mb-2">
+//             <Feather name="check-square" size={18} color="#2563eb" />
+//             <Text className="ml-2 text-base font-semibold">Checklist Submitted by User</Text>
+//           </View>
+//           <View className="bg-white rounded-xl border border-gray-200 shadow-sm">
+//             {checklistItems.map((item, index) => {
+//               const isChecked = checklistAnswers[item.key];
+//               return (
+//                 <View
+//                   key={item.key}
+//                   className={`flex-row justify-between items-center px-3 py-2 border-b border-gray-100 ${
+//                     index % 2 === 0 ? "bg-gray-50" : "bg-white"
+//                   }`}
+//                 >
+//                   <Text className="flex-1 text-[15px] pr-2">{item.question}</Text>
+//                   <Text
+//                     className={`w-6 text-right font-bold text-lg ${
+//                       isChecked ? "text-green-700" : "text-red-600"
+//                     }`}
+//                   >
+//                     {isChecked ? "✓" : "✗"}
+//                   </Text>
+//                 </View>
+//               );
+//             })}
+//           </View>
+//         </View>
+
+//         {/* Uploads */}
+//         <View className="mb-4">
+//           <View className="flex-row items-center mb-2">
+//             <Feather name="upload-cloud" size={18} color="#2563eb" />
+//             <Text className="ml-2 text-base font-semibold">Uploads By Step</Text>
+//           </View>
+//           {claimSteps.map((step) => {
+//             const uploads = data.uploads?.filter((up) => up.step_key === step.key) || [];
+//             if (uploads.length === 0) return null;
+//             return (
+//               <View key={step.key} className="mb-5">
+//                 <View className="flex-row items-center mb-1">
+//                   <Text className="font-bold text-lg">{step.title}</Text>
+//                   <Text
+//                     className={`ml-2 font-bold ${
+//                       uploads.length > 0 ? "text-green-600" : "text-red-600"
+//                     }`}
+//                   >
+//                     {uploads.length > 0 ? "✓ Done" : "✗ Missing"}
+//                   </Text>
+//                 </View>
+//                 <Text className="mb-1 text-xs text-gray-600">{step.instruction}</Text>
+//                 <View className="flex-row flex-wrap">
+//                   {uploads.map((up) => {
+//                     const uri = getMediaUrl(up.media_file);
+//                     return (
+//                       <Pressable
+//                         key={up.id}
+//                         onPress={() =>
+//                           setPreviewMedia({ uri, type: up.media_type === "video" ? "video" : "image" })
+//                         }
+//                       >
+//                         {up.media_type === "image" ? (
+//                           <Image
+//                             source={{ uri }}
+//                             className="w-32 h-32 rounded-lg m-1 bg-gray-100"
+//                             resizeMode="cover"
+//                           />
+//                         ) : (
+//                           <Video
+//                             source={{ uri }}
+//                             style={{ width: 130, height: 130, margin: 4, borderRadius: 12 }}
+//                             useNativeControls={false}
+//                             isLooping
+//                             resizeMode={ResizeMode.COVER}
+//                           />
+//                         )}
+//                       </Pressable>
+//                     );
+//                   })}
+//                 </View>
+//               </View>
+//             );
+//           })}
+//         </View>
+//       </ScrollView>
+
+//       {/* Fullscreen Media Preview */}
+//       {previewMedia && (
+//         <View className="absolute top-0 left-0 right-0 bottom-0 z-50 bg-black/90 items-center justify-center">
+//           <Pressable
+//             onPress={() => setPreviewMedia(null)}
+//             className="absolute top-0 left-0 right-0 bottom-0"
+//           />
+//           {previewMedia.type === "image" ? (
+//             <Image
+//               source={{ uri: previewMedia.uri }}
+//               className="w-full h-full"
+//               resizeMode="contain"
+//             />
+//           ) : (
+//             <Video
+//               source={{ uri: previewMedia.uri }}
+//               style={{ width: "100%", height: "100%" }}
+//               resizeMode={ResizeMode.CONTAIN}
+//               useNativeControls
+//               shouldPlay
+//             />
+//           )}
+//           <Pressable
+//             onPress={() => setPreviewMedia(null)}
+//             className="absolute top-5 left-5 bg-white/90 p-2 rounded-full"
+//           >
+//             <Ionicons name="arrow-back" size={24} color="black" />
+//           </Pressable>
+//         </View>
+//       )}
+//     </>
+//   );
+// }
