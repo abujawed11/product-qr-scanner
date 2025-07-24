@@ -44,17 +44,17 @@ const CustomDrawer = (props: any) => {
           style={{ backgroundColor: 'transparent' }}
         />
 
-        <DrawerItem
+        {/* <DrawerItem
           label="Warranty Status"
           onPress={() => router.push('/warranty-status')}
           icon={({ size }) => <FontAwesome name="id-card-o" size={24} color="#facc15" />}
           labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
           style={{ backgroundColor: 'transparent' }}
-        />
+        /> */}
 
         <DrawerItem
-          label="Warranty Cards"
-          onPress={() => router.push('/(main)/warranty/my-cards')}
+          label="Warranty"
+          onPress={() => router.push('/warranty')}
           icon={({ size }) => <FontAwesome name="id-card-o" size={24} color="#facc15" />}
           labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
           style={{ backgroundColor: 'transparent' }}

@@ -528,7 +528,16 @@ export default function KitDetailsScreen() {
               {kit.num_panels}
             </Text>
           </View>
+
+
         </View>
+        {isClaimed && (
+          <View className="mb-4 px-2 py-3 rounded-xl bg-yellow-100 border border-yellow-400">
+            <Text className="text-yellow-700 text-base font-semibold text-center">
+              You have already applied for Warranty for this Kit.
+            </Text>
+          </View>
+        )}
       </ScrollView>
 
       {/* Sticky Claim Warranty Button */}
@@ -538,11 +547,63 @@ export default function KitDetailsScreen() {
           style={{ backgroundColor: COLORS.text, borderTopColor: '#262626' }}
         >
           {isClaimed ? (
-            <View className="bg-gray-400 rounded-xl opacity-70 px-12 py-4">
-              <Text className="text-center text-black font-bold text-lg">
+            <>
+              {/* <Text className="text-center text-black font-bold text-lg">
                 ✅ Warranty Applied
-              </Text>
-            </View>
+              </Text> */}
+              <TouchableOpacity
+                className="flex-row items-center bg-yellow-400 rounded-xl px-12 py-4 shadow-md"
+                activeOpacity={0.85}
+                onPress={() => {
+                  const url = '/(main)/warranty?initialTab=warranty-status';
+                  console.log('[WarrantyNav] Navigating to warranty with:', url);
+                  router.push(url);
+                }}
+                style={{
+                  shadowColor: '#c0b100',
+                  shadowOpacity: 0.15,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowRadius: 7,
+                }}
+              >
+                <Ionicons name="eye" size={22} color="#000" className="mr-2" />
+                <Text className="text-black font-bold text-lg tracking-wide">
+                  Show Warranty Status
+                </Text>
+              </TouchableOpacity>
+
+
+              {/* <TouchableOpacity
+                className="flex-row items-center bg-yellow-400 rounded-xl px-12 py-4 shadow-md"
+                activeOpacity={0.85}
+                onPress={() =>
+                  
+                  router.push({
+                    pathname: '/(main)/warranty',
+                    params: { initialTab: 'warranty-status' }
+                    // Optionally pass kit_id or war_req_id as param if status page supports search/filter
+                    // params: { kit_id: kit_id, kit_no: kit_no, ... }
+                  })
+                }
+                style={{
+                  shadowColor: '#c0b100',
+                  shadowOpacity: 0.15,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowRadius: 7,
+                }}
+              >
+                <Ionicons name="eye" size={22} color="#000" className="mr-2" />
+
+                <Text className="text-black font-bold text-lg tracking-wide">
+                  Show Warranty Status
+                </Text>
+              </TouchableOpacity> */}
+            </>
+            // <View className="bg-gray-400 rounded-xl opacity-70 px-12 py-4">
+            //   <Text className="text-center text-black font-bold text-lg">
+            //     ✅ Warranty Applied
+            //   </Text>
+            // </View>
           ) : (
             <TouchableOpacity
               onPress={handleClaimWarranty}

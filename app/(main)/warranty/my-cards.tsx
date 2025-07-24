@@ -74,9 +74,9 @@ export default function MyWarrantyCardsScreen() {
 
   return (
     <ScrollView className="flex-1 bg-gray-50 px-2 py-4">
-      <Text className="text-xl font-bold text-black mb-4 text-center tracking-wide">
+      {/* <Text className="text-xl font-bold text-black mb-4 text-center tracking-wide">
         My Warranty Cards
-      </Text>
+      </Text> */}
       {cards.map((card) => (
         <WarrantyCard key={card.war_card_id} card={card} />
       ))}

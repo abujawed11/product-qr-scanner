@@ -1266,7 +1266,7 @@
 //           {showCardForm && (
 //             <View style={{ marginTop: 32, marginBottom: 16, padding: 16, backgroundColor: "#f9fafb", borderRadius: 12 }}>
 //               <Text style={{ fontWeight: "bold", fontSize: 16, marginBottom: 12 }}>Warranty Card Information</Text>
-              
+
 //               {/* Warranty Type Dropdown */}
 //               <Text style={{ marginBottom: 4 }}>Warranty Type *</Text>
 //               <View style={{ flexDirection: 'row', marginBottom: 16 }}>
@@ -1624,6 +1624,11 @@ export default function ReviewClaimUpdateScreen() {
       refetchDetail();
       setLoading(false);
       queryClient.invalidateQueries({ queryKey: ["warrantySummary"] });
+      queryClient.invalidateQueries({ queryKey: ["warrantyDashboardCounts"] });
+      queryClient.invalidateQueries({ queryKey: ["myScans_savedOrders"] }); // adjust keys as your listing components use
+      queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
+      queryClient.invalidateQueries({ queryKey: ["myWarrantyClaims"] });
+      queryClient.invalidateQueries({ queryKey: ["myWarrantyCards"] });
       // router.back();
       router.replace("/(adminDashboard)/review-req-dashboard")
     },
@@ -1717,7 +1722,7 @@ export default function ReviewClaimUpdateScreen() {
           {showCardForm && (
             <View style={{ marginTop: 32, marginBottom: 16, padding: 16, backgroundColor: "#f9fafb", borderRadius: 12 }}>
               <Text style={{ fontWeight: "bold", fontSize: 16, marginBottom: 12 }}>Warranty Card Information</Text>
-              
+
               {/* Warranty Type Dropdown */}
               <Text style={{ marginBottom: 4 }}>Warranty Type *</Text>
               <View style={{ flexDirection: 'row', marginBottom: 16 }}>

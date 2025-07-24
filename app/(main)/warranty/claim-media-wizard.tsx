@@ -4172,13 +4172,15 @@ export default function ClaimMediaWizard() {
             setIsSubmitting(false);
             setUploadProgress(0);
             // 🔥 Invalidate queries so dashboard and other places auto-refresh!
+            queryClient.invalidateQueries({ queryKey: ["warrantySummary"] });
             queryClient.invalidateQueries({ queryKey: ["warrantyDashboardCounts"] });
             queryClient.invalidateQueries({ queryKey: ["myScans_savedOrders"] }); // adjust keys as your listing components use
             queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
             queryClient.invalidateQueries({ queryKey: ["myWarrantyClaims"] });
+            queryClient.invalidateQueries({ queryKey: ["myWarrantyCards"] });
             resetWizard();
             Alert.alert("Submitted!", "Your warranty claim has been submitted.");
-            router.replace("/warranty-status");
+            router.replace("/(main)/dashboard");
         },
         onError: (error: AxiosError) => {
             setIsSubmitting(false);

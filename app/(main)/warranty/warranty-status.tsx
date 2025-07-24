@@ -1474,7 +1474,7 @@ export default function ClaimStatusScreen() {
         </Text>
         <TouchableOpacity
           // onPress={refetch}
-           onPress={() => refetch()}
+          onPress={() => refetch()}
           className="bg-yellow-400 px-6 py-3 rounded-xl"
         >
           <Text className="text-black font-bold">Retry</Text>
@@ -1485,9 +1485,9 @@ export default function ClaimStatusScreen() {
 
   return (
     <View className="flex-1 bg-black p-4">
-      <Text className="text-white text-3xl font-extrabold text-center mb-2 mt-4">
+      {/* <Text className="text-white text-3xl font-extrabold text-center mb-2 mt-4">
         Warranty Requests
-      </Text>
+      </Text> */}
       <FlatList
         keyExtractor={([orderId]) => orderId}
         data={grouped}
@@ -1592,6 +1592,7 @@ export default function ClaimStatusScreen() {
                             </Text>
                           </View>
                         ) : null}
+                        
                         <Text className="text-zinc-400 text-xs">
                           Submitted:{" "}
                           {new Date(claim.created_at).toLocaleString()}
@@ -1599,6 +1600,22 @@ export default function ClaimStatusScreen() {
                         {idx !== claimsForOrder.length - 1 && (
                           <View className="h-[1px] bg-[#23232c] opacity-40 mt-3" />
                         )}
+                        {/* Other fields... */}
+                        {claim.status === "approved" && (
+                          <TouchableOpacity
+                            className="bg-yellow-400 mt-3 py-2 px-4 rounded-lg items-center self-start"
+                            activeOpacity={0.9}
+                            onPress={() =>
+                              router.push({
+                                pathname: '/(main)/warranty/warranty-card',
+                                params: { war_req_id: claim.war_req_id }
+                              })
+                            }
+                          >
+                            <Text className="font-bold text-black text-base">View Card</Text>
+                          </TouchableOpacity>
+                        )}
+                        
                       </View>
                     );
                   })}

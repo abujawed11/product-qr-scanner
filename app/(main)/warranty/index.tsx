@@ -14,7 +14,7 @@
 //   const initialRoute = params.initial?.toString() === "Warranty Status"
 //     ? "Warranty Status"
 //     : "Request Warranty";
-  
+
 //   return (
 //     <>
 //       <Stack.Screen options={{ headerShown: false }} />
@@ -145,7 +145,7 @@
 //       <Tab.Navigator
 //         key={tabNavigatorKey} // <---- Here! use the key!
 //         initialRouteName={initialRoute}
-        
+
 //         screenOptions={{
 //           tabBarLabelStyle: { fontSize: 14, fontWeight: 'bold' },
 //           tabBarIndicatorStyle: { backgroundColor: 'orange' },
@@ -378,3 +378,101 @@
 //     </Tab.Navigator>
 //   );
 // }
+
+
+
+// import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+// import { useNavigation } from 'expo-router';
+// import { useEffect } from 'react';
+// import MyWarrantyCardsScreen from './my-cards';
+// import ClaimStatusScreen from './warranty-status';
+
+// const Tab = createMaterialTopTabNavigator();
+
+// export default function WarrantyTabs() {
+
+//     const navigation = useNavigation();
+//     useEffect(() => {
+//         navigation.setOptions?.({ title: 'Warranty' });
+//     }, [navigation]);
+
+//     return (
+//         <Tab.Navigator
+//             screenOptions={{
+//                 tabBarLabelStyle: { fontWeight: 'bold', color: '#000' },
+//                 tabBarIndicatorStyle: { backgroundColor: '#facc15', height: 4 },
+//                 tabBarStyle: { backgroundColor: '#fff' },
+//             }}
+//             initialRouteName="warranty-status"
+//         >
+//             <Tab.Screen
+//                 name="warranty-status"
+//                 component={ClaimStatusScreen}
+//                 options={{ tabBarLabel: "Warranty Status" }}
+//             />
+//             <Tab.Screen
+//                 name="my-cards"
+//                 component={MyWarrantyCardsScreen}
+//                 options={{ tabBarLabel: "My Warranty Cards" }}
+//             />
+//         </Tab.Navigator>
+//     );
+// }
+
+
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useEffect } from 'react';
+import MyWarrantyCardsScreen from './my-cards';
+import ClaimStatusScreen from './warranty-status';
+
+const Tab = createMaterialTopTabNavigator();
+
+export default function WarrantyTabs() {
+    // Get navigation object for setting the header title
+    const navigation = useNavigation();
+    useEffect(() => {
+        navigation.setOptions?.({ title: 'Warranty' });
+    }, [navigation]);
+
+    // Grab the "initialTab" param sent during navigation, if any
+    const params = useLocalSearchParams<{ initialTab?: string }>();
+
+    // Debug: print the navigation params and initial route value
+    console.log('WarrantyTabs params:', params);
+
+    // The tab screen keys (must match names below)
+    const TAB_KEYS = ['warranty-status', 'my-cards'];
+    const initialTabName =
+        params && TAB_KEYS.includes(params.initialTab as string)
+            ? (params.initialTab as string)
+            : 'warranty-status'; // Default
+
+
+    console.log('WarrantyTabs initialTabName:', initialTabName);
+
+    return (
+        <Tab.Navigator
+            key={initialTabName}
+            initialRouteName={initialTabName}
+            screenOptions={{
+                tabBarLabelStyle: { fontWeight: 'bold', color: '#000' },
+                tabBarIndicatorStyle: { backgroundColor: '#facc15', height: 4 },
+                tabBarStyle: { backgroundColor: '#fff' },
+                tabBarActiveTintColor: '#000',
+            }}
+        >
+            <Tab.Screen
+                name="warranty-status"
+                component={ClaimStatusScreen}
+                options={{ tabBarLabel: "Warranty Status" }}
+            />
+            <Tab.Screen
+                name="my-cards"
+                component={MyWarrantyCardsScreen}
+                options={{ tabBarLabel: "My Warranty Cards" }}
+            />
+        </Tab.Navigator>
+    );
+}
+
