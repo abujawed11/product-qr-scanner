@@ -421,8 +421,7 @@
 
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
-import { useEffect } from 'react';
+import { useLocalSearchParams } from 'expo-router';
 import MyWarrantyCardsScreen from './my-cards';
 import ClaimStatusScreen from './warranty-status';
 
@@ -430,10 +429,10 @@ const Tab = createMaterialTopTabNavigator();
 
 export default function WarrantyTabs() {
     // Get navigation object for setting the header title
-    const navigation = useNavigation();
-    useEffect(() => {
-        navigation.setOptions?.({ title: 'Warranty' });
-    }, [navigation]);
+    // const navigation = useNavigation();
+    // useEffect(() => {
+    //     navigation.setOptions?.({ title: 'Warranty' });
+    // }, [navigation]);
 
     // Grab the "initialTab" param sent during navigation, if any
     const params = useLocalSearchParams<{ initialTab?: string }>();

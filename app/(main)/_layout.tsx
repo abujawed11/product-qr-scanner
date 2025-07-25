@@ -45,7 +45,7 @@ export default function DashboardLayout() {
         { name: 'warranty/claim-form', title: 'Warranty Request Form' },
         { name: 'warranty/claim-media-wizard', title: 'Upload Files' },
         // { name: 'warranty/claim-media-wizard', title: 'Upload Files' },
-        { name: 'warranty', title: 'Warranty' },
+        { name: 'warranty/index', title: 'Warranty' },
         { name: 'warranty/warranty-card', title: 'Warranty Card' },
         { name: 'kit-details', title: 'Kit details' },
         // { name: 'tasks/[taskId]/update', title: 'Update Task' },
