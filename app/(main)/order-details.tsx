@@ -726,7 +726,7 @@ import {
 
 // Interfaces
 interface OrderItem {
-  order_item_id: string;
+  id: string;
   quantity: number;
   unit_price: string;
   total_price: string;
@@ -841,7 +841,7 @@ export default function OrderDetailsScreen() {
         <Text className="text-lg font-semibold text-white mb-2">Ordered Kits</Text>
 
         {order.items.map((item, index) => (
-          <View key={item.order_item_id} className="mb-4 p-3 border border-white/20 rounded-md">
+          <View key={item.id} className="mb-4 p-3 border border-white/20 rounded-md">
             <Text className="text-white font-semibold mb-1">Kit {index + 1}</Text>
             <Text className="text-white">Kit ID: {item.kit.kit_id}</Text>
             <Text className="text-white">Config: {item.kit.configuration}</Text>

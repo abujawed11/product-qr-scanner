@@ -12,7 +12,7 @@ export interface Kit {
 }
 
 export interface OrderItem {
-  order_item_id: string;
+  id: string;
   kit: Kit;
   quantity: number;
   unit_price: string;
