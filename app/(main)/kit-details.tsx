@@ -556,7 +556,7 @@ export default function KitDetailsScreen() {
                 activeOpacity={0.85}
                 onPress={() => {
                   const url = '/(main)/warranty?initialTab=warranty-status';
-                  console.log('[WarrantyNav] Navigating to warranty with:', url);
+                  // console.log('[WarrantyNav] Navigating to warranty with:', url);
                   router.push(url);
                 }}
                 style={{

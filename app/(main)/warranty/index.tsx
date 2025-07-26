@@ -438,7 +438,7 @@ export default function WarrantyTabs() {
     const params = useLocalSearchParams<{ initialTab?: string }>();
 
     // Debug: print the navigation params and initial route value
-    console.log('WarrantyTabs params:', params);
+    // console.log('WarrantyTabs params:', params);
 
     // The tab screen keys (must match names below)
     const TAB_KEYS = ['warranty-status', 'my-cards'];
@@ -448,7 +448,7 @@ export default function WarrantyTabs() {
             : 'warranty-status'; // Default
 
 
-    console.log('WarrantyTabs initialTabName:', initialTabName);
+    // console.log('WarrantyTabs initialTabName:', initialTabName);
 
     return (
         <Tab.Navigator

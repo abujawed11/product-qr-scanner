@@ -186,10 +186,10 @@ export default function LoginScreen() {
     useEffect(() => {
         if (user) {
             if (user.account_type === 'admin') {
-                console.log("Account Type",user.account_type)
+                // console.log("Account Type",user.account_type)
                 router.replace('/(adminDashboard)');
             } else {
-                console.log("Account Type",user.account_type)
+                // console.log("Account Type",user.account_type)
                 router.replace('/dashboard');
             }
         }

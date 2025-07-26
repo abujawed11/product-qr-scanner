@@ -24,7 +24,7 @@ export default function ReviewReqDashboard() {
     queryFn: async () => {
       // Your backend endpoint must return {pending: n, ...}
       const res = await api.get("/warranty-claims-status-summary/");
-      console.log(res.data)
+      // console.log(res.data)
       return res.data;
     },
   });

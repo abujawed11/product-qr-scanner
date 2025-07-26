@@ -658,7 +658,7 @@ const QRScanner = () => {
                 throw new Error('Missing required fields in QR code.');
             }
 
-            console.log(`Scanned QR Data: ${JSON.stringify(parsed)}`);
+            // console.log(`Scanned QR Data: ${JSON.stringify(parsed)}`);
 
             // Send to backend
             const res = await api.post('/save-order/', {
