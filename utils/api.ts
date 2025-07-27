@@ -58,6 +58,14 @@ api.interceptors.request.use(async config => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+    // <<<<<<<<<< Add this log here!
+  // This shows what URL the API call will attempt to reach
+  const fullUrl =
+    (config.baseURL ?? api.defaults.baseURL ?? '') +
+    (config.url || '');
+
+  console.log('[API REQUEST]', fullUrl);
   return config;
 });
 

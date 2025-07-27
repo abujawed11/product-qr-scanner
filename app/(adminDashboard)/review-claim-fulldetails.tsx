@@ -590,6 +590,7 @@ import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { ResizeMode, Video } from "expo-av";
+import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from "expo-media-library";
 import * as Print from "expo-print";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
@@ -660,32 +661,99 @@ function openInMaps(lat: number, lng: number) {
   });
 }
 
+// async function generatePDFfromImages(images: string[]) {
+//   const html = `
+//     <html>
+//       <head>
+//         <style>
+//           body { padding: 0; margin: 0; }
+//           img { width: 100%; margin-bottom: 20px; }
+//         </style>
+//       </head>
+//       <body>
+//         ${images.map((uri) => `<img src="${uri}" />`).join("")}
+//       </body>
+//     </html>
+//   `;
+
+//   const { uri } = await Print.printToFileAsync({ html });
+
+//   const permission = await MediaLibrary.requestPermissionsAsync();
+//   if (permission.granted) {
+//     const asset = await MediaLibrary.createAssetAsync(uri);
+//     await MediaLibrary.createAlbumAsync("Download", asset, false);
+//     alert("PDF saved to Downloads");
+//   } else {
+//     alert("Permission denied to save PDF.");
+//   }
+// }
+
+
+
+async function downloadImagesToLocal(images: string[]): Promise<string[]> {
+  const localUris: string[] = [];
+  for (const imageUrl of images) {
+    try {
+      // Use a unique name if possible to avoid caching issues!
+      const filename = imageUrl.split('/').pop() ?? `image_${Date.now()}.jpg`;
+      const localUri = FileSystem.cacheDirectory + filename;
+      await FileSystem.downloadAsync(imageUrl, localUri);
+      localUris.push(localUri);
+    } catch (e) {
+      console.log("Failed to download ", imageUrl, e);
+    }
+  }
+  return localUris;
+}
+
+async function savePdfToGallery(pdfUri: string) {
+  // Get a filename
+  const fileName = pdfUri.split('/').pop() || `generated_${Date.now()}.pdf`;
+  // Choose a new path in documentDirectory (which is sometimes accessible for assets)
+  const newUri = FileSystem.documentDirectory + fileName;
+  // OR for Android, you may want to use a path in Download folder for easier user access
+
+  await FileSystem.copyAsync({ from: pdfUri, to: newUri });
+  return newUri;
+}
+
 async function generatePDFfromImages(images: string[]) {
-  const html = `
-    <html>
-      <head>
-        <style>
-          body { padding: 0; margin: 0; }
-          img { width: 100%; margin-bottom: 20px; }
-        </style>
-      </head>
-      <body>
-        ${images.map((uri) => `<img src="${uri}" />`).join("")}
-      </body>
-    </html>
-  `;
+  try {
+    console.log("[generatePDFfromImages] Images passed in:", images);
+    const html = `
+      <html>
+        <head>
+          <style>
+            body { padding: 0; margin: 0; }
+            img { width: 100%; margin-bottom: 20px; }
+          </style>
+        </head>
+        <body>
+          ${images.map((uri) => `<img src="${uri}" />`).join("")}
+        </body>
+      </html>
+    `;
+    console.log("[generatePDFfromImages] HTML generated:", html);
 
-  const { uri } = await Print.printToFileAsync({ html });
+    const { uri } = await Print.printToFileAsync({ html });
+    const externalUri = await savePdfToGallery(uri);
+    console.log("[generatePDFfromImages] PDF file URI:", uri);
 
-  const permission = await MediaLibrary.requestPermissionsAsync();
-  if (permission.granted) {
-    const asset = await MediaLibrary.createAssetAsync(uri);
-    await MediaLibrary.createAlbumAsync("Download", asset, false);
-    alert("PDF saved to Downloads");
-  } else {
-    alert("Permission denied to save PDF.");
+    const permission = await MediaLibrary.requestPermissionsAsync();
+    console.log("[generatePDFfromImages] Permissions result:", permission);
+
+    if (permission.granted) {
+      const asset = await MediaLibrary.createAssetAsync(externalUri);
+      await MediaLibrary.createAlbumAsync("Download", asset, false);
+      alert("PDF saved to Downloads");
+    } else {
+      alert("Permission denied to save PDF.");
+    }
+  } catch (e) {
+    console.log("[generatePDFfromImages] Error generating/saving PDF", e);
   }
 }
+
 
 export default function ReviewClaimFullDetailsScreen() {
   const { war_req_id } = useLocalSearchParams<{ war_req_id: string }>();
@@ -827,13 +895,12 @@ export default function ReviewClaimFullDetailsScreen() {
           <Text className="mb-1">
             Status:
             <Text
-              className={`ml-2 px-2 py-1 text-white rounded-full text-xs font-bold ${
-                data.status === "Approved"
-                  ? "bg-green-600"
-                  : data.status === "Rejected"
+              className={`ml-2 px-2 py-1 text-white rounded-full text-xs font-bold ${data.status === "Approved"
+                ? "bg-green-600"
+                : data.status === "Rejected"
                   ? "bg-red-600"
                   : "bg-blue-600"
-              }`}
+                }`}
             >
               {data.status}
             </Text>
@@ -871,15 +938,13 @@ export default function ReviewClaimFullDetailsScreen() {
               return (
                 <View
                   key={item.key}
-                  className={`flex-row justify-between items-center px-3 py-2 border-b border-gray-100 ${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  }`}
+                  className={`flex-row justify-between items-center px-3 py-2 border-b border-gray-100 ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    }`}
                 >
                   <Text className="flex-1 text-[15px] pr-2">{item.question}</Text>
                   <Text
-                    className={`w-6 text-right font-bold text-lg ${
-                      isChecked ? "text-green-700" : "text-red-600"
-                    }`}
+                    className={`w-6 text-right font-bold text-lg ${isChecked ? "text-green-700" : "text-red-600"
+                      }`}
                   >
                     {isChecked ? "✓" : "✗"}
                   </Text>
@@ -939,33 +1004,67 @@ export default function ReviewClaimFullDetailsScreen() {
           })}
 
           {/* PDF Download Button */}
-          <Pressable
-            onPress={() => {
-              const imageUrls =
+          {/* <Pressable
+            // onPress={() => {
+            //   const imageUrls =
+            //     data.uploads?.filter((up) => up.media_type === "image").map((up) => getMediaUrl(up.media_file)) || [];
+            //   if (imageUrls.length > 0) {
+            //     generatePDFfromImages(imageUrls);
+            //   } else {
+            //     alert("No images to export");
+            //   }
+            // }}
+            
+            className="bg-yellow-400 px-4 py-3 rounded-lg flex-row items-center justify-center mt-4"
+          >
+            <Feather name="download" size={18} color="#000" />
+            <Text className="ml-2 font-bold text-black">Download All Images as PDF</Text>
+          </Pressable> */}
+          {/* Attach this directly to your Pressable's onPress prop: */}
+          {/* <Pressable
+            onPress={async () => {
+              // 1. Gather image URLs from uploads
+              const imageUrls: string[] =
                 data.uploads?.filter((up) => up.media_type === "image").map((up) => getMediaUrl(up.media_file)) || [];
-              if (imageUrls.length > 0) {
-                generatePDFfromImages(imageUrls);
-              } else {
-                alert("No images to export");
+              console.log("[Download PDF Button] imageUrls found:", imageUrls);
+
+              // 2. Early exit if there are no images
+              if (imageUrls.length === 0) {
+                console.log("[Download PDF Button] No images to export");
+                return;
               }
+
+              // 3. Download all images to the device local filesystem
+              const localUris: string[] = await downloadImagesToLocal(imageUrls);
+              console.log("[Download PDF Button] localUris:", localUris);
+
+              // 4. Early exit if none could be downloaded
+              if (localUris.length === 0) {
+                console.log("[Download PDF Button] No images could be downloaded locally");
+                return;
+              }
+
+              // 5. Generate PDF from local image URIs
+              await generatePDFfromImages(localUris);
             }}
             className="bg-yellow-400 px-4 py-3 rounded-lg flex-row items-center justify-center mt-4"
           >
             <Feather name="download" size={18} color="#000" />
             <Text className="ml-2 font-bold text-black">Download All Images as PDF</Text>
-          </Pressable>
+          </Pressable> */}
+
 
           {/* View Existing PDF */}
-         
-{data?.pdf_url && (
-  <Pressable
-    onPress={() => Linking.openURL(getMediaUrl(data.pdf_url!))}
-    className="bg-green-600 mt-3 px-4 py-3 rounded-lg flex-row items-center justify-center"
-  >
-    <Ionicons name="document-text-outline" size={18} color="white" />
-    <Text className="ml-2 font-bold text-white">View Submitted PDF</Text>
-  </Pressable>
-)}
+
+          {data?.pdf_url && (
+            <Pressable
+              onPress={() => Linking.openURL(getMediaUrl(data.pdf_url!))}
+              className="bg-green-600 mt-3 px-4 py-3 rounded-lg flex-row items-center justify-center"
+            >
+              <Ionicons name="document-text-outline" size={18} color="white" />
+              <Text className="ml-2 font-bold text-white">View Submitted PDF</Text>
+            </Pressable>
+          )}
 
         </View>
       </ScrollView>

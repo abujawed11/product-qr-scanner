@@ -76,6 +76,14 @@ const CustomDrawer = (props: any) => {
           style={{ backgroundColor: 'transparent' }}
         />
 
+        {/* <DrawerItem
+          label="Testing"
+          onPress={() => router.push('/(main)/test-upload')}
+          icon={({ size }) => <AntDesign name="infocirlce" size={size} color="#facc15" />}
+          labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
+          style={{ backgroundColor: 'transparent' }}
+        /> */}
+
         <DrawerItem
           label="Settings"
           onPress={() => router.push('/settings')}
