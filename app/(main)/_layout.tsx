@@ -36,12 +36,12 @@ export default function DashboardLayout() {
       }}
     >
       {[
-        { name: 'index', title: 'Home' },
-        { name: 'my-orders', title: 'My Orders' },
+        { name: 'dashboard/index', title: 'Home' },
+        { name: 'dashboard/my-orders', title: 'My Orders' },
         { name: 'all-orders', title: 'All Orders' },
         { name: 'order-details', title: 'Order Details' },
         { name: 'dashboard/qr-scanner', title: 'QR Scanner' },
-        { name: 'warranty-status', title: 'Warranty Status' },
+        { name: 'warranty/warranty-status', title: 'Warranty Status' },
         { name: 'warranty/warranty-status-page', title: 'Warranty Status' },
         { name: 'warranty/claim-form', title: 'Warranty Request Form' },
         { name: 'warranty/claim-media-wizard', title: 'Upload Files' },

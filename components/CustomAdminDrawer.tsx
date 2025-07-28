@@ -1,10 +1,10 @@
 import { useAuth } from '@/context/AuthContext';
 import {
-    AntDesign,
-    Entypo,
-    FontAwesome5,
-    MaterialCommunityIcons,
-    MaterialIcons,
+  AntDesign,
+  Entypo,
+  FontAwesome5,
+  MaterialCommunityIcons,
+  MaterialIcons,
 } from '@expo/vector-icons';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { useRouter } from 'expo-router';
@@ -67,7 +67,7 @@ const CustomAdminDrawer = (props: any) => {
 
         <DrawerItem
           label="Review Claims"
-          onPress={() => router.push('/(adminDashboard)/review-claims')}
+          onPress={() => router.push('/(adminDashboard)/review-req-dashboard')}
           icon={({ size }) => <MaterialIcons name="assignment" size={size} color="#facc15" />}
           labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
           style={{ backgroundColor: 'transparent' }}

@@ -2,7 +2,6 @@
 
 // import CustomDrawer from '@/components/CustomDrawer';
 import CustomAdminDrawer from '@/components/CustomAdminDrawer';
-import BellWithNotification from '@/components/NotificationBell';
 import { useAuth } from '@/context/AuthContext';
 import { Redirect } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
@@ -62,7 +61,7 @@ export default function AdminDashboardLayout() {
             title,
             drawerLabel: title,
             drawerItemStyle: { paddingLeft: 10 },
-            headerRight: () => <BellWithNotification />,
+            // headerRight: () => <BellWithNotification />,
           }}
         />
       ))}

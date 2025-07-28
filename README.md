@@ -381,3 +381,116 @@ react_qr_scanner
    └─ taskUtils.ts
 
 ```
+```
+react-native-qr-scanner
+├─ app
+│  ├─ (adminDashboard)
+│  │  ├─ index.tsx
+│  │  ├─ manage-clients.tsx
+│  │  ├─ manage-kits.tsx
+│  │  ├─ manage-orders.tsx
+│  │  ├─ review-claim-fulldetails.tsx
+│  │  ├─ review-claim-update.tsx
+│  │  ├─ review-req-dashboard.tsx
+│  │  ├─ review-req-warranty-status.tsx
+│  │  ├─ review-req-warranty.tsx
+│  │  ├─ warranty-clients.tsx
+│  │  ├─ warranty-orders.tsx
+│  │  ├─ warranty-requests.tsx
+│  │  └─ _layout.tsx
+│  ├─ (auth)
+│  │  ├─ forgot-password.tsx
+│  │  ├─ login.tsx
+│  │  ├─ register.tsx
+│  │  └─ _layout.tsx
+│  ├─ (main)
+│  │  ├─ about.tsx
+│  │  ├─ all-orders.tsx
+│  │  ├─ dashboard
+│  │  │  ├─ home.tsx
+│  │  │  ├─ index.tsx
+│  │  │  ├─ my-orders.tsx
+│  │  │  ├─ my-scans.tsx
+│  │  │  ├─ qr-scanner.tsx
+│  │  │  └─ _layout.tsx
+│  │  ├─ kit-details.tsx
+│  │  ├─ notifications.tsx
+│  │  ├─ order-details.tsx
+│  │  ├─ product-info.tsx
+│  │  ├─ profile.tsx
+│  │  ├─ settings.tsx
+│  │  ├─ support.tsx
+│  │  ├─ test-upload.tsx
+│  │  ├─ warranty
+│  │  │  ├─ claim-form.tsx
+│  │  │  ├─ claim-media-wizard.tsx
+│  │  │  ├─ claim-steps.ts
+│  │  │  ├─ index.tsx
+│  │  │  ├─ my-cards.tsx
+│  │  │  ├─ warranty-card.tsx
+│  │  │  ├─ warranty-status-page.tsx
+│  │  │  ├─ warranty-status.tsx
+│  │  │  └─ _layout.tsx
+│  │  └─ _layout.tsx
+│  ├─ index.tsx
+│  └─ _layout.tsx
+├─ app.json
+├─ assets
+│  ├─ fonts
+│  │  └─ SpaceMono-Regular.ttf
+│  └─ images
+│     ├─ adaptive-icon.png
+│     ├─ app_icon.png
+│     ├─ favicon.png
+│     ├─ icon.png
+│     ├─ partial-react-logo.png
+│     ├─ react-logo.png
+│     ├─ react-logo@2x.png
+│     ├─ react-logo@3x.png
+│     └─ splash-icon.png
+├─ babel.config.js
+├─ components
+│  ├─ ChecklistStep.tsx
+│  ├─ CustomAdminDrawer.tsx
+│  ├─ CustomDrawer.tsx
+│  ├─ FloatingInput.tsx
+│  ├─ FloatingPicker.tsx
+│  ├─ MediaStep.tsx
+│  ├─ NotificationBell.tsx
+│  ├─ ReviewStep.tsx
+│  ├─ UploadModal.tsx
+│  └─ WarrantyCard.tsx
+├─ context
+│  ├─ AuthContext.tsx
+│  ├─ NotificationContext.tsx
+│  ├─ RefreshContext.tsx
+│  └─ ThemeContext.tsx
+├─ eas.json
+├─ eslint.config.js
+├─ global.css
+├─ metro.config.js
+├─ nativewind-env.d.ts
+├─ package-lock.json
+├─ package.json
+├─ README.md
+├─ tailwind.config.js
+├─ tsconfig.json
+├─ types
+│  ├─ kit.types.ts
+│  ├─ order.types.ts
+│  ├─ StepMedia.ts
+│  ├─ user.types.ts
+│  └─ warranty.ts
+└─ utils
+   ├─ api.ts
+   ├─ color.ts
+   ├─ constants.ts
+   ├─ downloadExcel.ts
+   ├─ formatDate.ts
+   ├─ locationUtils.ts
+   ├─ mapCodeToCity.ts
+   ├─ mediaUtils.ts
+   ├─ statusColor.ts
+   └─ taskUtils.ts
+
+```
