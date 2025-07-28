@@ -42,6 +42,7 @@ export default function DashboardLayout() {
         { name: 'order-details', title: 'Order Details' },
         { name: 'dashboard/qr-scanner', title: 'QR Scanner' },
         { name: 'warranty-status', title: 'Warranty Status' },
+        { name: 'warranty/warranty-status-page', title: 'Warranty Status' },
         { name: 'warranty/claim-form', title: 'Warranty Request Form' },
         { name: 'warranty/claim-media-wizard', title: 'Upload Files' },
         // { name: 'warranty/claim-media-wizard', title: 'Upload Files' },

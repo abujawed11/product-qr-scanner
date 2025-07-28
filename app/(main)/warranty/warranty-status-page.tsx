@@ -647,9 +647,7 @@ const WarrantyStatusPage: React.FC = () => {
         />
       }
     >
-      <Text className="text-3xl font-extrabold text-black tracking-wide mb-4">
-        Warranty Status
-      </Text>
+      <Text className="text-3xl font-extrabold text-black tracking-wide mb-4"></Text>
 
       {/* ✅ Dynamic Status Color Badge */}
       <View className="bg-black px-4 py-1 rounded-full self-start mb-4">

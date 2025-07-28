@@ -4178,6 +4178,7 @@ export default function ClaimMediaWizard() {
             queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
             queryClient.invalidateQueries({ queryKey: ["myWarrantyClaims"] });
             queryClient.invalidateQueries({ queryKey: ["myWarrantyCards"] });
+            queryClient.invalidateQueries({ queryKey: ["kitDetails"] });
             resetWizard();
             Alert.alert("Submitted!", "Your warranty claim has been submitted.");
             router.replace("/(main)/dashboard");
