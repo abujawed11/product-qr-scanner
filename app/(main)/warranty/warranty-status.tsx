@@ -1592,7 +1592,7 @@ export default function ClaimStatusScreen() {
                             </Text>
                           </View>
                         ) : null}
-                        
+
                         <Text className="text-zinc-400 text-xs">
                           Submitted:{" "}
                           {new Date(claim.created_at).toLocaleString()}
@@ -1600,6 +1600,20 @@ export default function ClaimStatusScreen() {
                         {idx !== claimsForOrder.length - 1 && (
                           <View className="h-[1px] bg-[#23232c] opacity-40 mt-3" />
                         )}
+                        {/* ---- ADD THIS VIEW DETAILS BUTTON BELOW ---- */}
+                        <TouchableOpacity
+                          className="bg-blue-600 mt-3 py-2 px-4 rounded-lg items-center self-start"
+                          activeOpacity={0.9}
+                          onPress={() =>
+                            router.push({
+                              pathname: '/(main)/warranty/warranty-status-page', // CHANGE to your WarrantyStatusPage route!
+                              params: { war_req_id: claim.war_req_id }
+                            })
+                          }
+                        >
+                          <Text className="font-bold text-white text-base">View Details</Text>
+                        </TouchableOpacity>
+                        {/* ---- END BUTTON ---- */}
                         {/* Other fields... */}
                         {claim.status === "approved" && (
                           <TouchableOpacity
@@ -1615,7 +1629,7 @@ export default function ClaimStatusScreen() {
                             <Text className="font-bold text-black text-base">View Card</Text>
                           </TouchableOpacity>
                         )}
-                        
+
                       </View>
                     );
                   })}

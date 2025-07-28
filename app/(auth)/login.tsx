@@ -128,6 +128,7 @@ import {
 import { twMerge } from 'tailwind-merge';
 
 import { BACKGROUND_COLOR } from '@/utils/color'; // Adjust the import path as needed
+import { useQueryClient } from '@tanstack/react-query';
 
 const FloatingInput = ({
     label,
@@ -182,6 +183,9 @@ export default function LoginScreen() {
     const [loading, setLoading] = useState(false);
     const { user, login } = useAuth();
 
+    // const queryClient = new QueryClient();
+    const queryClient = useQueryClient();
+
     // ✅ Redirect based on updated user after login
     useEffect(() => {
         if (user) {
@@ -199,6 +203,7 @@ export default function LoginScreen() {
         try {
             setLoading(true);
             await login(username, password);
+            
             // // router.replace('/dashboard');
             // if (user?.account_type === 'admin') {
             //     console.log(user.account_type)
@@ -210,6 +215,7 @@ export default function LoginScreen() {
             console.error('Login error:', err);
             Alert.alert('Login Failed', err.message || 'Invalid credentials');
         } finally {
+            queryClient.invalidateQueries({ queryKey: ["warrantyDashboardCounts"] });
             setLoading(false);
         }
     };

@@ -222,6 +222,7 @@
 
 import { User } from '@/types/user.types';
 import api from '@/utils/api';
+import { useQueryClient } from '@tanstack/react-query';
 import * as SecureStore from 'expo-secure-store';
 import { jwtDecode } from 'jwt-decode';
 import React, { createContext, useContext, useEffect, useState } from 'react';
@@ -249,6 +250,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const loadAuthData = async () => {
@@ -303,6 +306,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(user);
       api.defaults.headers.common['Authorization'] = `Bearer ${access}`;
       scheduleTokenRefresh(access);
+
+      // 🚩 Invalidate dashboard counts (so dashboard re-fetches with correct session)
+      queryClient.invalidateQueries({ queryKey: ["warrantyDashboardCounts"] });
+
     } catch (error) {
       console.error('Login error:', error);
       throw new Error('Login failed');
@@ -335,10 +342,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const refresh = await SecureStore.getItemAsync('refresh');
       if (refresh) {
         await api.post('/token/logout/', { refresh });
+        // 🚩 Invalidate dashboard counts (so dashboard re-fetches with correct session)
+        // queryClient.invalidateQueries({ queryKey: ["warrantyDashboardCounts"] });
       }
     } catch (err) {
       console.warn('Logout failed or already invalid');
     } finally {
+      // queryClient.invalidateQueries({ queryKey: ["warrantyDashboardCounts"] });
       clearTimeout(refreshTimer);
       await SecureStore.deleteItemAsync('access');
       await SecureStore.deleteItemAsync('refresh');
