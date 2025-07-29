@@ -512,19 +512,17 @@
 
 
 import api from '@/utils/api';
-import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
-import { router } from 'expo-router';
 import React from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    BackHandler,
-    RefreshControl,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
 type WarrantyRouteParam = {
@@ -573,16 +571,16 @@ const WarrantyStatusPage: React.FC = () => {
   const route = useRoute<RouteProp<WarrantyRouteParam, 'params'>>();
   const war_req_id = (route.params as { war_req_id: string } | undefined)?.war_req_id;
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const onBackPress = () => {
-        router.replace('/(main)/warranty/warranty-status');
-        return true;
-      };
-      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-      return () => subscription.remove();
-    }, [])
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const onBackPress = () => {
+  //       router.replace('/(main)/warranty');
+  //       return true;
+  //     };
+  //     const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+  //     return () => subscription.remove();
+  //   }, [])
+  // );
 
   const {
     data,

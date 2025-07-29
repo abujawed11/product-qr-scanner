@@ -1211,10 +1211,410 @@
 //   );
 // }
 
+//========= working =====================================
+// import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+// import React, { useEffect, useState } from 'react';
+// import { Alert, BackHandler, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+// export default function WarrantyCustomerInfoPage() {
+//   // --- Get params for autofill ---
+//   const params = useLocalSearchParams<{
+//     client_id?: string;
+//     company_name?: string;
+//     order_id?: string;
+//     kit_id?: string;
+//     kit_no?: string;
+//     project_id?: string;
+//     purchase_date?: string;
+//   }>();
+
+//   const [clientId, setClientId] = useState('');
+//   const [clientName, setClientName] = useState('');
+//   const [companyName, setCompanyName] = useState('');
+//   const [phone, setPhone] = useState('');
+//   const [email, setEmail] = useState('');
+//   const [orderId, setOrderId] = useState('');
+//   const [kitId, setKitId] = useState('');
+//   const [kitNo, setKitNo] = useState('');
+//   const [projectId, setProjectId] = useState('');
+//   const [purchaseDate, setPurchaseDate] = useState('');
+
+//   useFocusEffect(
+//     React.useCallback(() => {
+//       const onBackPress = () => {
+//         router.replace('/(main)/dashboard');
+//         return true;
+//       };
+//       const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+//       return () => subscription.remove();
+//     }, [])
+//   );
+
+//   useEffect(() => {
+//     if (params.client_id) setClientId(params.client_id);
+//     if (params.company_name) setCompanyName(params.company_name);
+//     if (params.order_id) setOrderId(params.order_id);
+//     if (params.kit_id) setKitId(params.kit_id);
+//     if (params.kit_no) setKitNo(params.kit_no);
+//     if (params.project_id) setProjectId(params.project_id);
+//     if (params.purchase_date) setPurchaseDate(params.purchase_date);
+//   }, [params]);
+
+//   const handleNext = () => {
+//     if (!clientId || !companyName || !clientName || !phone || !email || !orderId || !kitId || !kitNo || !projectId) {
+//       Alert.alert('Validation Error', 'Please fill out all required fields.');
+//       return;
+//     }
+//     router.replace({
+//       pathname: '/(main)/warranty/claim-media-wizard',
+//       params: {
+//         clientId, companyName, clientName, phone, email, orderId, kitId, kitNo, projectId, purchaseDate,
+//         stepIdx: 0,
+//       }
+//     });
+//   };
+
+//   return (
+//     <>
+//       <View
+//         style={{
+//           flex: 1,
+//           backgroundColor: '#000',
+//         }}
+//       >
+//         <KeyboardAvoidingView
+//           behavior={Platform.OS === "ios" ? "padding" : "height"}
+//           style={{ flex: 1 }}
+//           keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+//         >
+//           <ScrollView
+//             contentContainerStyle={{ padding: 24, paddingBottom: 32 }}
+//             keyboardShouldPersistTaps="handled"
+//             showsVerticalScrollIndicator={false}
+//           >
+//             {/* <Text style={{ color: '#FACC15', fontWeight: '700', fontSize: 24, textAlign: 'center', marginBottom: 30 }}>
+//               Warranty Request Form
+//             </Text> */}
+
+//             {/* Client ID */}
+//             <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Client ID *</Text>
+//             <TextInput
+//               value={clientId}
+//               onChangeText={setClientId}
+//               placeholder="Client ID"
+//               placeholderTextColor="#BBB"
+//               style={{
+//                 backgroundColor: '#FFF',
+//                 borderRadius: 9,
+//                 borderWidth: 2,
+//                 borderColor: '#FACC15',
+//                 paddingVertical: 12,
+//                 paddingHorizontal: 16,
+//                 marginBottom: 16,
+//                 fontSize: 16,
+//                 color: '#222',
+//                 fontWeight: '500',
+//                 shadowColor: '#FACC15',
+//                 shadowOpacity: 0.08,
+//                 shadowRadius: 6,
+//                 shadowOffset: { width: 0, height: 2 },
+//                 elevation: 2,
+//               }}
+//             />
+
+//             {/* Client Company Name */}
+//             <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Client Company Name *</Text>
+//             <TextInput
+//               value={companyName}
+//               onChangeText={setCompanyName}
+//               placeholder="Company Name"
+//               placeholderTextColor="#BBB"
+//               style={{
+//                 backgroundColor: '#FFF',
+//                 borderRadius: 9,
+//                 borderWidth: 2,
+//                 borderColor: '#FACC15',
+//                 paddingVertical: 12,
+//                 paddingHorizontal: 16,
+//                 marginBottom: 16,
+//                 fontSize: 16,
+//                 color: '#222',
+//                 fontWeight: '500',
+//                 shadowColor: '#FACC15',
+//                 shadowOpacity: 0.08,
+//                 shadowRadius: 6,
+//                 shadowOffset: { width: 0, height: 2 },
+//                 elevation: 2,
+//               }}
+//             />
+
+//             {/* Contact Name */}
+//             <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Contact Name *</Text>
+//             <TextInput
+//               value={clientName}
+//               onChangeText={setClientName}
+//               placeholder="Contact Name"
+//               placeholderTextColor="#BBB"
+//               style={{
+//                 backgroundColor: '#FFF',
+//                 borderRadius: 9,
+//                 borderWidth: 2,
+//                 borderColor: '#FACC15',
+//                 paddingVertical: 12,
+//                 paddingHorizontal: 16,
+//                 marginBottom: 16,
+//                 fontSize: 16,
+//                 color: '#222',
+//                 fontWeight: '500',
+//                 shadowColor: '#FACC15',
+//                 shadowOpacity: 0.08,
+//                 shadowRadius: 6,
+//                 shadowOffset: { width: 0, height: 2 },
+//                 elevation: 2,
+//               }}
+//             />
+
+//             {/* Phone */}
+//             <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Contact Phone *</Text>
+//             <TextInput
+//               value={phone}
+//               onChangeText={setPhone}
+//               placeholder="Phone"
+//               placeholderTextColor="#BBB"
+//               keyboardType="phone-pad"
+//               style={{
+//                 backgroundColor: '#FFF',
+//                 borderRadius: 9,
+//                 borderWidth: 2,
+//                 borderColor: '#FACC15',
+//                 paddingVertical: 12,
+//                 paddingHorizontal: 16,
+//                 marginBottom: 16,
+//                 fontSize: 16,
+//                 color: '#222',
+//                 fontWeight: '500',
+//                 shadowColor: '#FACC15',
+//                 shadowOpacity: 0.08,
+//                 shadowRadius: 6,
+//                 shadowOffset: { width: 0, height: 2 },
+//                 elevation: 2,
+//               }}
+//             />
+
+//             {/* Email */}
+//             <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Email *</Text>
+//             <TextInput
+//               value={email}
+//               onChangeText={setEmail}
+//               placeholder="Email"
+//               placeholderTextColor="#BBB"
+//               keyboardType="email-address"
+//               autoCapitalize="none"
+//               style={{
+//                 backgroundColor: '#FFF',
+//                 borderRadius: 9,
+//                 borderWidth: 2,
+//                 borderColor: '#FACC15',
+//                 paddingVertical: 12,
+//                 paddingHorizontal: 16,
+//                 marginBottom: 16,
+//                 fontSize: 16,
+//                 color: '#222',
+//                 fontWeight: '500',
+//                 shadowColor: '#FACC15',
+//                 shadowOpacity: 0.08,
+//                 shadowRadius: 6,
+//                 shadowOffset: { width: 0, height: 2 },
+//                 elevation: 2,
+//               }}
+//             />
+
+//             {/* Order ID */}
+//             <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Order ID *</Text>
+//             <TextInput
+//               value={orderId}
+//               onChangeText={setOrderId}
+//               placeholder="Order ID"
+//               placeholderTextColor="#BBB"
+//               style={{
+//                 backgroundColor: '#FFF',
+//                 borderRadius: 9,
+//                 borderWidth: 2,
+//                 borderColor: '#FACC15',
+//                 paddingVertical: 12,
+//                 paddingHorizontal: 16,
+//                 marginBottom: 16,
+//                 fontSize: 16,
+//                 color: '#222',
+//                 fontWeight: '500',
+//                 shadowColor: '#FACC15',
+//                 shadowOpacity: 0.08,
+//                 shadowRadius: 6,
+//                 shadowOffset: { width: 0, height: 2 },
+//                 elevation: 2,
+//               }}
+//             />
+
+//             {/* Kit ID */}
+//             <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Kit ID *</Text>
+//             <TextInput
+//               value={kitId}
+//               onChangeText={setKitId}
+//               placeholder="Kit ID"
+//               placeholderTextColor="#BBB"
+//               style={{
+//                 backgroundColor: '#FFF',
+//                 borderRadius: 9,
+//                 borderWidth: 2,
+//                 borderColor: '#FACC15',
+//                 paddingVertical: 12,
+//                 paddingHorizontal: 16,
+//                 marginBottom: 16,
+//                 fontSize: 16,
+//                 color: '#222',
+//                 fontWeight: '500',
+//                 shadowColor: '#FACC15',
+//                 shadowOpacity: 0.08,
+//                 shadowRadius: 6,
+//                 shadowOffset: { width: 0, height: 2 },
+//                 elevation: 2,
+//               }}
+//             />
+
+//             {/* Kit Number */}
+//             <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Kit Number *</Text>
+//             <TextInput
+//               value={kitNo}
+//               onChangeText={setKitNo}
+//               placeholder="Kit No"
+//               placeholderTextColor="#BBB"
+//               style={{
+//                 backgroundColor: '#FFF',
+//                 borderRadius: 9,
+//                 borderWidth: 2,
+//                 borderColor: '#FACC15',
+//                 paddingVertical: 12,
+//                 paddingHorizontal: 16,
+//                 marginBottom: 16,
+//                 fontSize: 16,
+//                 color: '#222',
+//                 fontWeight: '500',
+//                 shadowColor: '#FACC15',
+//                 shadowOpacity: 0.08,
+//                 shadowRadius: 6,
+//                 shadowOffset: { width: 0, height: 2 },
+//                 elevation: 2,
+//               }}
+//             />
+
+//             {/* Project ID */}
+//             <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Project ID *</Text>
+//             <TextInput
+//               value={projectId}
+//               onChangeText={setProjectId}
+//               placeholder="Project ID"
+//               placeholderTextColor="#BBB"
+//               style={{
+//                 backgroundColor: '#FFF',
+//                 borderRadius: 9,
+//                 borderWidth: 2,
+//                 borderColor: '#FACC15',
+//                 paddingVertical: 12,
+//                 paddingHorizontal: 16,
+//                 marginBottom: 16,
+//                 fontSize: 16,
+//                 color: '#222',
+//                 fontWeight: '500',
+//                 shadowColor: '#FACC15',
+//                 shadowOpacity: 0.08,
+//                 shadowRadius: 6,
+//                 shadowOffset: { width: 0, height: 2 },
+//                 elevation: 2,
+//               }}
+//             />
+
+//             {/* Purchase Date */}
+//             <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Purchase Date</Text>
+//             <TextInput
+//               value={purchaseDate}
+//               onChangeText={setPurchaseDate}
+//               placeholder="Purchase Date"
+//               placeholderTextColor="#BBB"
+//               style={{
+//                 backgroundColor: '#FFF',
+//                 borderRadius: 9,
+//                 borderWidth: 2,
+//                 borderColor: '#FACC15',
+//                 paddingVertical: 12,
+//                 paddingHorizontal: 16,
+//                 marginBottom: 32,
+//                 fontSize: 16,
+//                 color: '#222',
+//                 fontWeight: '500',
+//                 shadowColor: '#FACC15',
+//                 shadowOpacity: 0.08,
+//                 shadowRadius: 6,
+//                 shadowOffset: { width: 0, height: 2 },
+//                 elevation: 2,
+//               }}
+//             />
+
+//             <TouchableOpacity
+//               style={{
+//                 backgroundColor: '#FACC15',
+//                 paddingVertical: 18,
+//                 borderRadius: 9,
+//                 shadowColor: '#000',
+//                 shadowOpacity: 0.18,
+//                 shadowRadius: 8,
+//                 shadowOffset: { width: 0, height: 4 },
+//                 elevation: 3,
+//                 marginTop: 8,
+//               }}
+//               onPress={handleNext}
+//             >
+//               <Text style={{
+//                 color: "#111",
+//                 fontWeight: 'bold',
+//                 textAlign: 'center',
+//                 fontSize: 15,
+//                 letterSpacing: 0.5
+//               }}>
+//                 Next: Start Warranty Photo/Video Steps
+//               </Text>
+//             </TouchableOpacity>
+//           </ScrollView>
+//         </KeyboardAvoidingView>
+//       </View>
+//     </>
+//   );
+// }
+
 
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, BackHandler, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+// Minimal country data
+const COUNTRY_LIST = [
+  { code: "+212", flag: "🇲🇦", label: "Morocco" },
+  { code: "+971", flag: "🇦🇪", label: "UAE" },
+  { code: "+86",  flag: "🇨🇳", label: "China" },
+  { code: "+34",  flag: "🇪🇸", label: "Spain" },
+  { code: "+91",  flag: "🇮🇳", label: "India" },
+  { code: "+1",   flag: "🇺🇸", label: "USA" },
+  { code: "+44",  flag: "🇬🇧", label: "UK" },
+  { code: "+49",  flag: "🇩🇪", label: "Germany" },
+  { code: "+33",  flag: "🇫🇷", label: "France" },
+  { code: "+27",  flag: "🇿🇦", label: "South Africa" },
+  { code: "+61",  flag: "🇦🇺", label: "Australia" },
+];
+
+  // add/remove as needed
+
+function validateEmail(email: string) {
+  return /^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$/.test(email);
+}
 
 export default function WarrantyCustomerInfoPage() {
   // --- Get params for autofill ---
@@ -1231,6 +1631,7 @@ export default function WarrantyCustomerInfoPage() {
   const [clientId, setClientId] = useState('');
   const [clientName, setClientName] = useState('');
   const [companyName, setCompanyName] = useState('');
+  const [country, setCountry] = useState(COUNTRY_LIST[4]); // Default India
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [orderId, setOrderId] = useState('');
@@ -1238,6 +1639,8 @@ export default function WarrantyCustomerInfoPage() {
   const [kitNo, setKitNo] = useState('');
   const [projectId, setProjectId] = useState('');
   const [purchaseDate, setPurchaseDate] = useState('');
+
+  const [showCountrySelect, setShowCountrySelect] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -1260,865 +1663,294 @@ export default function WarrantyCustomerInfoPage() {
     if (params.purchase_date) setPurchaseDate(params.purchase_date);
   }, [params]);
 
+  // Phone: only allow 0-9, max 10 digits
+  const handlePhoneChange = (txt: string) => {
+    let num = txt.replace(/[^\d]/g, '');
+    if (num.length > 10) num = num.slice(0, 10);
+    setPhone(num);
+  };
+
+  // Email: basic live validation
+  const isEmailValid = email === '' || validateEmail(email);
+
   const handleNext = () => {
-    if (!clientId || !companyName || !clientName || !phone || !email || !orderId || !kitId || !kitNo || !projectId) {
+    if (
+      !clientId || !companyName || !clientName || !phone || !email ||
+      !orderId || !kitId || !kitNo || !projectId
+    ) {
       Alert.alert('Validation Error', 'Please fill out all required fields.');
+      return;
+    }
+    if (phone.length < 10) {
+      Alert.alert('Validation Error', 'Phone number must be exactly 10 digits.');
+      return;
+    }
+    if (!validateEmail(email)) {
+      Alert.alert('Validation Error', 'Please enter a valid email address.');
       return;
     }
     router.replace({
       pathname: '/(main)/warranty/claim-media-wizard',
       params: {
-        clientId, companyName, clientName, phone, email, orderId, kitId, kitNo, projectId, purchaseDate,
+        clientId, companyName, clientName, phone: country.code + phone, email,
+        orderId, kitId, kitNo, projectId, purchaseDate,
         stepIdx: 0,
       }
     });
   };
 
   return (
-    <>
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: '#000',
-        }}
+    <View style={{ flex: 1, backgroundColor: '#000' }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+        <ScrollView
+          contentContainerStyle={{ padding: 24, paddingBottom: 32 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <ScrollView
-            contentContainerStyle={{ padding: 24, paddingBottom: 32 }}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
-            {/* <Text style={{ color: '#FACC15', fontWeight: '700', fontSize: 24, textAlign: 'center', marginBottom: 30 }}>
-              Warranty Request Form
-            </Text> */}
+          {/* Header */}
+          {/* <Text style={{ color: '#FACC15', fontWeight: '700', fontSize: 24, textAlign: 'center', marginBottom: 30 }}>
+            Warranty Request Form
+          </Text> */}
 
-            {/* Client ID */}
-            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Client ID *</Text>
-            <TextInput
-              value={clientId}
-              onChangeText={setClientId}
-              placeholder="Client ID"
-              placeholderTextColor="#BBB"
+          {/* Client ID */}
+          <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Client ID *</Text>
+          <TextInput
+            value={clientId}
+            onChangeText={setClientId}
+            placeholder="Client ID"
+            placeholderTextColor="#BBB"
+            style={inputStyle}
+          />
+
+          {/* Client Company Name */}
+          <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Client Company Name *</Text>
+          <TextInput
+            value={companyName}
+            onChangeText={setCompanyName}
+            placeholder="Company Name"
+            placeholderTextColor="#BBB"
+            style={inputStyle}
+          />
+
+          {/* Contact Name */}
+          <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Contact Name *</Text>
+          <TextInput
+            value={clientName}
+            onChangeText={setClientName}
+            placeholder="Contact Name"
+            placeholderTextColor="#BBB"
+            style={inputStyle}
+          />
+
+          {/* Country/Flag picker and Phone */}
+          <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Contact Phone *</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+            <TouchableOpacity
+              activeOpacity={0.77}
+              onPress={() => setShowCountrySelect(true)}
               style={{
-                backgroundColor: '#FFF',
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: '#fff',
                 borderRadius: 9,
                 borderWidth: 2,
                 borderColor: '#FACC15',
-                paddingVertical: 12,
-                paddingHorizontal: 16,
-                marginBottom: 16,
-                fontSize: 16,
-                color: '#222',
-                fontWeight: '500',
+                paddingHorizontal: 10,
+                paddingVertical: 10,
+                marginRight: 7,
                 shadowColor: '#FACC15',
                 shadowOpacity: 0.08,
                 shadowRadius: 6,
                 shadowOffset: { width: 0, height: 2 },
                 elevation: 2,
+                minWidth: 68
               }}
-            />
-
-            {/* Client Company Name */}
-            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Client Company Name *</Text>
-            <TextInput
-              value={companyName}
-              onChangeText={setCompanyName}
-              placeholder="Company Name"
-              placeholderTextColor="#BBB"
-              style={{
-                backgroundColor: '#FFF',
-                borderRadius: 9,
-                borderWidth: 2,
-                borderColor: '#FACC15',
-                paddingVertical: 12,
-                paddingHorizontal: 16,
-                marginBottom: 16,
-                fontSize: 16,
-                color: '#222',
-                fontWeight: '500',
-                shadowColor: '#FACC15',
-                shadowOpacity: 0.08,
-                shadowRadius: 6,
-                shadowOffset: { width: 0, height: 2 },
-                elevation: 2,
-              }}
-            />
-
-            {/* Contact Name */}
-            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Contact Name *</Text>
-            <TextInput
-              value={clientName}
-              onChangeText={setClientName}
-              placeholder="Contact Name"
-              placeholderTextColor="#BBB"
-              style={{
-                backgroundColor: '#FFF',
-                borderRadius: 9,
-                borderWidth: 2,
-                borderColor: '#FACC15',
-                paddingVertical: 12,
-                paddingHorizontal: 16,
-                marginBottom: 16,
-                fontSize: 16,
-                color: '#222',
-                fontWeight: '500',
-                shadowColor: '#FACC15',
-                shadowOpacity: 0.08,
-                shadowRadius: 6,
-                shadowOffset: { width: 0, height: 2 },
-                elevation: 2,
-              }}
-            />
-
-            {/* Phone */}
-            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Contact Phone *</Text>
+            >
+              <Text style={{ fontSize: 21, marginRight: 6 }}>{country.flag}</Text>
+              <Text style={{ color: "#444", fontWeight: '700', fontSize: 15 }}>{country.code}</Text>
+            </TouchableOpacity>
             <TextInput
               value={phone}
-              onChangeText={setPhone}
+              onChangeText={handlePhoneChange}
               placeholder="Phone"
               placeholderTextColor="#BBB"
-              keyboardType="phone-pad"
-              style={{
-                backgroundColor: '#FFF',
-                borderRadius: 9,
-                borderWidth: 2,
-                borderColor: '#FACC15',
-                paddingVertical: 12,
-                paddingHorizontal: 16,
-                marginBottom: 16,
-                fontSize: 16,
-                color: '#222',
-                fontWeight: '500',
-                shadowColor: '#FACC15',
-                shadowOpacity: 0.08,
-                shadowRadius: 6,
-                shadowOffset: { width: 0, height: 2 },
-                elevation: 2,
-              }}
+              keyboardType="numeric"
+              style={[inputStyle, { flex: 1, marginBottom: 0, borderRadius: 9 }]}
+              maxLength={10}
             />
+          </View>
+          {phone.length > 0 && phone.length < 10 &&
+            <Text style={{ color: "tomato", fontSize: 13, marginBottom: 11, marginLeft: 3 }}>Enter 10 digits</Text>
+          }
 
-            {/* Email */}
-            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Email *</Text>
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Email"
-              placeholderTextColor="#BBB"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              style={{
-                backgroundColor: '#FFF',
-                borderRadius: 9,
-                borderWidth: 2,
-                borderColor: '#FACC15',
-                paddingVertical: 12,
-                paddingHorizontal: 16,
-                marginBottom: 16,
-                fontSize: 16,
-                color: '#222',
-                fontWeight: '500',
-                shadowColor: '#FACC15',
-                shadowOpacity: 0.08,
-                shadowRadius: 6,
-                shadowOffset: { width: 0, height: 2 },
-                elevation: 2,
-              }}
-            />
-
-            {/* Order ID */}
-            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Order ID *</Text>
-            <TextInput
-              value={orderId}
-              onChangeText={setOrderId}
-              placeholder="Order ID"
-              placeholderTextColor="#BBB"
-              style={{
-                backgroundColor: '#FFF',
-                borderRadius: 9,
-                borderWidth: 2,
-                borderColor: '#FACC15',
-                paddingVertical: 12,
-                paddingHorizontal: 16,
-                marginBottom: 16,
-                fontSize: 16,
-                color: '#222',
-                fontWeight: '500',
-                shadowColor: '#FACC15',
-                shadowOpacity: 0.08,
-                shadowRadius: 6,
-                shadowOffset: { width: 0, height: 2 },
-                elevation: 2,
-              }}
-            />
-
-            {/* Kit ID */}
-            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Kit ID *</Text>
-            <TextInput
-              value={kitId}
-              onChangeText={setKitId}
-              placeholder="Kit ID"
-              placeholderTextColor="#BBB"
-              style={{
-                backgroundColor: '#FFF',
-                borderRadius: 9,
-                borderWidth: 2,
-                borderColor: '#FACC15',
-                paddingVertical: 12,
-                paddingHorizontal: 16,
-                marginBottom: 16,
-                fontSize: 16,
-                color: '#222',
-                fontWeight: '500',
-                shadowColor: '#FACC15',
-                shadowOpacity: 0.08,
-                shadowRadius: 6,
-                shadowOffset: { width: 0, height: 2 },
-                elevation: 2,
-              }}
-            />
-
-            {/* Kit Number */}
-            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Kit Number *</Text>
-            <TextInput
-              value={kitNo}
-              onChangeText={setKitNo}
-              placeholder="Kit No"
-              placeholderTextColor="#BBB"
-              style={{
-                backgroundColor: '#FFF',
-                borderRadius: 9,
-                borderWidth: 2,
-                borderColor: '#FACC15',
-                paddingVertical: 12,
-                paddingHorizontal: 16,
-                marginBottom: 16,
-                fontSize: 16,
-                color: '#222',
-                fontWeight: '500',
-                shadowColor: '#FACC15',
-                shadowOpacity: 0.08,
-                shadowRadius: 6,
-                shadowOffset: { width: 0, height: 2 },
-                elevation: 2,
-              }}
-            />
-
-            {/* Project ID */}
-            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Project ID *</Text>
-            <TextInput
-              value={projectId}
-              onChangeText={setProjectId}
-              placeholder="Project ID"
-              placeholderTextColor="#BBB"
-              style={{
-                backgroundColor: '#FFF',
-                borderRadius: 9,
-                borderWidth: 2,
-                borderColor: '#FACC15',
-                paddingVertical: 12,
-                paddingHorizontal: 16,
-                marginBottom: 16,
-                fontSize: 16,
-                color: '#222',
-                fontWeight: '500',
-                shadowColor: '#FACC15',
-                shadowOpacity: 0.08,
-                shadowRadius: 6,
-                shadowOffset: { width: 0, height: 2 },
-                elevation: 2,
-              }}
-            />
-
-            {/* Purchase Date */}
-            <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Purchase Date</Text>
-            <TextInput
-              value={purchaseDate}
-              onChangeText={setPurchaseDate}
-              placeholder="Purchase Date"
-              placeholderTextColor="#BBB"
-              style={{
-                backgroundColor: '#FFF',
-                borderRadius: 9,
-                borderWidth: 2,
-                borderColor: '#FACC15',
-                paddingVertical: 12,
-                paddingHorizontal: 16,
-                marginBottom: 32,
-                fontSize: 16,
-                color: '#222',
-                fontWeight: '500',
-                shadowColor: '#FACC15',
-                shadowOpacity: 0.08,
-                shadowRadius: 6,
-                shadowOffset: { width: 0, height: 2 },
-                elevation: 2,
-              }}
-            />
-
-            <TouchableOpacity
-              style={{
-                backgroundColor: '#FACC15',
-                paddingVertical: 18,
-                borderRadius: 9,
-                shadowColor: '#000',
-                shadowOpacity: 0.18,
-                shadowRadius: 8,
-                shadowOffset: { width: 0, height: 4 },
-                elevation: 3,
-                marginTop: 8,
-              }}
-              onPress={handleNext}
-            >
-              <Text style={{
-                color: "#111",
-                fontWeight: 'bold',
-                textAlign: 'center',
-                fontSize: 15,
-                letterSpacing: 0.5
-              }}>
-                Next: Start Warranty Photo/Video Steps
+          {/* Country Selector Modal (simple in-list display) */}
+          {showCountrySelect && (
+            <View style={{
+              position: 'absolute',
+              top: 150,
+              left: 24,
+              right: 24,
+              backgroundColor: '#18181b',
+              borderRadius: 18,
+              borderColor: '#FACC15',
+              borderWidth: 2,
+              zIndex: 10,
+              elevation: 12,
+              paddingVertical: 12
+            }}>
+              <Text style={{ color: '#FACC15', fontWeight: 'bold', fontSize: 18, textAlign: 'center', marginBottom: 10 }}>
+                Select Country
               </Text>
-            </TouchableOpacity>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </View>
-    </>
+              {COUNTRY_LIST.map((cty) => (
+                <TouchableOpacity
+                  key={cty.code}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingVertical: 12,
+                    paddingHorizontal: 18,
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#222',
+                  }}
+                  onPress={() => {
+                    setCountry(cty);
+                    setShowCountrySelect(false);
+                  }}
+                >
+                  <Text style={{ fontSize: 20, marginRight: 10 }}>{cty.flag}</Text>
+                  <Text style={{ color: '#FFF', fontSize: 15, fontWeight: country.code === cty.code ? 'bold' : '600' }}>
+                    {cty.label} ({cty.code})
+                  </Text>
+                  {country.code === cty.code && (
+                    <Text style={{ marginLeft: 8, color: "#FACC15", fontSize: 16 }}>✓</Text>
+                  )}
+                </TouchableOpacity>
+              ))}
+              <TouchableOpacity
+                style={{ paddingVertical: 8, alignItems: 'center' }}
+                onPress={() => setShowCountrySelect(false)}
+              >
+                <Text style={{ color: "#BBB", fontWeight: '600', fontSize: 15 }}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Email */}
+          <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6, marginTop: 1 }}>Email *</Text>
+          <TextInput
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Email"
+            placeholderTextColor="#BBB"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            style={inputStyle}
+          />
+          {!isEmailValid &&
+            <Text style={{ color: "tomato", fontSize: 13, marginBottom: 11, marginLeft: 3 }}>
+              Please enter a valid email address.
+            </Text>
+          }
+
+          {/* Order ID */}
+          <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Order ID *</Text>
+          <TextInput
+            value={orderId}
+            onChangeText={setOrderId}
+            placeholder="Order ID"
+            placeholderTextColor="#BBB"
+            style={inputStyle}
+          />
+
+          {/* Kit ID */}
+          <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Kit ID *</Text>
+          <TextInput
+            value={kitId}
+            onChangeText={setKitId}
+            placeholder="Kit ID"
+            placeholderTextColor="#BBB"
+            style={inputStyle}
+          />
+
+          {/* Kit Number */}
+          <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Kit Number *</Text>
+          <TextInput
+            value={kitNo}
+            onChangeText={setKitNo}
+            placeholder="Kit No"
+            placeholderTextColor="#BBB"
+            style={inputStyle}
+          />
+
+          {/* Project ID */}
+          <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Project ID *</Text>
+          <TextInput
+            value={projectId}
+            onChangeText={setProjectId}
+            placeholder="Project ID"
+            placeholderTextColor="#BBB"
+            style={inputStyle}
+          />
+
+          {/* Purchase Date */}
+          <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Purchase Date</Text>
+          <TextInput
+            value={purchaseDate}
+            onChangeText={setPurchaseDate}
+            placeholder="Purchase Date"
+            placeholderTextColor="#BBB"
+            style={[inputStyle, { marginBottom: 32 }]}
+          />
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#FACC15',
+              paddingVertical: 18,
+              borderRadius: 9,
+              shadowColor: '#000',
+              shadowOpacity: 0.18,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 4 },
+              elevation: 3,
+              marginTop: 8,
+            }}
+            onPress={handleNext}
+          >
+            <Text style={{
+              color: "#111",
+              fontWeight: 'bold',
+              textAlign: 'center',
+              fontSize: 15,
+              letterSpacing: 0.5
+            }}>
+              Next: Start Warranty Photo/Video Steps
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
-
-// import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-// import React, { useEffect, useState } from 'react';
-// import { Alert, BackHandler, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-// import { FloatingLabelInput } from 'react-native-floating-label-input';
-
-// export default function WarrantyCustomerInfoPage() {
-//   // --- Get params for autofill ---
-//   const params = useLocalSearchParams<{
-//     client_id?: string;
-//     company_name?: string;
-//     // phone?: string;
-//     // email?: string;
-//     order_id?: string;
-//     kit_id?: string;
-//     kit_no?: string;
-//     project_id?: string;
-//     purchase_date?: string;
-//   }>();
-
-//   const [clientId, setClientId] = useState('');
-//   const [clientName, setClientName] = useState('');
-//   const [companyName, setCompanyName] = useState('');
-//   const [phone, setPhone] = useState('');
-//   const [email, setEmail] = useState('');
-//   const [orderId, setOrderId] = useState('');
-//   const [kitId, setKitId] = useState('');
-//   const [kitNo, setKitNo] = useState('');
-//   const [projectId, setProjectId] = useState('');
-//   const [purchaseDate, setPurchaseDate] = useState('');
-
-//   useFocusEffect(
-//     React.useCallback(() => {
-//       const onBackPress = () => {
-//         router.replace('/(main)/dashboard');
-//         return true;
-//       };
-//       const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-//       return () => subscription.remove();
-//     }, [])
-//   );
-
-//   useEffect(() => {
-//     if (params.client_id) setClientId(params.client_id);
-//     if (params.company_name) setCompanyName(params.company_name);
-//     if (params.order_id) setOrderId(params.order_id);
-//     if (params.kit_id) setKitId(params.kit_id);
-//     if (params.kit_no) setKitNo(params.kit_no);
-//     if (params.project_id) setProjectId(params.project_id);
-//     if (params.purchase_date) setPurchaseDate(params.purchase_date);
-//   }, [params]);
-
-//   // Helper for editable status
-//   const isFieldFromParams = (key: keyof typeof params) => params[key] !== undefined;
-
-//   const handleNext = () => {
-//     if (!clientId || !companyName || !clientName || !phone || !email || !orderId || !kitId || !kitNo || !projectId) {
-//       Alert.alert('Validation Error', 'Please fill out all required fields.');
-//       return;
-//     }
-//     router.replace({
-//       pathname: '/(main)/warranty/claim-media-wizard',
-//       params: {
-//         clientId, clientName, phone, email, orderId, kitId, kitNo, projectId, purchaseDate,
-//         stepIdx: 0,
-//       }
-//     });
-//   };
-
-//   return (
-//     <View style={{ flex: 1, backgroundColor: '#000' }}>
-//       <KeyboardAvoidingView
-//         behavior={Platform.OS === "ios" ? "padding" : "height"}
-//         style={{ flex: 1 }}
-//         keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
-//       >
-//         <ScrollView
-//           contentContainerStyle={{ padding: 24, paddingBottom: 32 }}
-//           keyboardShouldPersistTaps="handled"
-//           showsVerticalScrollIndicator={false}
-//         >
-//           <Text style={{ fontSize: 24, fontWeight: 'bold', color: "#facc15", textAlign: 'center', marginBottom: 32 }}>
-//             Warranty Request Form
-//           </Text>
-
-//           <FloatingLabelInput
-//             containerStyles={{ backgroundColor: 'white', borderRadius: 6,height: 56, marginBottom: 16, paddingHorizontal: 4 }}
-//             label="Client ID *"
-//             value={clientId}
-//             editable={!isFieldFromParams("client_id")}
-//             onChangeText={setClientId}
-//             // customLabelStyles={{ colorFocused: "#facc15", colorBlurred: "#facc15", fontWeight: "bold" }}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }} // <-- font styling here
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "#facc15"
-//               // fontSizeFocused/fontSizeBlurred can be added if you wish
-//             }}
-//             inputStyles={{ color: "#000" }}
-//           // labelStyles={{ fontWeight: 'bold'}}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={{ backgroundColor: 'white', borderRadius: 12, marginBottom: 16, paddingHorizontal: 4 }}
-//             label="Client Company Name *"
-//             value={companyName}
-//             editable={!isFieldFromParams("company_name")}
-//             onChangeText={setCompanyName}
-//             // customLabelStyles={{ colorFocused: "#facc15", colorBlurred: "#facc15", fontWeight: "bold" }}
-//             inputStyles={{ color: "#000" }}
-//             // labelStyles={{ fontWeight: 'bold' }}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }} // <-- font styling here
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "#facc15"
-//               // fontSizeFocused/fontSizeBlurred can be added if you wish
-//             }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={{ backgroundColor: 'white', borderRadius: 12, marginBottom: 16, paddingHorizontal: 4 }}
-//             label="Contact Name *"
-//             value={clientName}
-//             onChangeText={setClientName}
-//             inputStyles={{ color: "#000" }}
-//             // customLabelStyles={{ colorFocused: "#facc15", colorBlurred: "#facc15", fontWeight: "bold" }}
-//             // labelStyles={{ fontWeight: 'bold' }}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }} // <-- font styling here
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "#facc15"
-//               // fontSizeFocused/fontSizeBlurred can be added if you wish
-//             }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={{ backgroundColor: 'white', borderRadius: 12, marginBottom: 16, paddingHorizontal: 4 }}
-//             label="Contact Phone *"
-//             value={phone}
-//             onChangeText={setPhone}
-//             keyboardType="phone-pad"
-//             inputStyles={{ color: "#000" }}
-//             // customLabelStyles={{ colorFocused: "#facc15", colorBlurred: "#facc15", fontWeight: "bold" }}
-//             // labelStyles={{ fontWeight: 'bold' }}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }} // <-- font styling here
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "#facc15"
-//               // fontSizeFocused/fontSizeBlurred can be added if you wish
-//             }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={{ backgroundColor: 'white', borderRadius: 12, marginBottom: 16, paddingHorizontal: 4 }}
-//             label="Email *"
-//             value={email}
-//             onChangeText={setEmail}
-//             keyboardType="email-address"
-//             inputStyles={{ color: "#000" }}
-//             // customLabelStyles={{ colorFocused: "#facc15", colorBlurred: "#facc15", fontWeight: "bold" }}
-//             // labelStyles={{ fontWeight: 'bold' }}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }} // <-- font styling here
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "#facc15"
-//               // fontSizeFocused/fontSizeBlurred can be added if you wish
-//             }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={{ backgroundColor: 'white', borderRadius: 12, marginBottom: 16, paddingHorizontal: 4 }}
-//             label="Order ID *"
-//             value={orderId}
-//             editable={!isFieldFromParams("order_id")}
-//             onChangeText={setOrderId}
-//             inputStyles={{ color: "#000" }}
-//             // customLabelStyles={{ colorFocused: "#facc15", colorBlurred: "#facc15", fontWeight: "bold" }}
-//             // labelStyles={{ fontWeight: 'bold' }}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }} // <-- font styling here
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "#facc15"
-//               // fontSizeFocused/fontSizeBlurred can be added if you wish
-//             }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={{ backgroundColor: 'white', borderRadius: 12, marginBottom: 16, paddingHorizontal: 4 }}
-//             label="Kit ID *"
-//             value={kitId}
-//             editable={!isFieldFromParams("kit_id")}
-//             onChangeText={setKitId}
-//             inputStyles={{ color: "#000" }}
-//             // customLabelStyles={{ colorFocused: "#facc15", colorBlurred: "#facc15", fontWeight: "bold" }}
-//             // labelStyles={{ fontWeight: 'bold' }}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }} // <-- font styling here
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "#facc15"
-//               // fontSizeFocused/fontSizeBlurred can be added if you wish
-//             }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={{ backgroundColor: 'white', borderRadius: 12, marginBottom: 16, paddingHorizontal: 4 }}
-//             label="Kit Number *"
-//             value={kitNo}
-//             editable={!isFieldFromParams("kit_no")}
-//             onChangeText={setKitNo}
-//             inputStyles={{ color: "#000" }}
-//             // customLabelStyles={{ colorFocused: "#facc15", colorBlurred: "#facc15", fontWeight: "bold" }}
-//             // labelStyles={{ fontWeight: 'bold' }}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }} // <-- font styling here
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "#facc15"
-//               // fontSizeFocused/fontSizeBlurred can be added if you wish
-//             }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={{ backgroundColor: 'white', borderRadius: 12, marginBottom: 16, paddingHorizontal: 4 }}
-//             label="Project ID *"
-//             value={projectId}
-//             editable={!isFieldFromParams("project_id")}
-//             onChangeText={setProjectId}
-//             inputStyles={{ color: "#000" }}
-//             // customLabelStyles={{ colorFocused: "#facc15", colorBlurred: "#facc15", fontWeight: "bold" }}
-//             // labelStyles={{ fontWeight: 'bold' }}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }} // <-- font styling here
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "#facc15"
-//               // fontSizeFocused/fontSizeBlurred can be added if you wish
-//             }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={{ backgroundColor: 'white', borderRadius: 12, marginBottom: 24, paddingHorizontal: 4 }}
-//             label="Purchase Date"
-//             value={purchaseDate}
-//             editable={!isFieldFromParams("purchase_date")}
-//             onChangeText={setPurchaseDate}
-//             inputStyles={{ color: "#000" }}
-//             // customLabelStyles={{ colorFocused: "#facc15", colorBlurred: "#facc15", fontWeight: "bold" }}
-//             // labelStyles={{ fontWeight: 'bold' }}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }} // <-- font styling here
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "#facc15"
-//               // fontSizeFocused/fontSizeBlurred can be added if you wish
-//             }}
-//           />
-
-//           <TouchableOpacity
-//             style={{
-//               backgroundColor: "#facc15",
-//               paddingVertical: 18,
-//               borderRadius: 14,
-//               marginTop: 6,
-//               marginBottom: 24,
-//             }}
-//             onPress={handleNext}
-//           >
-//             <Text style={{ color: "#000", fontWeight: "bold", fontSize: 18, textAlign: "center" }}>
-//               Next: Start Warranty Photo/Video Steps
-//             </Text>
-//           </TouchableOpacity>
-//         </ScrollView>
-//       </KeyboardAvoidingView>
-//     </View>
-//   );
-// }
-
-
-// import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-// import React, { useEffect, useState } from 'react';
-// import { Alert, BackHandler, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-// import { FloatingLabelInput } from 'react-native-floating-label-input';
-
-// export default function WarrantyCustomerInfoPage() {
-//   // --- Get params for autofill ---
-//   const params = useLocalSearchParams<{
-//     client_id?: string;
-//     company_name?: string;
-//     order_id?: string;
-//     kit_id?: string;
-//     kit_no?: string;
-//     project_id?: string;
-//     purchase_date?: string;
-//   }>();
-
-//   const [clientId, setClientId] = useState('');
-//   const [clientName, setClientName] = useState('');
-//   const [companyName, setCompanyName] = useState('');
-//   const [phone, setPhone] = useState('');
-//   const [email, setEmail] = useState('');
-//   const [orderId, setOrderId] = useState('');
-//   const [kitId, setKitId] = useState('');
-//   const [kitNo, setKitNo] = useState('');
-//   const [projectId, setProjectId] = useState('');
-//   const [purchaseDate, setPurchaseDate] = useState('');
-
-//   useFocusEffect(
-//     React.useCallback(() => {
-//       const onBackPress = () => {
-//         router.replace('/(main)/dashboard');
-//         return true;
-//       };
-//       const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-//       return () => subscription.remove();
-//     }, [])
-//   );
-
-//   useEffect(() => {
-//     if (params.client_id) setClientId(params.client_id);
-//     if (params.company_name) setCompanyName(params.company_name);
-//     if (params.order_id) setOrderId(params.order_id);
-//     if (params.kit_id) setKitId(params.kit_id);
-//     if (params.kit_no) setKitNo(params.kit_no);
-//     if (params.project_id) setProjectId(params.project_id);
-//     if (params.purchase_date) setPurchaseDate(params.purchase_date);
-//   }, [params]);
-
-//   // Helper for editable status
-//   const isFieldFromParams = (key: keyof typeof params) => params[key] !== undefined;
-
-//   const inputCommonStyle = {
-//     backgroundColor: 'white',
-//     borderRadius: 6,
-//     marginBottom: 16,
-//     paddingHorizontal: 8,
-//     height: 56,
-//     paddingTop: 16,
-//     // justifyContent: "center"
-//   };
-
-//   const handleNext = () => {
-//     if (!clientId || !companyName || !clientName || !phone || !email || !orderId || !kitId || !kitNo || !projectId) {
-//       Alert.alert('Validation Error', 'Please fill out all required fields.');
-//       return;
-//     }
-//     router.replace({
-//       pathname: '/(main)/warranty/claim-media-wizard',
-//       params: {
-//         clientId, clientName, phone, email, orderId, kitId, kitNo, projectId, purchaseDate,
-//         stepIdx: 0,
-//       }
-//     });
-//   };
-
-//   return (
-//     <View style={{ flex: 1, backgroundColor: '#000' }}>
-//       <KeyboardAvoidingView
-//         behavior={Platform.OS === "ios" ? "padding" : "height"}
-//         style={{ flex: 1 }}
-//         keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
-//       >
-//         <ScrollView
-//           contentContainerStyle={{ padding: 24, paddingBottom: 32 }}
-//           keyboardShouldPersistTaps="handled"
-//           showsVerticalScrollIndicator={false}
-//         >
-//           <Text style={{ fontSize: 24, fontWeight: 'bold', color: "#facc15", textAlign: 'center', marginBottom: 32 }}>
-//             Warranty Request Form
-//           </Text>
-
-//           <FloatingLabelInput
-//             containerStyles={inputCommonStyle}
-//             label="Client ID *"
-//             value={clientId}
-//             editable={!isFieldFromParams("client_id")}
-//             onChangeText={setClientId}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }}
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "rgba(250, 204, 21, 0.45)", // faded yellow
-//               fontSizeFocused: 13,
-//               fontSizeBlurred: 15
-//             }}
-//             inputStyles={{
-//               color: "#000",
-//               fontSize: 16,
-//               paddingVertical: 8
-//             }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={inputCommonStyle}
-//             label="Client Company Name *"
-//             value={companyName}
-//             editable={!isFieldFromParams("company_name")}
-//             onChangeText={setCompanyName}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }}
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "rgba(250, 204, 21, 0.45)",
-//               fontSizeFocused: 13,
-//               fontSizeBlurred: 15
-//             }}
-//             inputStyles={{ color: "#000", fontSize: 16, paddingVertical: 8 }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={inputCommonStyle}
-//             label="Contact Name *"
-//             value={clientName}
-//             onChangeText={setClientName}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }}
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "rgba(250, 204, 21, 0.45)",
-//               fontSizeFocused: 13,
-//               fontSizeBlurred: 15
-//             }}
-//             inputStyles={{ color: "#000", fontSize: 16, paddingVertical: 8 }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={inputCommonStyle}
-//             label="Contact Phone *"
-//             value={phone}
-//             onChangeText={setPhone}
-//             keyboardType="phone-pad"
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }}
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "rgba(250, 204, 21, 0.45)",
-//               fontSizeFocused: 13,
-//               fontSizeBlurred: 15
-//             }}
-//             inputStyles={{ color: "#000", fontSize: 16, paddingVertical: 8 }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={inputCommonStyle}
-//             label="Email *"
-//             value={email}
-//             onChangeText={setEmail}
-//             keyboardType="email-address"
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }}
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "rgba(250, 204, 21, 0.45)",
-//               fontSizeFocused: 13,
-//               fontSizeBlurred: 15
-//             }}
-//             inputStyles={{ color: "#000", fontSize: 16, paddingVertical: 8 }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={inputCommonStyle}
-//             label="Order ID *"
-//             value={orderId}
-//             editable={!isFieldFromParams("order_id")}
-//             onChangeText={setOrderId}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }}
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "rgba(250, 204, 21, 0.45)",
-//               fontSizeFocused: 13,
-//               fontSizeBlurred: 15
-//             }}
-//             inputStyles={{ color: "#000", fontSize: 16, paddingVertical: 8 }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={inputCommonStyle}
-//             label="Kit ID *"
-//             value={kitId}
-//             editable={!isFieldFromParams("kit_id")}
-//             onChangeText={setKitId}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }}
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "rgba(250, 204, 21, 0.45)",
-//               fontSizeFocused: 13,
-//               fontSizeBlurred: 15
-//             }}
-//             inputStyles={{ color: "#000", fontSize: 16, paddingVertical: 8 }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={inputCommonStyle}
-//             label="Kit Number *"
-//             value={kitNo}
-//             editable={!isFieldFromParams("kit_no")}
-//             onChangeText={setKitNo}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }}
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "rgba(250, 204, 21, 0.45)",
-//               fontSizeFocused: 13,
-//               fontSizeBlurred: 15
-//             }}
-//             inputStyles={{ color: "#000", fontSize: 16, paddingVertical: 8 }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={inputCommonStyle}
-//             label="Project ID *"
-//             value={projectId}
-//             editable={!isFieldFromParams("project_id")}
-//             onChangeText={setProjectId}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }}
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "rgba(250, 204, 21, 0.45)",
-//               fontSizeFocused: 13,
-//               fontSizeBlurred: 15
-//             }}
-//             inputStyles={{ color: "#000", fontSize: 16, paddingVertical: 8 }}
-//           />
-//           <FloatingLabelInput
-//             containerStyles={{ ...inputCommonStyle, marginBottom: 24 }}
-//             label="Purchase Date"
-//             value={purchaseDate}
-//             editable={!isFieldFromParams("purchase_date")}
-//             onChangeText={setPurchaseDate}
-//             labelStyles={{ fontWeight: 'bold', fontSize: 15 }}
-//             customLabelStyles={{
-//               colorFocused: "#facc15",
-//               colorBlurred: "rgba(250, 204, 21, 0.45)",
-//               fontSizeFocused: 13,
-//               fontSizeBlurred: 15
-//             }}
-//             inputStyles={{ color: "#000", fontSize: 16, paddingVertical: 8 }}
-//           />
-
-//           <TouchableOpacity
-//             style={{
-//               backgroundColor: "#facc15",
-//               paddingVertical: 18,
-//               borderRadius: 14,
-//               marginTop: 6,
-//               marginBottom: 24,
-//             }}
-//             onPress={handleNext}
-//           >
-//             <Text style={{ color: "#000", fontWeight: "bold", fontSize: 18, textAlign: "center" }}>
-//               Next: Start Warranty Photo/Video Steps
-//             </Text>
-//           </TouchableOpacity>
-//         </ScrollView>
-//       </KeyboardAvoidingView>
-//     </View>
-//   );
-// }
-
+// Input style reused
+const inputStyle = {
+  backgroundColor: '#FFF',
+  borderRadius: 9,
+  borderWidth: 2,
+  borderColor: '#FACC15',
+  paddingVertical: 12,
+  paddingHorizontal: 16,
+  marginBottom: 16,
+  fontSize: 16,
+  color: '#222',
+  fontWeight: '600' as const,
+  shadowColor: '#FACC15',
+  shadowOpacity: 0.08,
+  shadowRadius: 6,
+  shadowOffset: { width: 0, height: 2 },
+  elevation: 2,
+};

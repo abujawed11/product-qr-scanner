@@ -8,7 +8,7 @@
 //   return (
 //     <View className="flex-1 bg-yellow-100 items-center justify-center px-4">
 //       <Text className="text-2xl font-bold text-yellow-600 mb-2">Welcome!</Text>
-      
+
 //       {user ? (
 //         <>
 //           <Text className="text-lg text-gray-800 mb-4">
@@ -77,13 +77,6 @@ export default function DashboardTabs() {
           focus: () => navigation.setOptions({ title: 'My Scans' }),
         }}
       />
-      {/* <Tab.Screen
-        name="Assign Tasks"
-        component={AssignTaskScreen}
-        listeners={{
-          focus: () => navigation.setOptions({ title: 'Assigned Tasks' }),
-        }}
-      /> */}
     </Tab.Navigator>
   );
 }

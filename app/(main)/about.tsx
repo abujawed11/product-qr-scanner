@@ -1,62 +1,249 @@
-
-import React from 'react';
-import { ScrollView, Text } from 'react-native';
+import React, { useState } from 'react';
+import {
+  LayoutAnimation,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  UIManager,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+type SectionProps = {
+  title: string;
+  emoji: string;
+  children: React.ReactNode;
+  expanded: boolean;
+  onToggle: () => void;
+};
+
+const ACCENT = "#FAD90E";
+const BG = "#0B0B0E";
+const FG = "#fff";
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+const Section: React.FC<SectionProps> = ({
+  title,
+  emoji,
+  children,
+  expanded,
+  onToggle,
+}) => (
+  <View style={styles.sectionOuter}>
+    <TouchableOpacity
+      onPress={() => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        onToggle();
+      }}
+      style={[
+        styles.sectionTitleRow,
+        expanded && { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }
+      ]}
+      activeOpacity={0.8}
+    >
+      <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, minHeight: 27 }}>
+        <Text style={styles.sectionEmoji}>{emoji}</Text>
+        <Text
+          style={styles.sectionTitle}
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
+          {title}
+        </Text>
+      </View>
+      <Text style={[styles.dropIcon, expanded && { color: ACCENT }]}>{expanded ? "▲" : "▼"}</Text>
+    </TouchableOpacity>
+    {expanded && (
+      <View style={styles.sectionContent}>
+        {children}
+      </View>
+    )}
+  </View>
+);
+
 const AboutScreen = () => {
+  const [openSection, setOpenSection] = useState<number | null>(null);
+
+  const sections: {
+    title: string;
+    emoji: string;
+    content: React.ReactNode;
+  }[] = [
+    {
+      title: 'About Sun-Rack Warranty Portal',
+      emoji: '🔆',
+      content: (
+        <Text style={styles.contentText}>
+          The <Text style={styles.bold}>Sun-Rack Warranty Portal</Text> is a streamlined digital platform designed for Sun-Rack Technologies clients to manage and secure the warranty of their solar module mounting solutions with maximum ease and transparency.
+        </Text>
+      )
+    },
+    {
+      title: 'What We Offer',
+      emoji: '✨',
+      content: (
+        <View>
+          <Text style={styles.bullet}><Text style={styles.bold}>Seamless QR Experience</Text>: Simply scan the QR code provided with your Sun-Rack Technologies product to initiate a warranty request in seconds.</Text>
+          <Text style={styles.bullet}><Text style={styles.bold}>Digital Warranty Card</Text>: Upon successful verification, your official warranty card is issued digitally: secure, paperless, and instantly accessible.</Text>
+          <Text style={styles.bullet}><Text style={styles.bold}>24/7 Accessibility</Text>: Register and track your warranty status anytime, anywhere, without the hassle of paperwork or waiting periods.</Text>
+          <Text style={styles.bullet}><Text style={styles.bold}>Customer-Focused Support</Text>: Dedicated support ensures your warranty queries and requests receive prompt attention.</Text>
+        </View>
+      ),
+    },
+    {
+      title: 'Why Use the Sun-Rack Warranty Portal?',
+      emoji: '❓',
+      content: (
+        <View>
+          <Text style={styles.bullet}><Text style={styles.bold}>Easy Registration</Text>: Quick process designed for all users, streamlining the warranty claim and tracking experience.</Text>
+          <Text style={styles.bullet}><Text style={styles.bold}>Convenience</Text>: Manage your solar structure warranties digitally, ensuring that all records are stored safely and are always just a click away.</Text>
+          <Text style={styles.bullet}><Text style={styles.bold}>Transparency & Trust</Text>: Get clear terms, confirmation, and details of your warranty, building long-term trust with every Sun-Rack product.</Text>
+        </View>
+      ),
+    },
+    {
+      title: 'About Sun-Rack Technologies',
+      emoji: '🏢',
+      content: (
+        <View>
+          <Text style={[styles.contentText, { marginBottom: 6 }]}>
+            Founded in 2018, <Text style={styles.bold}>Sun-Rack Technologies</Text> is recognized as one of India’s leading manufacturers of solar module mounting structures. With a commitment to quality, innovation, and sustainability, Sun-Rack delivers:
+          </Text>
+          <View style={{ paddingLeft: 8 }}>
+            <Text style={styles.bulletDash}>Easy-to-install structures</Text>
+            <Text style={styles.bulletDash}>Designs suited for varied roof and ground conditions (including metal, RCC, and carport solutions)</Text>
+            <Text style={styles.bulletDash}>Premium-grade aluminum (T6-6063) components</Text>
+            <Text style={styles.bulletDash}>Wind-resilient engineering for up to 200kmph</Text>
+          </View>
+        </View>
+      ),
+    },
+    {
+      title: 'Our Vision',
+      emoji: '🌅',
+      content: (
+        <Text style={styles.contentText}>
+          With the <Text style={styles.bold}>Sun-Rack Warranty Portal</Text>, we aim to enhance the ownership experience, ensuring that every investment in clean energy with Sun-Rack is anchored in security, convenience, and trust.
+        </Text>
+      ),
+    },
+    {
+      title: 'In a Nutshell',
+      emoji: '🔎',
+      content: (
+        <Text style={styles.contentText}>
+          This About section captures the digital innovation, customer advantages, and the reputable background of Sun-Rack Technologies, tailored for use on your new warranty portal.
+        </Text>
+      ),
+    },
+  ];
+
   return (
-    <SafeAreaView className="flex-1 bg-white dark:bg-neutral-900">
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
-        {/* Title */}
-        <Text className="text-2xl font-bold text-black dark:text-white mb-4">🚀 About Sun-Rack Task Management App</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-6">
-          An all-in-one productivity platform built to simplify task management and improve team collaboration across departments and roles.
+    <SafeAreaView style={{ flex: 1, backgroundColor: BG }}>
+      <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 40 }}>
+        <Text style={styles.mainTitle}>
+          🛡️ <Text style={{ color: ACCENT }}>About Sun-Rack Warranty Portal</Text>
         </Text>
-
-        {/* Section: Secure Role-Based Access */}
-        <Text className="text-xl font-semibold text-black dark:text-white mb-2">🔐 Secure Role-Based Access</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-1">👤 User & Admin Roles: Admins get full visibility, while users see only their created and assigned tasks.</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-4">📝 Seamless registration and login with hashed password security.</Text>
-
-        {/* Section: Smart Task Creation */}
-        <Text className="text-xl font-semibold text-black dark:text-white mb-2">🧠 Smart Task Creation</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-1">🗂️ Add title, description, priority, and due date</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-1">📎 Attach files and 🎤 voice notes for detailed communication</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-4">👥 Assign tasks to team members in seconds</Text>
-
-        {/* Section: Real-Time Notifications */}
-        <Text className="text-xl font-semibold text-black dark:text-white mb-2">🔔 Real-Time Notifications</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-1">📲 Instant push & in-app alerts for task assignments and updates</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-4">🔄 Keeps assignees and assigners always in sync</Text>
-
-        {/* Section: Two-Way Task Collaboration */}
-        <Text className="text-xl font-semibold text-black dark:text-white mb-2">🔄 Two-Way Task Collaboration</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-1">🔄 Update task status: Pending, In Progress, or Completed</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-1">🗣️ Send voice replies for updates, clarifications, or delays</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-4">📊 Adjust task priority as needs evolve</Text>
-
-        {/* Section: Dashboard Overview */}
-        <Text className="text-xl font-semibold text-black dark:text-white mb-2">📊 Dashboard Overview</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-1">📌 View tasks by category: Active, Pending, Completed, Snoozed</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-1">📁 My Tasks and Assigned Tasks sections for organized tracking</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-4">🔍 Powerful filter & sort options for better task visibility</Text>
-
-        {/* Section: Export to Excel */}
-        <Text className="text-xl font-semibold text-black dark:text-white mb-2">📤 Export to Excel</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-1">📄 Download all task data in Excel format</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-4">✅ Useful for offline access, reporting, and project summaries</Text>
-
-        {/* Section: Built For Professionals */}
-        <Text className="text-xl font-semibold text-black dark:text-white mb-2">👨‍💻 Built For Professionals</Text>
-        <Text className="text-base text-gray-700 dark:text-gray-300 mb-1">🧑‍💼 Perfect for developers, designers, marketers, analysts, HR, QA, and more</Text>
-
-        {/* Outro */}
-        <Text className="text-base text-gray-700 dark:text-gray-300 mt-6">
-          With <Text className="font-semibold text-black dark:text-white">Sun-Rack Task</Text>, productivity meets clarity. Stay organized, communicate clearly, and manage work effortlessly—no matter your role.
-        </Text>
+        {sections.map((section, idx) => (
+          <Section
+            key={section.title}
+            title={section.title}
+            emoji={section.emoji}
+            expanded={openSection === idx}
+            onToggle={() => setOpenSection(openSection === idx ? null : idx)}
+          >
+            {section.content}
+          </Section>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  mainTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: "#fff",
+    marginBottom: 20,
+    letterSpacing: 0.5,
+  },
+  sectionOuter: {
+    marginBottom: 20,
+    borderRadius: 14,
+    backgroundColor: "#18181b",
+    borderColor: ACCENT,
+    borderWidth: 1.2,
+    overflow: 'hidden',
+    shadowColor: "#FAD90E",
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    backgroundColor: "#18181b",
+    borderTopLeftRadius: 14,
+    borderTopRightRadius: 14,
+  },
+  sectionEmoji: {
+    fontSize: 22,
+    marginRight: 10,
+  },
+  sectionTitle: {
+    color: ACCENT,
+    fontWeight: 'bold',
+    fontSize: 18,
+    letterSpacing: 0.2,
+    flexShrink: 1,
+    flexWrap: 'wrap',
+  },
+  dropIcon: {
+    fontSize: 18,
+    color: "#fff",
+    marginLeft: 12,
+  },
+  sectionContent: {
+    backgroundColor: "#191919",
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderBottomLeftRadius: 14,
+    borderBottomRightRadius: 14,
+  },
+  contentText: {
+    color: FG,
+    fontSize: 16,
+    lineHeight: 23,
+    marginBottom: 2,
+  },
+  bold: {
+    fontWeight: 'bold',
+    color: ACCENT,
+  },
+  bullet: {
+    color: FG,
+    fontSize: 16,
+    lineHeight: 23,
+    marginBottom: 6,
+    marginLeft: 0,
+  },
+  bulletDash: {
+    color: FG,
+    fontSize: 16,
+    marginBottom: 3,
+    marginLeft: 10,
+  },
+});
 
 export default AboutScreen;
