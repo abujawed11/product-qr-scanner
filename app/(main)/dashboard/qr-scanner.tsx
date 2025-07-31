@@ -649,68 +649,16 @@ const QRScanner = () => {
         }, 900); // Wait 700ms for user to center QR
     };
 
-    const processScannedData = async (result: BarcodeScanningResult) => {
-        try {
-            const parsed = JSON.parse(result.data);
-            const { kit_id, prod_unit, warehouse, project_id, kit_no, date } = parsed;
-
-            if (!kit_id || !prod_unit || !warehouse || !project_id || !kit_no || !date) {
-                throw new Error('Missing required fields in QR code.');
-            }
-
-            // console.log(`Scanned QR Data: ${JSON.stringify(parsed)}`);
-
-            // Send to backend
-            const res = await api.post('/save-order/', {
-                kit_id,
-                prod_unit,
-                warehouse,
-                project_id,
-                kit_no,
-                date
-            });
-
-            const { scan_id } = res.data;
-
-            if (!scan_id) {
-                throw new Error('Scan ID not returned from server.');
-            }
-
-            // triggerRefresh();
-            // Invalidate React Query caches for the my-scans page
-            queryClient.invalidateQueries({ queryKey: ["myScans_savedOrders"] });
-            queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
-
-            // Navigate to kit-details page with scan_id
-            router.push({
-                pathname: '/(main)/kit-details',
-                params: { scan_id }
-            });
-
-        } catch (err) {
-            console.error(err);
-            let errorMessage = 'Invalid QR code or server error.';
-            if (axios.isAxiosError(err) && err.response?.data?.error) {
-                errorMessage = err.response.data.error;
-            }
-            Alert.alert('Error', errorMessage);
-            setScanned(false);
-        }
-    };
-
-    // const handleBarcodeScanned = async (result: BarcodeScanningResult) => {
-    //     if (scanned) return;
-    //     setScanned(true);
-
+    // const processScannedData = async (result: BarcodeScanningResult) => {
     //     try {
     //         const parsed = JSON.parse(result.data);
-    //         const { kit_id, prod_unit, warehouse, project_id, kit_no, date } = parsed;
+    //         const { kit_id, prod_unit, warehouse, project_id, date } = parsed;
 
-    //         if (!kit_id || !prod_unit || !warehouse || !project_id || !kit_no || !date) {
+    //         if (!kit_id || !prod_unit || !warehouse || !project_id || !date) {
     //             throw new Error('Missing required fields in QR code.');
     //         }
 
-    //         console.log(`Scanned QR Data: ${JSON.stringify(parsed)}`);
+    //         // console.log(`Scanned QR Data: ${JSON.stringify(parsed)}`);
 
     //         // Send to backend
     //         const res = await api.post('/save-order/', {
@@ -718,7 +666,6 @@ const QRScanner = () => {
     //             prod_unit,
     //             warehouse,
     //             project_id,
-    //             kit_no,
     //             date
     //         });
 
@@ -727,7 +674,12 @@ const QRScanner = () => {
     //         if (!scan_id) {
     //             throw new Error('Scan ID not returned from server.');
     //         }
-    //         triggerRefresh();
+
+    //         // triggerRefresh();
+    //         // Invalidate React Query caches for the my-scans page
+    //         queryClient.invalidateQueries({ queryKey: ["myScans_savedOrders"] });
+    //         queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
+
     //         // Navigate to kit-details page with scan_id
     //         router.push({
     //             pathname: '/(main)/kit-details',
@@ -744,6 +696,70 @@ const QRScanner = () => {
     //         setScanned(false);
     //     }
     // };
+
+    const processScannedData = async (result: BarcodeScanningResult) => {
+        try {
+            const parsed = JSON.parse(result.data);
+            const { kit_id, prod_unit, warehouse, project_id, date } = parsed;
+
+            if (!kit_id || !prod_unit || !warehouse || !project_id || !date) {
+                throw new Error('Missing required fields in QR code.');
+            }
+
+            // Send to backend
+            const res = await api.post('/save-order/', {
+                kit_id,
+                prod_unit,
+                warehouse,
+                project_id,
+                date
+            });
+
+            // --- Handle both authorized and unauthorized responses ---
+            if (res.data.scan_id) {
+                // Scan authorized and saved
+                // Invalidate React Query caches for the my-scans page
+                queryClient.invalidateQueries({ queryKey: ["myScans_savedOrders"] });
+                queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
+
+                // Navigate to kit-details page with scan_id
+                router.push({
+                    pathname: '/(main)/kit-details',
+                    params: { scan_id: res.data.scan_id }
+                });
+            } else if (res.data.kit_id) {
+                console.log("unauthorized",res.data.kit_id)
+                const kit_id = res.data.kit_id
+                // Not authorized to save scan, but show details for viewing only
+                // Alert.alert(
+                //     'Info',
+                //     res.data.error || "You are not authorized to scan kits for this project."
+                // );
+                // Optionally, show the kit/project data to the user with a view details component
+                // e.g., showModalWithKitDetails(res.data.details);
+                // Or navigate to a readonly kit-details screen:
+                router.push({
+                    pathname: '/(main)/kit-details',
+                    params: {kit_id: kit_id}
+                        // ...res.data.details, // spread the kit details
+                        // kit_data: JSON.stringify(res.data.details.kit), // ✅ stringify
+                        // readonly: true // optionally pass a flag
+                    // }
+                });
+            } else {
+                throw new Error('Unexpected server response.');
+            }
+
+        } catch (err) {
+            console.error(err);
+            let errorMessage = 'Invalid QR code or server error.';
+            if (axios.isAxiosError(err) && err.response?.data?.error) {
+                errorMessage = err.response.data.error;
+            }
+            Alert.alert('Error', errorMessage);
+            setScanned(false);
+        }
+    };
 
 
 
@@ -800,26 +816,7 @@ const QRScanner = () => {
                 params: { scan_id }
             });
 
-            // if (!customerId || !orderId || !locationId) {
-            //   throw new Error('Missing required fields');
-            // }
 
-            // console.log(`Uploaded data: ${JSON.stringify({ clientId, orderId, locationId })}`);
-
-            // Try saving
-            // const saveRes = await api.post('/save-order/', {
-            //     customerId,
-            //     orderId,
-            //     locationId,
-            // });
-
-            // const { message } = saveRes.data;
-
-            // if (message === 'Order already scanned and saved' || saveRes.status === 200 || saveRes.status === 201) {
-            // router.push({
-            //     pathname: '/(main)/order-details',
-            //     params: { clientId, orderId },
-            // });
         }
 
         catch (err) {
@@ -835,65 +832,6 @@ const QRScanner = () => {
             setScanned(false);
         }
     };
-
-    //   const handleUploadQR = async () => {
-    //     try {
-    //       const result = await DocumentPicker.getDocumentAsync({
-    //         type: 'image/*', // Allow image files only
-    //         copyToCacheDirectory: true,
-    //       });
-
-    //       if (result.canceled) {
-    //         return;
-    //       }
-
-    //       const { uri, mimeType } = result.assets[0];
-
-    //       if (!mimeType?.startsWith('image/')) {
-    //         Alert.alert('Error', 'Please select an image file.');
-    //         return;
-    //       }
-
-    //       // Here, you would typically use a library like 'expo-barcode-scanner' or send the image to your backend
-    //       // For simplicity, we'll assume the backend can process the image and return QR data
-    //       const formData = new FormData();
-    //       formData.append('file', {
-    //         uri,
-    //         name: uri.split('/').pop() || 'qr_image.jpg',
-    //         type: mimeType,
-    //       } as any);
-
-    //       const response = await api.post('/upload-qr/', formData, {
-    //         headers: { 'Content-Type': 'multipart/form-data' },
-    //       });
-
-    //       const { customerId, orderId, locationId } = response.data;
-    //       console.log(response.data);
-
-    //       if (!customerId || !orderId || !locationId) {
-    //         throw new Error('Missing required fields');
-    //       }
-
-    //       console.log(`Uploaded data: ${JSON.stringify({ customerId, orderId, locationId })}`);
-
-    //       // ✅ Call backend API to save uploaded order (if not already handled by /upload-qr/)
-    //       await api.post('/save-order/', {
-    //         customerId,
-    //         orderId,
-    //         locationId,
-    //       });
-
-    //       // ✅ Navigate to details page
-    //       router.push({
-    //         pathname: '/(main)/order-details',
-    //         params: { customerId, orderId },
-    //       });
-
-    //     } catch (error) {
-    //       console.error(error);
-    //       Alert.alert('Error', 'Failed to upload or process QR code.');
-    //     }
-    //   };
 
     if (!permission?.granted) {
         return (
