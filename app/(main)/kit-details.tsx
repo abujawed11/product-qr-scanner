@@ -1002,12 +1002,16 @@ interface WarrantyClaim {
 }
 
 export default function KitDetailsScreen() {
-  const { scan_id, kit_id } = useLocalSearchParams();
+  // const { scan_id, kit_id } = useLocalSearchParams();
+  const { scan_id, kit_id, all_scanned, total_kits } = useLocalSearchParams();
   const { user } = useAuth();
   const { refreshKey } = useRefresh();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState('');
+
+
+  const allScanned = all_scanned === "true";
 
   useFocusEffect(
     React.useCallback(() => {
@@ -1027,6 +1031,7 @@ export default function KitDetailsScreen() {
         if (scan_id) {
           const res = await api.get(`/kit-scan-details/${scan_id}/`);
           setData(res.data);
+          console.log(res.data)
         } else if (kit_id) {
           const res = await api.get(`/kit/${kit_id}/`);
           setData({ kit: res.data, kit_id: kit_id });
@@ -1145,7 +1150,10 @@ export default function KitDetailsScreen() {
           <View className="rounded-xl p-5 mb-5" style={{ backgroundColor: COLORS.fieldBg }}>
             {[
               { icon: 'shield-checkmark', label: 'Kit ID', value: kitId },
-              { icon: 'settings-outline', label: 'Kit No', value: kit_no },
+              allScanned
+                ? { icon: 'settings-outline', label: 'Total Kits', value: total_kits }
+                : { icon: 'settings-outline', label: 'Kit No', value: kit_no },
+              // { icon: 'settings-outline', label: 'Kit No', value: kit_no },
               { icon: 'business', label: 'Production Unit', value: mapCodeToCity(prod_unit) },
               { icon: 'cube-outline', label: 'Warehouse', value: mapCodeToCity(warehouse) },
               { icon: 'briefcase-outline', label: 'Project ID', value: project_id },
@@ -1226,6 +1234,21 @@ export default function KitDetailsScreen() {
           ))}
         </View>
 
+        {allScanned && (
+          <View style={{
+            marginBottom: 16,
+            padding: 12,
+            backgroundColor: '#FFF8E1',
+            borderColor: '#FFD700',
+            borderWidth: 1.5,
+            borderRadius: 10,
+          }}>
+            <Text style={{ color: '#b28900', fontWeight: 'bold', fontSize: 16, textAlign: 'center' }}>
+              All kits ({total_kits}) already scanned under this project.
+            </Text>
+          </View>
+        )}
+
         {isClaimed && (
           <View className="mb-4 px-2 py-3 rounded-xl bg-yellow-100 border border-yellow-400">
             <Text className="text-yellow-700 text-base font-semibold text-center">
@@ -1233,9 +1256,11 @@ export default function KitDetailsScreen() {
             </Text>
           </View>
         )}
+
+
       </ScrollView>
 
-      {scan_id && project_id && isClientMatch(project_id) && (
+      {scan_id && project_id && isClientMatch(project_id) && !allScanned && (
         <View className="left-0 right-0 py-9 border-t border-gray-700 items-center" style={{ backgroundColor: COLORS.text }}>
           {isClaimed ? (
             <TouchableOpacity

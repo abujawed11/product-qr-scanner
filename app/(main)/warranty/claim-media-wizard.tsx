@@ -4119,7 +4119,7 @@ import api from "@/utils/api";
 import { getLocationWithPermission } from "@/utils/locationUtils";
 import { useMutation, useQueryClient } from "@tanstack/react-query"; // --- IMPORTANT
 import { AxiosError, AxiosProgressEvent } from "axios";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, BackHandler } from "react-native";
 
@@ -4219,30 +4219,61 @@ export default function ClaimMediaWizard() {
         // eslint-disable-next-line
     }, []);
 
-    useEffect(() => {
-        const backAction = () => {
-            if (stepIdx === 0) {
-                Alert.alert(
-                    "Cancel Warranty Claim?",
-                    "Are you sure you want to cancel the warranty claim and go back to dashboard?",
-                    [
-                        { text: "Cancel", style: "cancel" },
-                        {
-                            text: "Leave",
-                            style: "destructive",
-                            onPress: handleCancel,
-                        },
-                    ]
-                );
-                return true;
-            } else {
-                setStepIdx(i => i - 1);
-                return true;
-            }
-        };
-        const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
-        return () => backHandler.remove();
-    }, [stepIdx]);
+    // useEffect(() => {
+    //     const backAction = () => {
+    //         if (stepIdx === 0) {
+    //             Alert.alert(
+    //                 "Cancel Warranty Claim?",
+    //                 "Are you sure you want to cancel the warranty claim and go back to dashboard?",
+    //                 [
+    //                     { text: "Cancel", style: "cancel" },
+    //                     {
+    //                         text: "Leave",
+    //                         style: "destructive",
+    //                         onPress: handleCancel,
+    //                     },
+    //                 ]
+    //             );
+    //             return true;
+    //         } else {
+    //             setStepIdx(i => i - 1);
+    //             return true;
+    //         }
+    //     };
+    //     const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+    //     return () => backHandler.remove();
+    // }, [stepIdx]);
+
+    // inside your component:
+    useFocusEffect(
+        React.useCallback(() => {
+            const backAction = () => {
+                if (stepIdx === 0) {
+                    Alert.alert(
+                        "Cancel Warranty Claim?",
+                        "Are you sure you want to cancel the warranty claim and go back to dashboard?",
+                        [
+                            { text: "Cancel", style: "cancel" },
+                            {
+                                text: "Leave",
+                                style: "destructive",
+                                onPress: handleCancel,
+                            },
+                        ]
+                    );
+                    return true;
+                } else {
+                    setStepIdx(i => i - 1);
+                    return true;
+                }
+            };
+            const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+            return () => {
+                backHandler.remove();
+            };
+        }, [stepIdx])
+    );
 
     useEffect(() => {
         if (stepIdx === reviewStepIdx && !hasRequestedLocation) {

@@ -697,6 +697,71 @@ const QRScanner = () => {
     //     }
     // };
 
+    // const processScannedData = async (result: BarcodeScanningResult) => {
+    //     try {
+    //         const parsed = JSON.parse(result.data);
+    //         const { kit_id, prod_unit, warehouse, project_id, date } = parsed;
+
+    //         if (!kit_id || !prod_unit || !warehouse || !project_id || !date) {
+    //             throw new Error('Missing required fields in QR code.');
+    //         }
+
+    //         // Send to backend
+    //         const res = await api.post('/save-order/', {
+    //             kit_id,
+    //             prod_unit,
+    //             warehouse,
+    //             project_id,
+    //             date
+    //         });
+
+    //         // --- Handle both authorized and unauthorized responses ---
+    //         if (res.data.scan_id) {
+    //             // Scan authorized and saved
+    //             // Invalidate React Query caches for the my-scans page
+    //             queryClient.invalidateQueries({ queryKey: ["myScans_savedOrders"] });
+    //             queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
+
+    //             // Navigate to kit-details page with scan_id
+    //             router.push({
+    //                 pathname: '/(main)/kit-details',
+    //                 params: { scan_id: res.data.scan_id }
+    //             });
+    //         } else if (res.data.kit_id) {
+    //             console.log("unauthorized",res.data.kit_id)
+    //             const kit_id = res.data.kit_id
+    //             // Not authorized to save scan, but show details for viewing only
+    //             // Alert.alert(
+    //             //     'Info',
+    //             //     res.data.error || "You are not authorized to scan kits for this project."
+    //             // );
+    //             // Optionally, show the kit/project data to the user with a view details component
+    //             // e.g., showModalWithKitDetails(res.data.details);
+    //             // Or navigate to a readonly kit-details screen:
+    //             router.push({
+    //                 pathname: '/(main)/kit-details',
+    //                 params: {kit_id: kit_id}
+    //                     // ...res.data.details, // spread the kit details
+    //                     // kit_data: JSON.stringify(res.data.details.kit), // ✅ stringify
+    //                     // readonly: true // optionally pass a flag
+    //                 // }
+    //             });
+    //         } else {
+    //             throw new Error('Unexpected server response.');
+    //         }
+
+    //     } catch (err) {
+    //         console.error(err);
+    //         let errorMessage = 'Invalid QR code or server error.';
+    //         if (axios.isAxiosError(err) && err.response?.data?.error) {
+    //             errorMessage = err.response.data.error;
+    //         }
+    //         Alert.alert('Error', errorMessage);
+    //         setScanned(false);
+    //     }
+    // };
+
+
     const processScannedData = async (result: BarcodeScanningResult) => {
         try {
             const parsed = JSON.parse(result.data);
@@ -706,7 +771,6 @@ const QRScanner = () => {
                 throw new Error('Missing required fields in QR code.');
             }
 
-            // Send to backend
             const res = await api.post('/save-order/', {
                 kit_id,
                 prod_unit,
@@ -715,41 +779,37 @@ const QRScanner = () => {
                 date
             });
 
-            // --- Handle both authorized and unauthorized responses ---
-            if (res.data.scan_id) {
-                // Scan authorized and saved
-                // Invalidate React Query caches for the my-scans page
+            // Normal scan
+            if (res.data.scan_id && !res.data.all_scanned) {
                 queryClient.invalidateQueries({ queryKey: ["myScans_savedOrders"] });
                 queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
 
-                // Navigate to kit-details page with scan_id
                 router.push({
                     pathname: '/(main)/kit-details',
-                    params: { scan_id: res.data.scan_id }
+                    params: { scan_id: res.data.scan_id,all_scanned: "false" }
                 });
-            } else if (res.data.kit_id) {
-                console.log("unauthorized",res.data.kit_id)
-                const kit_id = res.data.kit_id
-                // Not authorized to save scan, but show details for viewing only
-                // Alert.alert(
-                //     'Info',
-                //     res.data.error || "You are not authorized to scan kits for this project."
-                // );
-                // Optionally, show the kit/project data to the user with a view details component
-                // e.g., showModalWithKitDetails(res.data.details);
-                // Or navigate to a readonly kit-details screen:
+            }
+            // All scanned case: route to kit-details, but with all_scanned info
+            else if (res.data.scan_id && res.data.all_scanned) {
                 router.push({
                     pathname: '/(main)/kit-details',
-                    params: {kit_id: kit_id}
-                        // ...res.data.details, // spread the kit details
-                        // kit_data: JSON.stringify(res.data.details.kit), // ✅ stringify
-                        // readonly: true // optionally pass a flag
-                    // }
+                    params: {
+                        scan_id: res.data.scan_id,
+                        all_scanned: "true",
+                        total_kits: res.data.total_kits || "" // for display
+                    }
                 });
-            } else {
+            }
+            // Handle unauthorized as before
+            else if (res.data.kit_id) {
+                router.push({
+                    pathname: '/(main)/kit-details',
+                    params: { kit_id: res.data.kit_id }
+                });
+            }
+            else {
                 throw new Error('Unexpected server response.');
             }
-
         } catch (err) {
             console.error(err);
             let errorMessage = 'Invalid QR code or server error.';
@@ -760,6 +820,7 @@ const QRScanner = () => {
             setScanned(false);
         }
     };
+
 
 
 

@@ -44,24 +44,26 @@
 import { WarrantyCard } from "@/components/WarrantyCard";
 import api from "@/utils/api";
 import { useQuery } from "@tanstack/react-query";
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import React from "react";
-import { BackHandler, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 export default function WarrantyCardDetailScreen() {
-  useFocusEffect(
-    React.useCallback(() => {
-      const onBackPress = () => {
-        router.replace("/(main)/warranty");
-        return true;
-      };
-      const subscription = BackHandler.addEventListener(
-        "hardwareBackPress",
-        onBackPress
-      );
-      return () => subscription.remove();
-    }, [])
-  );
+
+  
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const onBackPress = () => {
+  //       router.replace("/(main)/warranty");
+  //       return true;
+  //     };
+  //     const subscription = BackHandler.addEventListener(
+  //       "hardwareBackPress",
+  //       onBackPress
+  //     );
+  //     return () => subscription.remove();
+  //   }, [])
+  // );
 
   const { war_req_id } = useLocalSearchParams();
 
