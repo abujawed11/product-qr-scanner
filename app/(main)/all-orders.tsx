@@ -322,15 +322,15 @@ export default function AllOrdersScreen() {
                                 <Text className="text-black text-xs font-semibold text-center">View Details</Text>
                             </TouchableOpacity>
                         </View>
-                        <Text className="text-gray-600 text-sm">👤 Client: {order.client_id}</Text>
+                        <Text className="text-gray-600 text-sm">👤 Client ID: {order.client_id}</Text>
                         <Text className="text-gray-600 text-sm">
                             🗓️ Ordered: {order.order_date ? new Date(order.order_date).toDateString() : '-'}
                         </Text>
-                        {order.expected_delivery_date && (
+                        {/* {order.expected_delivery_date && (
                             <Text className="text-gray-600 text-sm">
                                 🚚 Expected: {new Date(order.expected_delivery_date).toDateString()}
                             </Text>
-                        )}
+                        )} */}
                         {order.delivery_date && (
                             <Text className="text-gray-600 text-sm">
                                 ✅ Delivered: {new Date(order.delivery_date).toDateString()}
@@ -349,9 +349,9 @@ export default function AllOrdersScreen() {
               🚚 Dispatch From: {order.dispatch_location}
             </Text> */}
 
-                        <Text className="text-sm mt-2 font-bold text-blue-700">
+                        {/* <Text className="text-sm mt-2 font-bold text-blue-700">
                             📌 Status: {order.status.toUpperCase()}
-                        </Text>
+                        </Text> */}
 
                         <Text className="text-black text-sm mt-2">
                             🔢 Unique Kits: {order.kit_count}
@@ -365,46 +365,46 @@ export default function AllOrdersScreen() {
                                 ⚙️ Production Status: {order.production_status}
                             </Text>
                         )}
-                        {order.dispatch_status && (
+                        {/* {order.dispatch_status && (
                             <Text className="text-gray-700 text-sm">
                                 🚚 Dispatch Status: {order.dispatch_status}
                             </Text>
-                        )}
-                        {order.delivery_status && (
+                        )} */}
+                        {/* {order.delivery_status && (
                             <Text className="text-gray-700 text-sm">
                                 📦 Delivery Status: {order.delivery_status}
                             </Text>
-                        )}
+                        )} */}
 
-                        {order.payment_received && (
+                        {/* {order.payment_received && (
                             <Text className="text-gray-700 text-sm">
                                 💰 Payment: {order.payment_received}
                             </Text>
-                        )}
+                        )} */}
                         {order.payment_percentage && (
                             <Text className="text-gray-700 text-sm">
                                 💵 Payment %: {order.payment_percentage}
                             </Text>
                         )}
 
-                        {order.delivery_address && (
+                        {/* {order.delivery_address && (
                             <Text className="text-gray-700 text-xs mt-1">
                                 🏠 Delivery Address: {order.delivery_address}
                             </Text>
-                        )}
-                        {order.billing_address && (
+                        )} */}
+                        {/* {order.billing_address && (
                             <Text className="text-gray-700 text-xs">
                                 🏠 Billing Address: {order.billing_address}
                             </Text>
-                        )}
-                        {order.partial_delivery_allowed && (
+                        )} */}
+                        {/* {order.partial_delivery_allowed && (
                             <Text className="text-gray-700 text-xs">
                                 🪫 Partial Delivery Allowed: {order.partial_delivery_allowed}
                             </Text>
-                        )}
-                        {order.remarks && (
+                        )} */}
+                        {/* {order.remarks && (
                             <Text className="text-gray-600 text-sm">📝 Remarks: {order.remarks}</Text>
-                        )}
+                        )} */}
                     </View>
                 ))
             )}

@@ -1231,7 +1231,7 @@
 //         );
 //         return true;
 //       };
-  
+
 //       const subscription = BackHandler.addEventListener(
 //         "hardwareBackPress",
 //         onBackPress
@@ -1567,9 +1567,13 @@ const MyScansScreen: React.FC = () => {
                           }
                           className="flex-row items-center justify-between px-3 py-1"
                         >
-                          <Text className="text-black font-medium text-base">
+                          {/* <Text className="text-black font-medium text-base">
                             🧩 Kit ID: {kitId}
+                          </Text> */}
+                          <Text className="text-black text-base font-extrabold">
+                            🧩 <Text className="font-extrabold">KIT ID:</Text> <Text className="font-extrabold">{kitId}</Text>
                           </Text>
+
                           <Text className="text-yellow-600 font-bold text-xl">
                             {expandedKit[kitKey] ? '−' : '+'}
                           </Text>

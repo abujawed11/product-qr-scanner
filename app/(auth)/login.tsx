@@ -248,7 +248,7 @@ export default function LoginScreen() {
                         Login
                     </Text>
 
-                    <FloatingInput label="Email" value={username} setValue={setUsername} />
+                    <FloatingInput label="Username" value={username} setValue={setUsername} />
                     <FloatingInput label="Password" value={password} setValue={setPassword} secureTextEntry />
 
                     <TouchableOpacity

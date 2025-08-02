@@ -1472,7 +1472,7 @@ export default function ReviewClaimFullDetailsScreen() {
         {/* Device Location Section */}
         <View className="flex-row items-center mb-2">
           <Feather name="map-pin" size={18} color="green" />
-          <Text className="ml-2 text-base font-semibold text-gray-700">Client Location</Text>
+          <Text className="ml-2 text-base font-semibold text-gray-700">Installation Location</Text>
         </View>
         <DeviceLocationCard />
 
