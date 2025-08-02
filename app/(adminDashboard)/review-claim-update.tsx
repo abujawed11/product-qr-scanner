@@ -1368,7 +1368,8 @@ import {
 } from "react-native";
 import { ActivityIndicator, Button, Text, TextInput } from "react-native-paper";
 
-type Status = "pending" | "under_review" | "approved" | "rejected" | "cancelled" | "";
+// type Status = "pending" | "under_review" | "approved" | "rejected" | "cancelled" | "";
+type Status = "under_review" | "approved" | "rejected";
 
 type WarrantyCardDetail = {
   warranty_type: string;
@@ -1408,12 +1409,12 @@ type UpdateClaimPayload = {
 };
 
 const STATUS_DISPLAY: Record<Status, { label: string; color: string }> = {
-  pending: { label: "Pending", color: "#facc15" },
+  // pending: { label: "Pending", color: "#facc15" },
   under_review: { label: "Under Review", color: "#fde047" },
   approved: { label: "Approved", color: "#22c55e" },
   rejected: { label: "Rejected", color: "#ef4444" },
-  cancelled: { label: "Cancelled", color: "#374151" },
-  "": { label: "", color: "#000" }
+  // cancelled: { label: "Cancelled", color: "#374151" },
+  // "": { label: "", color: "#000" }
 };
 const WARRANTY_TYPE_CHOICES = [
   { label: "Full", value: "full" },
@@ -1507,8 +1508,8 @@ export default function ReviewClaimUpdateScreen() {
   );
 
   // --- State for form --- //
-  const [status, setStatus] = useState<Status>("");
-  const [originalStatus, setOriginalStatus] = useState<Status>("");
+  const [status, setStatus] = useState<Status>("under_review");
+  const [originalStatus, setOriginalStatus] = useState<Status>("under_review");
 
   const [comment, setComment] = useState(""); // Always blank
 

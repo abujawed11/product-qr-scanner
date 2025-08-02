@@ -22,7 +22,7 @@ const typeDisplay = (type: string) =>
     type === "full"
         ? "Full Coverage"
         : type === "partial"
-            ? "Partial Coverage"
+            ? "Full Coverage*"
             : type.charAt(0).toUpperCase() + type.slice(1);
 
 function getWarrantyStatus(card: WarrantyCardProps): { label: string; color: string } {
@@ -70,10 +70,10 @@ export const WarrantyCard: FC<{ card: WarrantyCardProps }> = ({ card }) => {
 
                     >{card.certificate_no}</Text>
                 </View>
-                <View className="flex-row items-center">
+                {/* <View className="flex-row items-center">
                     <Text className="text-sm text-black font-medium">Card ID:</Text>
                     <Text className="ml-2 text-black">{card.war_card_id}</Text>
-                </View>
+                </View> */}
                 <View className="flex-row items-center gap-4 mt-1">
                     <Text className="text-sm text-black font-medium">Type:</Text>
                     <Text className="ml-1 px-2 py-0.5 text-xs bg-black text-yellow-300 rounded font-bold">

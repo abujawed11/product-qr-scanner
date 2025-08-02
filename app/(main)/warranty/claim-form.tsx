@@ -1599,18 +1599,18 @@ import { Alert, BackHandler, KeyboardAvoidingView, Platform, ScrollView, Text, T
 const COUNTRY_LIST = [
   { code: "+212", flag: "🇲🇦", label: "Morocco" },
   { code: "+971", flag: "🇦🇪", label: "UAE" },
-  { code: "+86",  flag: "🇨🇳", label: "China" },
-  { code: "+34",  flag: "🇪🇸", label: "Spain" },
-  { code: "+91",  flag: "🇮🇳", label: "India" },
-  { code: "+1",   flag: "🇺🇸", label: "USA" },
-  { code: "+44",  flag: "🇬🇧", label: "UK" },
-  { code: "+49",  flag: "🇩🇪", label: "Germany" },
-  { code: "+33",  flag: "🇫🇷", label: "France" },
-  { code: "+27",  flag: "🇿🇦", label: "South Africa" },
-  { code: "+61",  flag: "🇦🇺", label: "Australia" },
+  { code: "+86", flag: "🇨🇳", label: "China" },
+  { code: "+34", flag: "🇪🇸", label: "Spain" },
+  { code: "+91", flag: "🇮🇳", label: "India" },
+  { code: "+1", flag: "🇺🇸", label: "USA" },
+  { code: "+44", flag: "🇬🇧", label: "UK" },
+  { code: "+49", flag: "🇩🇪", label: "Germany" },
+  { code: "+33", flag: "🇫🇷", label: "France" },
+  { code: "+27", flag: "🇿🇦", label: "South Africa" },
+  { code: "+61", flag: "🇦🇺", label: "Australia" },
 ];
 
-  // add/remove as needed
+// add/remove as needed
 
 function validateEmail(email: string) {
   return /^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$/.test(email);
@@ -1641,6 +1641,11 @@ export default function WarrantyCustomerInfoPage() {
   const [purchaseDate, setPurchaseDate] = useState('');
 
   const [showCountrySelect, setShowCountrySelect] = useState(false);
+
+
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [phoneTouched, setPhoneTouched] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -1674,6 +1679,7 @@ export default function WarrantyCustomerInfoPage() {
   const isEmailValid = email === '' || validateEmail(email);
 
   const handleNext = () => {
+    setSubmitAttempted(true);
     if (
       !clientId || !companyName || !clientName || !phone || !email ||
       !orderId || !kitId || !kitNo || !projectId
@@ -1776,6 +1782,7 @@ export default function WarrantyCustomerInfoPage() {
             <TextInput
               value={phone}
               onChangeText={handlePhoneChange}
+              onBlur={() => setPhoneTouched(true)}     // <-- Add this line here
               placeholder="Phone"
               placeholderTextColor="#BBB"
               keyboardType="numeric"
@@ -1783,7 +1790,7 @@ export default function WarrantyCustomerInfoPage() {
               maxLength={10}
             />
           </View>
-          {phone.length > 0 && phone.length < 10 &&
+          {(phone.length > 0 && phone.length < 10 && (phoneTouched || submitAttempted)) &&
             <Text style={{ color: "tomato", fontSize: 13, marginBottom: 11, marginLeft: 3 }}>Enter 10 digits</Text>
           }
 
@@ -1849,22 +1856,23 @@ export default function WarrantyCustomerInfoPage() {
             keyboardType="email-address"
             autoCapitalize="none"
             style={inputStyle}
+            onBlur={() => setEmailTouched(true)}
           />
-          {!isEmailValid &&
+          {(!isEmailValid && (emailTouched || submitAttempted)) &&
             <Text style={{ color: "tomato", fontSize: 13, marginBottom: 11, marginLeft: 3 }}>
               Please enter a valid email address.
             </Text>
           }
 
           {/* Order ID */}
-          <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Order ID *</Text>
+          {/* <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Order ID *</Text>
           <TextInput
             value={orderId}
             onChangeText={setOrderId}
             placeholder="Order ID"
             placeholderTextColor="#BBB"
             style={inputStyle}
-          />
+          /> */}
 
           {/* Kit ID */}
           <Text style={{ color: '#FACC15', fontWeight: '600', marginBottom: 6 }}>Kit ID *</Text>

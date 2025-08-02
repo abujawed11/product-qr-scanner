@@ -635,7 +635,7 @@ const HomeScreen = () => {
       {/* Header */}
       <Text className="text-white text-2xl font-extrabold mb-1">Hi, {user?.username}</Text>
       <Text className="text-white text-2xl font-extrabold mb-1">
-        Welcome to Sunrack Warranty App !!
+        Welcome to Sunrack Warranty App
       </Text>
       <Text className="text-yellow-400 text-sm font-medium">
         Client ID: {user?.client_id}

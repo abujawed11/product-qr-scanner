@@ -1014,7 +1014,7 @@
 //             //     alert("No images to export");
 //             //   }
 //             // }}
-            
+
 //             className="bg-yellow-400 px-4 py-3 rounded-lg flex-row items-center justify-center mt-4"
 //           >
 //             <Feather name="download" size={18} color="#000" />
@@ -1286,7 +1286,7 @@ export default function ReviewClaimFullDetailsScreen() {
       const res = await api.get(`/warranty-claims/${war_req_id}/`);
       // console.log("Data fetched for claim:", res.data);
       return res.data;
-      
+
     },
     enabled: !!war_req_id,
   });
@@ -1418,38 +1418,42 @@ export default function ReviewClaimFullDetailsScreen() {
         {/* Info Card */}
         <View className="bg-white rounded-xl shadow-md border border-gray-200 px-4 py-5 mb-6">
           <Text className="text-lg font-extrabold mb-1">Request ID#{data.war_req_id}</Text>
+
           <Text className="mb-1">
             Status:
             <Text
-              className={`ml-2 px-2 py-1 text-white rounded-full text-xs font-bold ${
-                data.status === "Approved"
-                  ? "bg-green-600"
-                  : data.status === "Rejected"
+              className={`ml-2 px-2 py-1 text-white rounded-full text-xs font-bold ${data.status === "Approved"
+                ? "bg-green-600"
+                : data.status === "Rejected"
                   ? "bg-red-600"
                   : "bg-blue-600"
-              }`}
+                }`}
             >
               {data.status}
             </Text>
           </Text>
           <Text>
-            Company: <Text className="font-bold">{data.company_name}</Text>
+            Project ID: <Text className="font-bold">{data.project_id}</Text>
           </Text>
           <Text>
             Client ID: <Text className="font-bold">{data.client_id}</Text>
           </Text>
           <Text>
-            Order ID: <Text className="font-bold">{data.order_id}</Text>
+            Company: <Text className="font-bold">{data.company_name}</Text>
           </Text>
+
+          {/* <Text>
+            Order ID: <Text className="font-bold">{data.order_id}</Text>
+          </Text> */}
           <Text>
             Kit ID: <Text className="font-bold">{data.kit_id}</Text>
           </Text>
           <Text>
             Kit #: <Text className="font-bold">{data.kit_number}</Text>
           </Text>
-          <Text>
+          {/* <Text>
             Project ID: <Text className="font-bold">{data.project_id}</Text>
-          </Text>
+          </Text> */}
           <Text>
             Purchase Date:{" "}
             <Text className="font-bold">
@@ -1488,15 +1492,13 @@ export default function ReviewClaimFullDetailsScreen() {
               return (
                 <View
                   key={item.key}
-                  className={`flex-row justify-between items-center px-3 py-2 border-b border-gray-100 ${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  }`}
+                  className={`flex-row justify-between items-center px-3 py-2 border-b border-gray-100 ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    }`}
                 >
                   <Text className="flex-1 text-[15px] pr-2">{item.question}</Text>
                   <Text
-                    className={`w-6 text-right font-bold text-lg ${
-                      isChecked ? "text-green-700" : "text-red-600"
-                    }`}
+                    className={`w-6 text-right font-bold text-lg ${isChecked ? "text-green-700" : "text-red-600"
+                      }`}
                   >
                     {isChecked ? "✓" : "✗"}
                   </Text>
@@ -1520,9 +1522,8 @@ export default function ReviewClaimFullDetailsScreen() {
                 <View className="flex-row items-center mb-1">
                   <Text className="font-bold text-lg">{step.title}</Text>
                   <Text
-                    className={`ml-2 font-bold ${
-                      uploads.length > 0 ? "text-green-600" : "text-red-600"
-                    }`}
+                    className={`ml-2 font-bold ${uploads.length > 0 ? "text-green-600" : "text-red-600"
+                      }`}
                   >
                     {uploads.length > 0 ? "✓ Done" : "✗ Missing"}
                   </Text>

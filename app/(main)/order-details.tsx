@@ -1383,7 +1383,8 @@ export default function OrderDetailsScreen() {
                   marginTop: 2,
                   fontWeight: "600",
                 }}>
-                  {group.kit.configuration}
+                  {/* {group.kit.configuration} */}
+                  Quantity: {group.totalQuantity}
                 </Text>
               </View>
               <View style={{

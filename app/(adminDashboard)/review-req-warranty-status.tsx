@@ -296,13 +296,13 @@ export default function ReviewReqWarrantyList() {
                 <MaterialIcons name="confirmation-number" size={18} color="#0f172a" />
                 <Text className="ml-2 text-lg font-extrabold">Request ID #{req.war_req_id}</Text>
               </View>
-
+              <Text className="mb-0.5">Project ID: <Text className="font-bold">{req.project_id}</Text></Text>
               <Text className="mb-0.5">Client ID: <Text className="font-bold">{req.client_id}</Text></Text>
               <Text className="mb-0.5">Company: <Text className="font-bold">{req.company_name}</Text></Text>
-              <Text className="mb-0.5">Order ID: <Text className="font-bold">{req.order?.order_id}</Text></Text>
+              {/* <Text className="mb-0.5">Order ID: <Text className="font-bold">{req.order?.order_id}</Text></Text> */}
               <Text className="mb-0.5">Kit ID: <Text className="font-bold">{req.kit_id}</Text></Text>
               <Text className="mb-0.5">Kit #: <Text className="font-bold">{req.kit_number}</Text></Text>
-              <Text className="mb-0.5">Project ID: <Text className="font-bold">{req.project_id}</Text></Text>
+              
               <Text className="mb-0.5">
                 Purchase Date:{" "}
                 <Text className="font-bold">
