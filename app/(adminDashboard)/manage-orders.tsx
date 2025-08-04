@@ -648,27 +648,295 @@
 
 
 
+// import { Order } from '@/types/order.types';
+// import api from '@/utils/api';
+// import { formatDateTime } from '@/utils/formatDate';
+// import React, { useCallback, useEffect, useState } from 'react';
+// import {
+//   ActivityIndicator,
+//   Modal,
+//   Platform,
+//   Pressable,
+//   RefreshControl,
+//   ScrollView,
+//   Text,
+//   TouchableOpacity,
+//   View,
+// } from 'react-native';
+
+// // Color palette constants
+// const BLACK = '#000000';
+// const ACCENT = '#FAD90E';
+// const TEXT_PRIMARY = '#F5F5F5'; // off-white for text
+// const TEXT_SECONDARY = '#BFBFBF'; // lighter gray text
+
+// interface PaginatedResponse<T> {
+//   count: number;
+//   next: string | null;
+//   previous: string | null;
+//   results: T[];
+// }
+
+// interface OrderCardProps {
+//   order: Order;
+//   onViewStatus: (order: Order) => void;
+// }
+
+// const OrderCard: React.FC<OrderCardProps> = ({ order, onViewStatus }) => (
+//   <View
+//     style={{
+//       backgroundColor: BLACK,
+//       borderRadius: 16,
+//       padding: 20,
+//       marginVertical: 10,
+//       borderWidth: 1,
+//       borderColor: ACCENT,
+//       shadowColor: ACCENT,
+//       shadowOpacity: 0.4,
+//       shadowRadius: 12,
+//       shadowOffset: { width: 0, height: 5 },
+//       elevation: Platform.OS === 'android' ? 6 : 0,
+//     }}
+//   >
+//     <Text style={{ color: ACCENT, fontSize: 20, fontWeight: '700', marginBottom: 6 }}>
+//       Project ID: {order.project_id}
+//     </Text>
+//     {/* <Text style={{ color: TEXT_SECONDARY, fontSize: 16, marginBottom: 4 }}>
+//       Project ID: {order.project_id}
+//     </Text> */}
+//     {/* <Text style={{ color: TEXT_SECONDARY, fontSize: 16, marginBottom: 4 }}>
+//       Status: <Text style={{ color: ACCENT }}>{order.status || 'N/A'}</Text>
+//     </Text> */}
+//     <Text style={{ color: TEXT_SECONDARY, fontSize: 14, marginBottom: 14 }}>
+//       Order Date: <Text style={{ color: TEXT_PRIMARY }}>{formatDateTime(order.order_date)}</Text>
+//     </Text>
+
+//     <TouchableOpacity
+//       onPress={() => onViewStatus(order)}
+//       style={{
+//         backgroundColor: ACCENT,
+//         paddingVertical: 12,
+//         paddingHorizontal: 28,
+//         borderRadius: 24,
+//         alignSelf: 'flex-start',
+//         shadowColor: ACCENT,
+//         shadowOpacity: 0.6,
+//         shadowRadius: 10,
+//         shadowOffset: { width: 0, height: 4 },
+//         elevation: 4,
+//       }}
+//       activeOpacity={0.85}
+//     >
+//       <Text style={{ color: BLACK, fontWeight: '700', fontSize: 16, letterSpacing: 0.5 }}>
+//         View Status
+//       </Text>
+//     </TouchableOpacity>
+//   </View>
+// );
+
+// export default function ManageOrdersScreen() {
+//   const [orders, setOrders] = useState<Order[]>([]);
+//   const [loading, setLoading] = useState(true);
+//   const [refreshing, setRefreshing] = useState(false);
+//   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+//   const [modalOrderDetails, setModalOrderDetails] = useState<Order | null>(null);
+//   const [modalLoading, setModalLoading] = useState(false);
+
+//   // Fetch all orders (paginated)
+//   const fetchOrders = useCallback(async () => {
+//     try {
+//       const response = await api.get<PaginatedResponse<Order>>('/admin/orders/');
+//       setOrders(response.data.results);
+//     } catch (error) {
+//       console.error('Failed to fetch orders', error);
+//     }
+//   }, []);
+
+//   // Initial and manual refresh fetch
+//   useEffect(() => {
+//     setLoading(true);
+//     fetchOrders().finally(() => setLoading(false));
+//   }, [fetchOrders]);
+
+//   const onRefresh = useCallback(() => {
+//     setRefreshing(true);
+//     fetchOrders().finally(() => setRefreshing(false));
+//   }, [fetchOrders]);
+
+//   // Fetch detailed status for selected order when modal opens
+//   useEffect(() => {
+//     if (!selectedOrder) {
+//       setModalOrderDetails(null);
+//       setModalLoading(false);
+//       return;
+//     }
+//     setModalLoading(true);
+//     api
+//       .get<Order>(`/admin/orders/${selectedOrder.order_id}/`)
+//       .then(res => setModalOrderDetails(res.data))
+//       .catch(error => {
+//         console.error('Failed to fetch order details:', error);
+//         setModalOrderDetails(null);
+//       })
+//       .finally(() => setModalLoading(false));
+//   }, [selectedOrder]);
+
+//   const handleCloseModal = () => setSelectedOrder(null);
+
+//   return (
+//     <View style={{ flex: 1, backgroundColor: BLACK, padding: 20 }}>
+//       <Text
+//         style={{
+//           color: ACCENT,
+//           fontSize: 28,
+//           fontWeight: '900',
+//           letterSpacing: 2,
+//           marginBottom: 20,
+//           textShadowColor: ACCENT,
+//           textShadowOffset: { width: 0, height: 3 },
+//           textShadowRadius: 15,
+//         }}
+//       >
+//         Manage Orders
+//       </Text>
+
+//       {loading && !refreshing ? (
+//         <ActivityIndicator size="large" color={ACCENT} />
+//       ) : (
+//         <ScrollView
+//           showsVerticalScrollIndicator={false}
+//           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={ACCENT} />}
+//         >
+//           {orders.length === 0 && (
+//             <Text style={{ color: TEXT_SECONDARY, textAlign: 'center', fontSize: 16, marginTop: 48 }}>
+//               No orders found.
+//             </Text>
+//           )}
+
+//           {orders.map(order => (
+//             <OrderCard key={order.order_id} order={order} onViewStatus={setSelectedOrder} />
+//           ))}
+//         </ScrollView>
+//       )}
+
+//       <Modal visible={!!selectedOrder} transparent animationType="slide" onRequestClose={handleCloseModal}>
+//         <View
+//           style={{
+//             flex: 1,
+//             justifyContent: 'center',
+//             alignItems: 'center',
+//             backgroundColor: 'rgba(0,0,0,0.85)',
+//             paddingHorizontal: 20,
+//           }}
+//         >
+//           <View
+//             style={{
+//               backgroundColor: BLACK,
+//               borderRadius: 20,
+//               width: '100%',
+//               maxWidth: 400,
+//               padding: 28,
+//               borderWidth: 1,
+//               borderColor: ACCENT,
+//               shadowColor: ACCENT,
+//               shadowOpacity: 0.75,
+//               shadowRadius: 16,
+//               shadowOffset: { width: 0, height: 8 },
+//               elevation: 10,
+//             }}
+//           >
+//             <Text
+//               style={{
+//                 fontSize: 24,
+//                 fontWeight: '900',
+//                 color: ACCENT,
+//                 marginBottom: 16,
+//                 letterSpacing: 1.3,
+//               }}
+//             >
+//               Order Status
+//             </Text>
+
+//             {modalLoading ? (
+//               <ActivityIndicator size="large" color={ACCENT} />
+//             ) : modalOrderDetails ? (
+//               <>
+//                 <Text style={{ color: TEXT_PRIMARY, fontSize: 16, marginBottom: 8 }}>
+//                   <Text style={{ color: ACCENT, fontWeight: '700' }}>Overall Status: </Text>
+//                   {modalOrderDetails.status || 'N/A'}
+//                 </Text>
+//                 <Text style={{ color: TEXT_PRIMARY, fontSize: 16, marginBottom: 8 }}>
+//                   <Text style={{ color: ACCENT, fontWeight: '700' }}>Production Status: </Text>
+//                   {modalOrderDetails.production_status || 'N/A'}
+//                 </Text>
+//                 <Text style={{ color: TEXT_PRIMARY, fontSize: 16, marginBottom: 8 }}>
+//                   <Text style={{ color: ACCENT, fontWeight: '700' }}>Dispatch Status: </Text>
+//                   {modalOrderDetails.dispatch_status || 'N/A'}
+//                 </Text>
+//                 <Text style={{ color: TEXT_PRIMARY, fontSize: 16, marginBottom: 20 }}>
+//                   <Text style={{ color: ACCENT, fontWeight: '700' }}>Delivery Status: </Text>
+//                   {modalOrderDetails.delivery_status || 'N/A'}
+//                 </Text>
+//               </>
+//             ) : (
+//               <Text style={{ color: 'tomato', marginBottom: 20 }}>Failed to load order details.</Text>
+//             )}
+
+//             <Pressable
+//               onPress={handleCloseModal}
+//               style={{
+//                 backgroundColor: ACCENT,
+//                 paddingVertical: 14,
+//                 borderRadius: 28,
+//                 shadowColor: ACCENT,
+//                 shadowOpacity: 0.55,
+//                 shadowRadius: 12,
+//                 shadowOffset: { width: 0, height: 5 },
+//                 elevation: 6,
+//               }}
+//             >
+//               <Text
+//                 style={{
+//                   color: BLACK,
+//                   fontWeight: '700',
+//                   fontSize: 18,
+//                   textAlign: 'center',
+//                   letterSpacing: 1.1,
+//                 }}
+//               >
+//                 Close
+//               </Text>
+//             </Pressable>
+//           </View>
+//         </View>
+//       </Modal>
+//     </View>
+//   );
+// }
+
+
+
+
+import { FilterSortBar } from '@/components/FilterSortBar'; // Assuming you have a FilterSortBar component
 import { Order } from '@/types/order.types';
 import api from '@/utils/api';
 import { formatDateTime } from '@/utils/formatDate';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
-  Platform,
   Pressable,
   RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 
-// Color palette constants
 const BLACK = '#000000';
 const ACCENT = '#FAD90E';
-const TEXT_PRIMARY = '#F5F5F5'; // off-white for text
-const TEXT_SECONDARY = '#BFBFBF'; // lighter gray text
+const TEXT_PRIMARY = '#F5F5F5';
+const TEXT_SECONDARY = '#BFBFBF';
 
 interface PaginatedResponse<T> {
   count: number;
@@ -695,39 +963,33 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onViewStatus }) => (
       shadowOpacity: 0.4,
       shadowRadius: 12,
       shadowOffset: { width: 0, height: 5 },
-      elevation: Platform.OS === 'android' ? 6 : 0,
+      elevation: 6,
     }}
   >
     <Text style={{ color: ACCENT, fontSize: 20, fontWeight: '700', marginBottom: 6 }}>
       Project ID: {order.project_id}
     </Text>
-    {/* <Text style={{ color: TEXT_SECONDARY, fontSize: 16, marginBottom: 4 }}>
-      Project ID: {order.project_id}
-    </Text> */}
-    {/* <Text style={{ color: TEXT_SECONDARY, fontSize: 16, marginBottom: 4 }}>
-      Status: <Text style={{ color: ACCENT }}>{order.status || 'N/A'}</Text>
-    </Text> */}
-    <Text style={{ color: TEXT_SECONDARY, fontSize: 14, marginBottom: 14 }}>
+    <Text style={{ color: TEXT_SECONDARY, fontSize: 14, marginBottom: 12 }}>
       Order Date: <Text style={{ color: TEXT_PRIMARY }}>{formatDateTime(order.order_date)}</Text>
     </Text>
-
+    <Text style={{ color: TEXT_PRIMARY, fontSize: 16, marginBottom: 2 }}>Status: <Text style={{ color: ACCENT }}>{order.status}</Text></Text>
+    <Text style={{ color: TEXT_PRIMARY, fontSize: 14 }}>
+      Client ID: <Text style={{ color: TEXT_SECONDARY }}>{order.client_id}</Text>
+    </Text>
     <TouchableOpacity
       onPress={() => onViewStatus(order)}
       style={{
         backgroundColor: ACCENT,
-        paddingVertical: 12,
-        paddingHorizontal: 28,
+        paddingVertical: 8,
+        paddingHorizontal: 24,
         borderRadius: 24,
         alignSelf: 'flex-start',
-        shadowColor: ACCENT,
-        shadowOpacity: 0.6,
-        shadowRadius: 10,
-        shadowOffset: { width: 0, height: 4 },
+        marginTop: 14,
         elevation: 4,
       }}
       activeOpacity={0.85}
     >
-      <Text style={{ color: BLACK, fontWeight: '700', fontSize: 16, letterSpacing: 0.5 }}>
+      <Text style={{ color: BLACK, fontWeight: '700', fontSize: 15 }}>
         View Status
       </Text>
     </TouchableOpacity>
@@ -735,35 +997,52 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onViewStatus }) => (
 );
 
 export default function ManageOrdersScreen() {
+  const [paginated, setPaginated] = useState<PaginatedResponse<Order> | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState<string>('desc');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [modalOrderDetails, setModalOrderDetails] = useState<Order | null>(null);
   const [modalLoading, setModalLoading] = useState(false);
 
-  // Fetch all orders (paginated)
-  const fetchOrders = useCallback(async () => {
+  const scrollRef = useRef<ScrollView>(null);
+
+  const fetchOrders = useCallback(async (url?: string) => {
+    setLoading(true);
     try {
-      const response = await api.get<PaginatedResponse<Order>>('/admin/orders/');
+      const params: any = {};
+      if (search) params.search = search;
+      params.ordering = sort === 'desc' ? '-created_at' : 'created_at';
+      const endpoint = url ?? '/admin/orders/';
+      const response = await api.get<PaginatedResponse<Order>>(endpoint, { params });
+      setPaginated(response.data);
       setOrders(response.data.results);
+      // Optionally scroll to top on new page/filter
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
     } catch (error) {
       console.error('Failed to fetch orders', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
-  }, []);
+  }, [search, sort]);
 
-  // Initial and manual refresh fetch
   useEffect(() => {
-    setLoading(true);
-    fetchOrders().finally(() => setLoading(false));
+    fetchOrders();
   }, [fetchOrders]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchOrders().finally(() => setRefreshing(false));
+    fetchOrders();
   }, [fetchOrders]);
 
-  // Fetch detailed status for selected order when modal opens
+  // Pagination actions
+  const goNext = () => paginated?.next && fetchOrders(paginated.next);
+  const goPrev = () => paginated?.previous && fetchOrders(paginated.previous);
+
+  // View status modal logic (unchanged)
   useEffect(() => {
     if (!selectedOrder) {
       setModalOrderDetails(null);
@@ -791,35 +1070,77 @@ export default function ManageOrdersScreen() {
           fontSize: 28,
           fontWeight: '900',
           letterSpacing: 2,
-          marginBottom: 20,
-          textShadowColor: ACCENT,
-          textShadowOffset: { width: 0, height: 3 },
-          textShadowRadius: 15,
+          marginBottom: 12,
         }}
       >
         Manage Orders
       </Text>
 
+      {/* Filter and Sort UI */}
+      <FilterSortBar
+        search={search}
+        setSearch={setSearch}
+        sort={sort}
+        setSort={setSort}
+        onFilter={() => fetchOrders()}
+      />
+
       {loading && !refreshing ? (
         <ActivityIndicator size="large" color={ACCENT} />
       ) : (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={ACCENT} />}
-        >
-          {orders.length === 0 && (
-            <Text style={{ color: TEXT_SECONDARY, textAlign: 'center', fontSize: 16, marginTop: 48 }}>
-              No orders found.
-            </Text>
-          )}
+        <>
+          <ScrollView
+            ref={scrollRef}
+            showsVerticalScrollIndicator={false}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={ACCENT} />}
+          >
+            {orders.length === 0 && (
+              <Text style={{ color: TEXT_SECONDARY, textAlign: 'center', fontSize: 16, marginTop: 48 }}>
+                No orders found.
+              </Text>
+            )}
+            {orders.map(order => (
+              <OrderCard key={order.project_id} order={order} onViewStatus={setSelectedOrder} />
+            ))}
 
-          {orders.map(order => (
-            <OrderCard key={order.order_id} order={order} onViewStatus={setSelectedOrder} />
-          ))}
-        </ScrollView>
+            {/* Pagination Buttons */}
+            {paginated && (
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 16 }}>
+                <TouchableOpacity
+                  disabled={!paginated.previous}
+                  onPress={goPrev}
+                  style={{
+                    opacity: paginated.previous ? 1 : 0.4,
+                    backgroundColor: '#fffde6',
+                    paddingVertical: 8,
+                    paddingHorizontal: 24,
+                    borderRadius: 16,
+                  }}
+                >
+                  <Text style={{ color: '#333', fontWeight: 'bold' }}>Previous</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  disabled={!paginated.next}
+                  onPress={goNext}
+                  style={{
+                    opacity: paginated.next ? 1 : 0.4,
+                    backgroundColor: '#fffde6',
+                    paddingVertical: 8,
+                    paddingHorizontal: 24,
+                    borderRadius: 16,
+                  }}
+                >
+                  <Text style={{ color: '#333', fontWeight: 'bold' }}>Next</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </ScrollView>
+        </>
       )}
 
+      {/* Modal logic unchanged (same as your version) */}
       <Modal visible={!!selectedOrder} transparent animationType="slide" onRequestClose={handleCloseModal}>
+        {/* ...modal UI remains as in your code... */}
         <View
           style={{
             flex: 1,
