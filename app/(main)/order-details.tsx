@@ -1326,6 +1326,8 @@ export default function OrderDetailsScreen() {
         <Text className="text-white">Project ID: {order.project_id}</Text>
         <Text className="text-white">Status: {order.status}</Text>
         <Text className="text-white">Order Date: {formatDateTime(order.order_date)}</Text>
+        <Text className="text-white">Billing Address: {order.billing_address}</Text>
+        <Text className="text-white">Delivery Address: {order.delivery_address}</Text>
         {/* {order.expected_delivery_date && (
           <Text className="text-white">Expected Delivery: {new Date(order.expected_delivery_date).toDateString()}</Text>
         )} */}

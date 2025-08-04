@@ -786,7 +786,7 @@ const QRScanner = () => {
 
                 router.push({
                     pathname: '/(main)/kit-details',
-                    params: { scan_id: res.data.scan_id,all_scanned: "false" }
+                    params: { scan_id: res.data.scan_id, all_scanned: "false" }
                 });
             }
             // All scanned case: route to kit-details, but with all_scanned info
@@ -858,33 +858,40 @@ const QRScanner = () => {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
-            // const { kit_id, prod_unit, warehouse, project_id, kit_no, date } = response.data;
+            // For normal scan
+            if (response.data.scan_id && !response.data.all_scanned) {
+                queryClient.invalidateQueries({ queryKey: ["myScans_savedOrders"] });
+                queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
 
-            const { scan_id } = response.data;
-
-            if (!scan_id) {
-                throw new Error('Scan ID not returned from server.');
+                router.push({
+                    pathname: '/(main)/kit-details',
+                    params: { scan_id: response.data.scan_id, all_scanned: "false" }
+                });
             }
-
-            // triggerRefresh();
-            queryClient.invalidateQueries({ queryKey: ["myScans_savedOrders"] });
-            queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
-
-
-            // ✅ Navigate to kit-details page with scan_id
-            router.push({
-                pathname: '/(main)/kit-details',
-                params: { scan_id }
-            });
-
-
-        }
-
-        catch (err) {
-            // console.error(error);
-            // Alert.alert('Error', 'Failed to upload or process QR code.');
+            // All kits already scanned
+            else if (response.data.scan_id && response.data.all_scanned) {
+                router.push({
+                    pathname: '/(main)/kit-details',
+                    params: {
+                        scan_id: response.data.scan_id,
+                        all_scanned: "true",
+                        total_kits: response.data.total_kits || ""
+                    }
+                });
+            }
+            // Unauthorized or other handled server condition
+            else if (response.data.kit_id) {
+                router.push({
+                    pathname: '/(main)/kit-details',
+                    params: { kit_id: response.data.kit_id }
+                });
+            }
+            // Unexpected
+            else {
+                throw new Error('Unexpected server response.');
+            }
+        } catch (err) {
             console.error(err);
-            //   Alert.alert('Error', 'Invalid QR code or server error.');
             let errorMessage = 'Invalid QR code or server error.';
             if (axios.isAxiosError(err) && err.response?.data?.error) {
                 errorMessage = err.response.data.error;
@@ -893,6 +900,70 @@ const QRScanner = () => {
             setScanned(false);
         }
     };
+
+
+    // const handleUploadQR = async () => {
+    //     try {
+    //         const result = await DocumentPicker.getDocumentAsync({
+    //             type: 'image/*',
+    //             copyToCacheDirectory: true,
+    //         });
+
+    //         if (result.canceled) return;
+
+    //         const { uri, mimeType } = result.assets[0];
+
+    //         if (!mimeType?.startsWith('image/')) {
+    //             Alert.alert('Error', 'Please select an image file.');
+    //             return;
+    //         }
+
+    //         const formData = new FormData();
+    //         formData.append('file', {
+    //             uri,
+    //             name: uri.split('/').pop() || 'qr_image.jpg',
+    //             type: mimeType,
+    //         } as any);
+
+    //         const response = await api.post('/upload-qr/', formData, {
+    //             headers: { 'Content-Type': 'multipart/form-data' },
+    //         });
+
+    //         // const { kit_id, prod_unit, warehouse, project_id, kit_no, date } = response.data;
+
+    //         const { scan_id } = response.data;
+
+    //         if (!scan_id) {
+    //             throw new Error('Scan ID not returned from server.');
+    //         }
+
+    //         // triggerRefresh();
+    //         queryClient.invalidateQueries({ queryKey: ["myScans_savedOrders"] });
+    //         queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
+
+
+    //         // ✅ Navigate to kit-details page with scan_id
+    //         router.push({
+    //             pathname: '/(main)/kit-details',
+    //             params: { scan_id }
+    //         });
+
+
+    //     }
+
+    //     catch (err) {
+    //         // console.error(error);
+    //         // Alert.alert('Error', 'Failed to upload or process QR code.');
+    //         console.error(err);
+    //         //   Alert.alert('Error', 'Invalid QR code or server error.');
+    //         let errorMessage = 'Invalid QR code or server error.';
+    //         if (axios.isAxiosError(err) && err.response?.data?.error) {
+    //             errorMessage = err.response.data.error;
+    //         }
+    //         Alert.alert('Error', errorMessage);
+    //         setScanned(false);
+    //     }
+    // };
 
     if (!permission?.granted) {
         return (

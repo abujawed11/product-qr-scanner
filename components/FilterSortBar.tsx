@@ -7,7 +7,8 @@ interface FilterSortBarProps {
     setSearch: (val: string) => void;
     onFilter: () => void;
     sort: string;
-    setSort: (val: string) => void;
+    // setSort: (val: string) => void;
+    setSort: React.Dispatch<React.SetStateAction<'desc' | 'asc'>>;
 }
 
 const ACCENT = '#FAD90E';

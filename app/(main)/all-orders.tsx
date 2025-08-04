@@ -360,32 +360,32 @@ export default function AllOrdersScreen() {
                             📦 Total Kits: {order.total_quantity}
                         </Text>
 
-                        {order.production_status && (
+                        {/* {order.production_status && (
                             <Text className="text-gray-700 text-sm">
                                 ⚙️ Production Status: {order.production_status}
                             </Text>
-                        )}
+                        )} */}
                         {/* {order.dispatch_status && (
                             <Text className="text-gray-700 text-sm">
                                 🚚 Dispatch Status: {order.dispatch_status}
                             </Text>
                         )} */}
-                        {/* {order.delivery_status && (
+                        {order.delivery_status && (
                             <Text className="text-gray-700 text-sm">
                                 📦 Delivery Status: {order.delivery_status}
                             </Text>
-                        )} */}
+                        )}
 
                         {/* {order.payment_received && (
                             <Text className="text-gray-700 text-sm">
                                 💰 Payment: {order.payment_received}
                             </Text>
                         )} */}
-                        {order.payment_percentage && (
+                        {/* {order.payment_percentage && (
                             <Text className="text-gray-700 text-sm">
                                 💵 Payment %: {order.payment_percentage}
                             </Text>
-                        )}
+                        )} */}
 
                         {/* {order.delivery_address && (
                             <Text className="text-gray-700 text-xs mt-1">
