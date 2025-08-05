@@ -241,6 +241,11 @@ export default function DashboardLayout() {
         headerStyle: { backgroundColor: '#facc15' },
         headerTintColor: 'black',
         drawerPosition: 'left',
+        //         headerRight: () => (
+        //   <TouchableOpacity onPress={() => router.push('/(main)/notifications')}>
+        //     <Icon name="bell-outline" size={24} color="black" style={{ marginRight: 16 }} />
+        //   </TouchableOpacity>
+        // ),
       })}
     >
       <Drawer.Screen name="dashboard" options={{ title: 'Dashboard' }} />
