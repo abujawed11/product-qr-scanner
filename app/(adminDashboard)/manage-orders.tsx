@@ -1818,6 +1818,7 @@ export default function ManageOrdersScreen() {
       params.ordering = sort === "desc" ? "-created_at" : "created_at";
       const endpoint = url ?? "/admin/orders/";
       const response = await api.get<PaginatedResponse<AdminOrder>>(endpoint, { params });
+      // console.log("Admin Order data: -->",response.data.results[0].order_id);
       setPaginated(response.data);
       setOrders(response.data.results);
       scrollRef.current?.scrollTo({ y: 0, animated: true });
@@ -1894,7 +1895,7 @@ export default function ManageOrdersScreen() {
                 order={order}
                 onViewDetails={() =>
                   router.push({
-                    pathname: "/(adminDashboard)/order-details",
+                    pathname: "/(adminDashboard)/admin-order-details",
                     params: { orderId: order.order_id },
                   })
                 }

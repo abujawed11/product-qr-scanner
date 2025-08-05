@@ -1,5 +1,6 @@
 import { AdminOrder } from "@/types/adminOrder.types";
 import { formatDateTime } from "@/utils/formatDate";
+import { getOrderStatusColor } from "@/utils/statusColor";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
@@ -19,15 +20,15 @@ interface StatusBadgeProps {
     color: string;
 }
 
-const getStatusColor = (status?: string) => {
-    if (!status) return "#9ca3af";
-    const s = status.toLowerCase();
-    if (s === "completed" || s === "delivered" || s === "done") return "#22c55e";
-    if (s === "partial" || s === "processing" || s === "planned") return "#fde047";
-    if (s === "pending") return "#facc15";
-    if (s === "cancelled" || s === "no" || s === "rejected") return "#ef4444";
-    return "#5e8bc9ff";
-};
+// const getStatusColor = (status?: string) => {
+//     if (!status) return "#9ca3af";
+//     const s = status.toLowerCase();
+//     if (s === "completed" || s === "delivered" || s === "done") return "#22c55e";
+//     if (s === "partial" || s === "processing" || s === "planned") return "#fde047";
+//     if (s === "pending") return "#facc15";
+//     if (s === "cancelled" || s === "no" || s === "rejected") return "#ef4444";
+//     return "#5e8bc9ff";
+// };
 
 const StatusBadge: React.FC<StatusBadgeProps> = ({ label, value, color }) => (
     <View
@@ -60,9 +61,9 @@ export const AdminOrderCard: React.FC<OrderCardProps> = ({ order, onViewDetails 
 
 
     // DEBUG: inspect delivery-related values
-    const deliveryStatus = order.delivery_status ? order.delivery_status.trim().toLowerCase() : "";
-    const hasDeliveryDate = !!order.delivery_date;
-    const hasExpectedDate = !!order.expected_delivery_date;
+    // const deliveryStatus = order.delivery_status ? order.delivery_status.trim().toLowerCase() : "";
+    // const hasDeliveryDate = !!order.delivery_date;
+    // const hasExpectedDate = !!order.expected_delivery_date;
 
     // Console log for debugging
     // console.log("----ORDER DEBUG----");
@@ -89,17 +90,17 @@ export const AdminOrderCard: React.FC<OrderCardProps> = ({ order, onViewDetails 
                 <StatusBadge
                     label="Production"
                     value={order.production_status || "–"}
-                    color={getStatusColor(order.production_status ?? undefined)}
+                    color={getOrderStatusColor(order.production_status ?? undefined)}
                 />
                 <StatusBadge
                     label="Dispatch"
                     value={order.dispatch_status || "–"}
-                    color={getStatusColor(order.dispatch_status ?? undefined)}
+                    color={getOrderStatusColor(order.dispatch_status ?? undefined)}
                 />
                 <StatusBadge
                     label="Delivery"
                     value={order.delivery_status || "–"}
-                    color={getStatusColor(order.delivery_status ?? undefined)}
+                    color={getOrderStatusColor(order.delivery_status ?? undefined)}
                 />
             </View>
 

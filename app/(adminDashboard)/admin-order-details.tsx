@@ -1,8 +1,10 @@
 import { AdminOrder } from "@/types/adminOrder.types";
 import api from "@/utils/api";
 import { formatDateTime } from "@/utils/formatDate";
+import { getOrderStatusColor } from "@/utils/statusColor";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, BackHandler, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 interface Kit {
     kit: {
@@ -14,15 +16,15 @@ interface Kit {
     total_price: string;
 }
 
-const getStatusColor = (status?: string) => {
-    if (!status) return "#9ca3af";
-    const s = status.toLowerCase();
-    if (s === "completed" || s === "delivered" || s === "done") return "#22c55e";
-    if (s === "partial" || s === "processing" || s === "planned") return "#fde047";
-    if (s === "pending") return "#facc15";
-    if (s === "cancelled" || s === "no" || s === "rejected") return "#ef4444";
-    return "#64748b";
-};
+// const getStatusColor = (status?: string) => {
+//     if (!status) return "#9ca3af";
+//     const s = status.toLowerCase();
+//     if (s === "completed" || s === "delivered" || s === "done") return "#22c55e";
+//     if (s === "partial" || s === "processing" || s === "planned") return "#fde047";
+//     if (s === "pending") return "#facc15";
+//     if (s === "cancelled" || s === "no" || s === "rejected") return "#ef4444";
+//     return "#64748b";
+// };
 
 const StatusBadge: React.FC<{ label: string; value: string; color: string }> = ({
     label,
@@ -51,11 +53,33 @@ interface Props {
     navigation?: any;
 }
 
-export const AdminOrderDetailsScreen: React.FC<Props> = ({ orderId, navigation }) => {
-    // const { orderId } = useLocalSearchParams<{ orderId: string }>();
+const AdminOrderDetailsScreen: React.FC<Props> = () => {
+    const { orderId } = useLocalSearchParams<{ orderId: string }>();
     const [order, setOrder] = useState<AdminOrder | null>(null);
     const [kits, setKits] = useState<Kit[]>([]);
     const [loading, setLoading] = useState(true);
+
+    // Utility to interpret payment_received string
+    function isPaymentReceived(received?: string | null): boolean {
+        if (!received) return false;
+        const value = received.trim().toLowerCase();
+        // Add other "truthy" variants if needed
+        return value === "yes" || value === "paid" || value === "completed";
+    }
+
+    // console.log(orderId, "Order ID from params");
+
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const onBackPress = () => {
+                router.replace("/(adminDashboard)/manage-orders");
+                return true;
+            };
+            const subscription = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+            return () => subscription.remove();
+        }, [])
+    );
 
     useEffect(() => {
         async function fetchDetails() {
@@ -97,32 +121,32 @@ export const AdminOrderDetailsScreen: React.FC<Props> = ({ orderId, navigation }
             <View className="flex-row flex-wrap mb-2">
                 <StatusBadge
                     label="Payment"
-                    value={order.payment_received ? "Yes" : "No"}
-                    color={order.payment_received ? "#22c55e" : "#ef4444"}
+                    value={isPaymentReceived(order.payment_received) ? "Yes" : "No"}
+                    color={isPaymentReceived(order.payment_received) ? "#22c55e" : "#ef4444"}
                 />
                 <StatusBadge
                     label="Production"
                     value={order.production_status || "—"}
-                    color={getStatusColor(order.production_status ?? undefined)}
+                    color={getOrderStatusColor(order.production_status ?? undefined)}
                 />
                 <StatusBadge
                     label="Dispatch"
                     value={order.dispatch_status || "—"}
-                    color={getStatusColor(order.dispatch_status ?? undefined)}
+                    color={getOrderStatusColor(order.dispatch_status ?? undefined)}
                 />
                 <StatusBadge
                     label="Delivery"
                     value={order.delivery_status || "—"}
-                    color={getStatusColor(order.delivery_status ?? undefined)}
+                    color={getOrderStatusColor(order.delivery_status ?? undefined)}
                 />
             </View>
             {showDelivery ? (
                 <Text className="text-xs text-[#BFBFBF] mb-1">
-                    Delivery: <Text className="font-semibold">{formatDateTime(order.delivery_date!)}</Text>
+                    Delivery: <Text className="font-semibold">{order.delivery_date!}</Text>
                 </Text>
             ) : showExpected ? (
                 <Text className="text-xs text-[#BFBFBF] mb-1">
-                    Expected: <Text className="font-semibold">{formatDateTime(order.expected_delivery_date!)}</Text>
+                    Expected: <Text className="font-semibold">{order.expected_delivery_date!}</Text>
                 </Text>
             ) : null}
             <Text className="text-xs text-[#BFBFBF] mb-4">
@@ -172,7 +196,7 @@ export const AdminOrderDetailsScreen: React.FC<Props> = ({ orderId, navigation }
             <View className="mb-6">
                 <Text className="text-base font-bold text-[#FAD90E] mb-2">Order Info</Text>
                 <Text className="text-xs text-[#BFBFBF]">
-                    PO Date: <Text className="text-[#F5F5F5]">{order.po_date ? formatDateTime(order.po_date) : "N/A"}</Text>
+                    PO Date: <Text className="text-[#F5F5F5]">{order.po_date ? order.po_date : "N/A"}</Text>
                 </Text>
                 <Text className="text-xs text-[#BFBFBF]">
                     Production Unit: <Text className="text-[#F5F5F5]">{order.production_unit || "N/A"}</Text>
@@ -209,3 +233,6 @@ export const AdminOrderDetailsScreen: React.FC<Props> = ({ orderId, navigation }
         </ScrollView>
     );
 };
+
+
+export default AdminOrderDetailsScreen;
