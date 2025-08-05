@@ -591,13 +591,14 @@ import { FilterSortBar } from '@/components/FilterSortBar';
 import { User } from '@/types/user.types';
 import api from '@/utils/api';
 import React, { useEffect, useState } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import {
     ActivityIndicator,
     Alert,
     Modal,
     ScrollView,
     Text,
+    TextInput,
     TouchableOpacity,
     View
 } from 'react-native';
@@ -847,7 +848,7 @@ export default function ManageClients() {
             )}
 
             {/* Modal logic unchanged (same as your version) */}
-            <Modal visible={modalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
+            {/* <Modal visible={modalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
                 <ScrollView className="flex-1 bg-black px-6 pt-10">
                     <Text className="text-2xl font-bold text-yellow-400 text-center mb-6">
                         {editUser ? 'Edit User' : 'Add User'}
@@ -858,11 +859,143 @@ export default function ManageClients() {
                     )}
 
                     {/* ...rest of your existing modal form code... */}
-                    {/* Copy all Controller/TextInput fields, handleSubmit, and Cancel/Save buttons as in your original code */}
-                    {/* ... */}
-                    {/* Form code unchanged, see previous blocks */}
+            {/* Copy all Controller/TextInput fields, handleSubmit, and Cancel/Save buttons as in your original code */}
+            {/* ... */}
+            {/* Form code unchanged, see previous blocks */}
+            {/* </ScrollView> */}
+            {/* </Modal> */}
+
+            <Modal visible={modalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
+                <ScrollView className="flex-1 bg-black px-6 pt-10">
+                    <Text className="text-2xl font-bold text-yellow-400 text-center mb-6">
+                        {editUser ? 'Edit User' : 'Add User'}
+                    </Text>
+
+                    {editUser?.client_id && (
+                        <Text className="text-white text-sm mb-2">Client ID: {editUser.client_id}</Text>
+                    )}
+
+                    <Controller
+                        control={control}
+                        name="account_type"
+                        render={({ field: { onChange, value } }) => (
+                            <View className="bg-white rounded mb-4 px-3">
+                                <Text className="text-black mb-1 mt-2">Account Type</Text>
+                                <TouchableOpacity onPress={() => onChange('client')}>
+                                    <Text className={`p-2 ${value === 'client' ? 'bg-yellow-300' : ''}`}>Client</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => onChange('admin')}>
+                                    <Text className={`p-2 ${value === 'admin' ? 'bg-yellow-300' : ''}`}>Admin</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    />
+
+                    <Controller
+                        control={control}
+                        name="is_active"
+                        render={({ field: { onChange, value } }) => (
+                            <View className="bg-white rounded mb-4 px-3 py-2">
+                                <Text className="text-black mb-2">Status</Text>
+                                <TouchableOpacity onPress={() => onChange(true)}>
+                                    <Text className={`p-2 ${value === true ? 'bg-green-300' : ''}`}>Active</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => onChange(false)}>
+                                    <Text className={`p-2 ${value === false ? 'bg-red-300' : ''}`}>Inactive</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    />
+
+                    <Controller
+                        control={control}
+                        name="username"
+                        rules={{ required: 'Username is required' }}
+                        render={({ field: { onChange, value } }) => (
+                            <TextInput
+                                value={value}
+                                onChangeText={onChange}
+                                placeholder="Username"
+                                className="bg-white text-black p-3 rounded mb-4"
+                            />
+                        )}
+                    />
+
+                    <Controller
+                        control={control}
+                        name="email"
+                        rules={{
+                            required: 'Email is required',
+                            pattern: {
+                                value: /^\S+@\S+\.\S+$/,
+                                message: 'Enter a valid email address',
+                            },
+                        }}
+                        render={({ field: { onChange, value } }) => (
+                            <TextInput
+                                value={value}
+                                onChangeText={onChange}
+                                placeholder="Email"
+                                className="bg-white text-black p-3 rounded mb-4"
+                                keyboardType="email-address"
+                            />
+                        )}
+                    />
+
+                    {!editUser && (
+                        <Controller
+                            control={control}
+                            name="password"
+                            rules={{ required: 'Password is required' }}
+                            render={({ field: { onChange, value } }) => (
+                                <TextInput
+                                    value={value}
+                                    onChangeText={onChange}
+                                    placeholder="Password"
+                                    secureTextEntry
+                                    className="bg-white text-black p-3 rounded mb-4"
+                                />
+                            )}
+                        />
+                    )}
+
+                    {/* <TouchableOpacity
+                        onPress={handleSubmit(onSubmit, onInvalid)}
+                        className={`p-4 rounded-xl ${editUser && isUnchanged()
+                            ? 'bg-gray-400'
+                            : 'bg-yellow-400'
+                            }`}
+                        disabled={editUser && isUnchanged()}
+                    >
+                        <Text className="text-center font-bold text-black">
+                            {editUser ? 'Update' : 'Create'}
+                        </Text>
+                    </TouchableOpacity> */}
+                    <TouchableOpacity
+                        onPress={handleSubmit(onSubmit, onInvalid)}
+                        className={`p-4 rounded-xl ${!!editUser && isUnchanged() ? 'bg-gray-400' : 'bg-yellow-400'
+                            }`}
+                        disabled={!!editUser && isUnchanged()}
+                    >
+                        <Text className="text-center font-bold text-black">
+                            {editUser ? 'Update' : 'Create'}
+                        </Text>
+                    </TouchableOpacity>
+
+                    {editUser && isUnchanged() && (
+                        <Text className="text-yellow-200 text-center mt-2 text-xs">
+                            No changes made
+                        </Text>
+                    )}
+
+                    <TouchableOpacity onPress={() => setModalVisible(false)} className="mt-4">
+                        <Text className="text-center text-yellow-400 font-bold">Cancel</Text>
+                    </TouchableOpacity>
                 </ScrollView>
             </Modal>
+
+
+
         </ScrollView>
     );
 }
