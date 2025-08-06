@@ -1,7 +1,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { AntDesign, Entypo, FontAwesome, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import { useRouter } from 'expo-router';
+import { usePathname, useRouter } from 'expo-router';
 import React from 'react';
 import { Text, useColorScheme, View } from 'react-native';
 
@@ -9,6 +9,7 @@ const CustomDrawer = (props: any) => {
   const router = useRouter();
   const { user, logout } = useAuth();
   const colorScheme = useColorScheme();
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     await logout();
@@ -30,7 +31,31 @@ const CustomDrawer = (props: any) => {
       <View className="mt-6">
         <DrawerItem
           label="Home"
+          // onPress={() => {
+          //   props.navigation.closeDrawer(); // always close the drawer
+
+          //   // match actual full path including layout segment
+          //   if (pathname !== '/(main)/dashboard') {
+          //     router.push('/(main)/dashboard');
+          //   }
+          // }}
           onPress={() => router.push('/dashboard')}
+          // onPress={() => {
+          //   if (pathname !== '/dashboard') {
+          //     props.navigation.closeDrawer();
+          //     // setTimeout(() => {
+          //     router.replace('/dashboard');
+          //     // }, 100);
+          //   } else {
+          //     props.navigation.closeDrawer();
+          //   }
+          // }}
+          // props.navigation.closeDrawer();
+          // if (pathname !== '/dashboard') {
+          //   router.push('/dashboard');
+          // }
+          // let drawer close naturally
+          // }}
           icon={({ size }) => <Entypo name="home" size={size} color="#facc15" />}
           labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
           style={{ backgroundColor: 'transparent' }}

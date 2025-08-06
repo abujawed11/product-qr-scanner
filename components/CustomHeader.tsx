@@ -137,7 +137,7 @@ export default function CustomHeader({ navigation, route, options }: NativeStack
         {/* Right section: Bell */}
         {/* <BellWithNotification /> */}
         {/* Right section: Bell - absolutely positioned */}
-        <View style={{ position: 'absolute', right: 16, top: -3 }}>
+        <View style={{ position: 'absolute', right: 10, top: -3 }}>
           {/* <BellWithNotification /> */}
           {!HIDE_BELL_ON.includes(route.name) && (
             <BellWithNotification />
@@ -185,7 +185,7 @@ export function CustomMainHeader({ navigation, route, options }: DrawerHeaderPro
 
         {/* Right section: Bell */}
         {/* <BellWithNotification /> */}
-        <View style={{ position: 'absolute', right: 16, top: -3 }}>
+        <View style={{ position: 'absolute', right: 10, top: -3 }}>
           <BellWithNotification />
         </View>
       </View>
