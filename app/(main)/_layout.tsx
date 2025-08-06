@@ -211,11 +211,71 @@
 // app/(main)/_layout.tsx
 // app/(main)/_layout.tsx
 
+// import CustomDrawer from '@/components/CustomDrawer';
+// import { useAuth } from '@/context/AuthContext';
+// import { Redirect } from 'expo-router';
+// import { Drawer } from 'expo-router/drawer';
+// import { ActivityIndicator, View } from 'react-native';
+
+// export default function DashboardLayout() {
+//   const { user, loading } = useAuth();
+
+//   if (loading) {
+//     return (
+//       <View className="flex-1 justify-center items-center bg-white">
+//         <ActivityIndicator size="large" color="orange" />
+//       </View>
+//     );
+//   }
+
+//   if (!user) {
+//     return <Redirect href="/(auth)/login" />;
+//   }
+
+//   return (
+//     <Drawer
+//       drawerContent={(props) => <CustomDrawer {...props} />}
+//       screenOptions={({ route }) => ({
+//         // Hide Drawer header on dashboard and warranty
+//         headerShown: route.name !== 'dashboard' && route.name !== 'warranty',
+//         headerStyle: { backgroundColor: '#facc15' },
+//         headerTintColor: 'black',
+//         drawerPosition: 'left',
+//       })}
+//     >
+//       <Drawer.Screen name="dashboard" options={{ title: 'Dashboard' }} />
+//       <Drawer.Screen name="warranty" options={{ title: 'Warranty' }} />
+
+//       {/* The rest of your direct files as Drawer Screens */}
+//       <Drawer.Screen name="about" options={{ title: 'About' }} />
+//       <Drawer.Screen name="all-orders" options={{ title: 'All Orders' }} />
+//       <Drawer.Screen name="kit-details" options={{ title: 'Kit Details' }} />
+//       <Drawer.Screen name="notifications" options={{ title: 'Notifications' }} />
+//       <Drawer.Screen name="order-details" options={{ title: 'Order Details' }} />
+//       <Drawer.Screen name="product-info" options={{ title: 'Product Info' }} />
+//       <Drawer.Screen name="profile" options={{ title: 'Profile' }} />
+//       <Drawer.Screen name="settings" options={{ title: 'Settings' }} />
+//       <Drawer.Screen name="support" options={{ title: 'Support' }} />
+//       <Drawer.Screen name="test-upload" options={{ title: 'Test Upload' }} />
+//     </Drawer>
+//   );
+// }
+
+
+// app/(main)/_layout.tsx
+
+// app/(main)/_layout.tsx
+
 import CustomDrawer from '@/components/CustomDrawer';
+import { CustomMainHeader } from '@/components/CustomHeader';
 import { useAuth } from '@/context/AuthContext';
 import { Redirect } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
-import { ActivityIndicator, View } from 'react-native';
+import React from 'react';
+import {
+  ActivityIndicator,
+  View
+} from 'react-native';
 
 export default function DashboardLayout() {
   const { user, loading } = useAuth();
@@ -236,22 +296,16 @@ export default function DashboardLayout() {
     <Drawer
       drawerContent={(props) => <CustomDrawer {...props} />}
       screenOptions={({ route }) => ({
-        // Hide Drawer header on dashboard and warranty
         headerShown: route.name !== 'dashboard' && route.name !== 'warranty',
-        headerStyle: { backgroundColor: '#facc15' },
-        headerTintColor: 'black',
+        header:
+          route.name !== 'dashboard' && route.name !== 'warranty'
+            ? (props) => <CustomMainHeader {...props} />
+            : undefined,
         drawerPosition: 'left',
-        //         headerRight: () => (
-        //   <TouchableOpacity onPress={() => router.push('/(main)/notifications')}>
-        //     <Icon name="bell-outline" size={24} color="black" style={{ marginRight: 16 }} />
-        //   </TouchableOpacity>
-        // ),
       })}
     >
       <Drawer.Screen name="dashboard" options={{ title: 'Dashboard' }} />
       <Drawer.Screen name="warranty" options={{ title: 'Warranty' }} />
-
-      {/* The rest of your direct files as Drawer Screens */}
       <Drawer.Screen name="about" options={{ title: 'About' }} />
       <Drawer.Screen name="all-orders" options={{ title: 'All Orders' }} />
       <Drawer.Screen name="kit-details" options={{ title: 'Kit Details' }} />
@@ -265,5 +319,4 @@ export default function DashboardLayout() {
     </Drawer>
   );
 }
-
 

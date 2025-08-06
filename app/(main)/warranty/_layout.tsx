@@ -198,36 +198,71 @@
 
 // File: app/(main)/warranty/_layout.tsx
 
-import { Ionicons } from '@expo/vector-icons';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
+// import { Ionicons } from '@expo/vector-icons';
+// import { DrawerActions, useNavigation } from '@react-navigation/native';
+// import { Stack } from 'expo-router';
+// import { TouchableOpacity } from 'react-native';
+
+// export default function WarrantyLayout() {
+//   const navigation = useNavigation();
+
+//   return (
+//     <Stack
+//       screenOptions={{
+//         // headerStyle: { backgroundColor: '#facc15' },
+//         // headerTintColor: 'black',
+//         headerStyle: { backgroundColor: '#facc15' },
+//         headerTintColor: 'black',
+//         // Hamburger menu to open the root drawer
+//         headerLeft: () => (
+//           <TouchableOpacity
+//             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+//             // style={{ marginLeft: 16 }}
+//             style={{paddingRight: 10}}
+//           >
+//             <Ionicons name="menu" size={24} color="black" />
+//           </TouchableOpacity>
+//         ),
+//       }}
+//     >
+//       {/* Define each warranty screen so you can set a custom title */}
+
+
+//       <Stack.Screen
+//         name="warranty-status-page"
+//         options={{ title: 'Warranty Details' }}
+//       />
+//       <Stack.Screen
+//         name="claim-form"
+//         options={{ title: 'Warranty Request Form' }}
+//       />
+//       <Stack.Screen
+//         name="claim-media-wizard"
+//         options={{ title: 'Upload Files' }}
+//       />
+//       <Stack.Screen
+//         name="warranty-card"
+//         options={{ title: 'Warranty Card' }}
+//       />
+//     </Stack>
+//   );
+// }
+
+
+
+// File: app/(main)/warranty/_layout.tsx
+
+import CustomHeader from '@/components/CustomHeader';
 import { Stack } from 'expo-router';
-import { TouchableOpacity } from 'react-native';
+import React from 'react';
 
 export default function WarrantyLayout() {
-  const navigation = useNavigation();
-
   return (
     <Stack
       screenOptions={{
-        // headerStyle: { backgroundColor: '#facc15' },
-        // headerTintColor: 'black',
-        headerStyle: { backgroundColor: '#facc15' },
-        headerTintColor: 'black',
-        // Hamburger menu to open the root drawer
-        headerLeft: () => (
-          <TouchableOpacity
-            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-            // style={{ marginLeft: 16 }}
-            style={{paddingRight: 10}}
-          >
-            <Ionicons name="menu" size={24} color="black" />
-          </TouchableOpacity>
-        ),
+        header: (props) => <CustomHeader {...props} />,
       }}
     >
-      {/* Define each warranty screen so you can set a custom title */}
-
-
       <Stack.Screen
         name="warranty-status-page"
         options={{ title: 'Warranty Details' }}
@@ -247,3 +282,4 @@ export default function WarrantyLayout() {
     </Stack>
   );
 }
+
