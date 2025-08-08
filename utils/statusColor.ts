@@ -17,6 +17,11 @@ export function getStatusColor(status: string): string {
   }
 }
 
+// helper to produce a solid background class from the text color
+export function getStatusBgClass(status: string): string {
+  return getStatusColor(status).replace('text-', 'bg-'); // e.g. text-green-500 -> bg-green-500 [2][6][9]
+}
+
 
 export const getOrderStatusColor = (status?: string) => {
     if (!status) return "#9ca3af";

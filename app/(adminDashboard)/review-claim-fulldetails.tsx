@@ -1129,6 +1129,7 @@ dayjs.extend(relativeTime);
 
 import { checklistItems, claimSteps as importedClaimSteps } from "@/app/(main)/warranty/claim-steps";
 import api from "@/utils/api";
+import { getStatusBgClass } from "@/utils/statusColor";
 
 type Upload = {
   id: number;
@@ -1163,11 +1164,27 @@ type ClaimDetail = {
   pdf_url?: string;
 };
 
+
+function normalizeStatus(s: string) {
+  const t = s.toLowerCase();
+  if (t === 'approved') return 'delivered';
+  if (t === 'rejected') return 'cancelled';
+  return t;
+}
+
 function getMediaUrl(media_file: string): string {
   if (media_file.startsWith("http")) return media_file;
   if (media_file.startsWith("/media/")) return doc_url + media_file;
   return doc_url + media_file.replace(/^\/+/, "");
 }
+
+
+const getStatusColor = (status: string) => {
+  if (status.toLowerCase().includes("pending")) return "bg-yellow-200 text-yellow-800";
+  if (status.toLowerCase().includes("approved")) return "bg-green-200 text-green-800";
+  if (status.toLowerCase().includes("rejected")) return "bg-red-200 text-red-800";
+  return "bg-blue-200 text-blue-800";
+};
 
 function openInMaps(lat: number, lng: number) {
   let url: string;
@@ -1401,6 +1418,8 @@ export default function ReviewClaimFullDetailsScreen() {
 
   const claimSteps: ClaimStep[] = importedClaimSteps;
 
+  const pillBg = getStatusBgClass(normalizeStatus(data.status));
+
   return (
     <>
       <ScrollView
@@ -1419,7 +1438,7 @@ export default function ReviewClaimFullDetailsScreen() {
         <View className="bg-white rounded-xl shadow-md border border-gray-200 px-4 py-5 mb-6">
           <Text className="text-lg font-extrabold mb-1">Request ID#{data.war_req_id}</Text>
 
-          <Text className="mb-1">
+          {/* <Text className="mb-1">
             Status:
             <Text
               className={`ml-2 px-2 py-1 text-white rounded-full text-xs font-bold ${data.status === "Approved"
@@ -1431,7 +1450,30 @@ export default function ReviewClaimFullDetailsScreen() {
             >
               {data.status}
             </Text>
+          </Text> */}
+          {/* <Text>
+            Status:
+            <Text
+              className={`ml-2 px-2 py-1 rounded-full text-xs font-bold text-white ${pillBg}`}
+            >
+              {data.status}
+            </Text>
+          </Text> */}
+
+          <Text className="mb-0.5">
+            Status:{" "}
+            <Text
+              className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusColor(
+                data.status
+              )}`}
+            >
+              {data.status.toUpperCase()}
+            </Text>
           </Text>
+
+
+
+
           <Text>
             Project ID: <Text className="font-bold">{data.project_id}</Text>
           </Text>

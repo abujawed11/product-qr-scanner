@@ -52,6 +52,7 @@ export default function AdminDashboardLayout() {
         { name: 'review-req-warranty-status', title: 'Requests' },
         { name: 'review-claim-fulldetails', title: 'Complete Details' },
         { name: 'review-claim-update', title: 'Update Status' },
+        { name: 'admin-order-details', title: 'Order Details' },
         // { name: 'review-claims', title: 'Review Claims' },
       ].map(({ name, title }) => (
         <Drawer.Screen
