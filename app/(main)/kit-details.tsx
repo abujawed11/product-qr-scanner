@@ -1130,6 +1130,7 @@ export default function KitDetailsScreen() {
         purchase_date: date ?? '',
         client_id: client_id ?? '',
         company_name: company_name,
+        email: user?.email || '',
       },
     });
   };

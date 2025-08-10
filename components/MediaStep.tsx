@@ -171,9 +171,8 @@ import { StepMedia } from "@/types/StepMedia";
 import { compressImage } from "@/utils/mediaUtils";
 import { ResizeMode, Video } from "expo-av";
 import * as ImagePicker from "expo-image-picker";
-import * as NavigationBar from 'expo-navigation-bar';
 import React from "react";
-import { Image, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export type MediaStepProps = {
@@ -201,10 +200,7 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
             const compressedUri = await compressImage(originalUri);
             setMedia(m => ({ ...m, [step.key]: { ...m[step.key], image: compressedUri } }));
         }
-        if (Platform.OS === 'android') {
-            // **FORCE navigation bar VISIBLE**
-            await NavigationBar.setVisibilityAsync('visible');
-        }
+        
     }
 
     async function takeImageWithCamera() {
@@ -223,10 +219,7 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
             const compressedUri = await compressImage(originalUri);
             setMedia(m => ({ ...m, [step.key]: { ...m[step.key], image: compressedUri } }));
         }
-         if (Platform.OS === 'android') {
-            // **FORCE navigation bar VISIBLE**
-            await NavigationBar.setVisibilityAsync('visible');
-        }
+        
     }
 
     async function pickVideoFromGallery() {
@@ -237,10 +230,7 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
         if (!result.canceled && result.assets?.length) {
             setMedia(m => ({ ...m, [step.key]: { ...m[step.key], video: result.assets[0].uri } }));
         }
-         if (Platform.OS === 'android') {
-            // **FORCE navigation bar VISIBLE**
-            await NavigationBar.setVisibilityAsync('visible');
-        }
+        
     }
 
     async function recordVideoWithCamera() {
@@ -256,10 +246,7 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
         if (!result.canceled && result.assets?.length) {
             setMedia(m => ({ ...m, [step.key]: { ...m[step.key], video: result.assets[0].uri } }));
         }
-         if (Platform.OS === 'android') {
-            // **FORCE navigation bar VISIBLE**
-            await NavigationBar.setVisibilityAsync('visible');
-        }
+        
     }
 
     return (

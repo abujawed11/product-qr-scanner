@@ -142,6 +142,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // app/_layout.tsx
 import { AuthProvider } from '@/context/AuthContext';
 import { RefreshProvider } from '@/context/RefreshContext';
+import * as NavigationBar from 'expo-navigation-bar';
 import * as Notifications from 'expo-notifications';
 import { Slot } from 'expo-router';
 import { useEffect } from 'react';
@@ -179,6 +180,19 @@ export default function RootLayout() {
           vibrationPattern: [0, 250, 250, 250],
           lightColor: '#FF231F7C',
         });
+
+        // Configure Android navigation bar: dim or hide
+        try {
+          // Make nav bar darker and buttons light for a dimmed look
+          await NavigationBar.setBackgroundColorAsync('#0a0a0a');
+          await NavigationBar.setButtonStyleAsync('light');
+
+          // If you want it hidden by default, uncomment the next two lines
+          await NavigationBar.setBehaviorAsync('overlay-swipe');
+          await NavigationBar.setVisibilityAsync('hidden');
+        } catch (e) {
+          // noop
+        }
       }
     };
 

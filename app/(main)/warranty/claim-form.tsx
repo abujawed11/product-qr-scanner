@@ -1626,6 +1626,7 @@ export default function WarrantyCustomerInfoPage() {
     kit_no?: string;
     project_id?: string;
     purchase_date?: string;
+    email?: string;
   }>();
 
   const [clientId, setClientId] = useState('');
@@ -1666,6 +1667,7 @@ export default function WarrantyCustomerInfoPage() {
     if (params.kit_no) setKitNo(params.kit_no);
     if (params.project_id) setProjectId(params.project_id);
     if (params.purchase_date) setPurchaseDate(params.purchase_date);
+    if (params.email) setEmail(String(params.email));
   }, [params]);
 
   // Phone: only allow 0-9, max 10 digits
@@ -1730,6 +1732,7 @@ export default function WarrantyCustomerInfoPage() {
             placeholder="Client ID"
             placeholderTextColor="#BBB"
             style={inputStyle}
+            editable={false}
           />
 
           {/* Client Company Name */}
@@ -1740,6 +1743,7 @@ export default function WarrantyCustomerInfoPage() {
             placeholder="Company Name"
             placeholderTextColor="#BBB"
             style={inputStyle}
+            editable={false}
           />
 
           {/* Contact Name */}
@@ -1857,6 +1861,7 @@ export default function WarrantyCustomerInfoPage() {
             autoCapitalize="none"
             style={inputStyle}
             onBlur={() => setEmailTouched(true)}
+            editable={false}
           />
           {(!isEmailValid && (emailTouched || submitAttempted)) &&
             <Text style={{ color: "tomato", fontSize: 13, marginBottom: 11, marginLeft: 3 }}>
@@ -1882,6 +1887,7 @@ export default function WarrantyCustomerInfoPage() {
             placeholder="Kit ID"
             placeholderTextColor="#BBB"
             style={inputStyle}
+            editable={false}
           />
 
           {/* Kit Number */}
@@ -1892,6 +1898,7 @@ export default function WarrantyCustomerInfoPage() {
             placeholder="Kit No"
             placeholderTextColor="#BBB"
             style={inputStyle}
+            editable={false}
           />
 
           {/* Project ID */}
@@ -1902,6 +1909,7 @@ export default function WarrantyCustomerInfoPage() {
             placeholder="Project ID"
             placeholderTextColor="#BBB"
             style={inputStyle}
+            editable={false}
           />
 
           {/* Purchase Date */}
@@ -1912,6 +1920,7 @@ export default function WarrantyCustomerInfoPage() {
             placeholder="Purchase Date"
             placeholderTextColor="#BBB"
             style={[inputStyle, { marginBottom: 32 }]}
+            editable={false}
           />
 
           <TouchableOpacity

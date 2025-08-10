@@ -2,6 +2,7 @@
 
 // import CustomDrawer from '@/components/CustomDrawer';
 import CustomAdminDrawer from '@/components/CustomAdminDrawer';
+import { CustomMainHeader } from '@/components/CustomHeader';
 import { useAuth } from '@/context/AuthContext';
 import { Redirect } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
@@ -41,6 +42,9 @@ export default function AdminDashboardLayout() {
         drawerPosition: 'left',
         headerStyle: { backgroundColor: '#facc15' }, // Yellow
         headerTintColor: 'black',
+        header: (props) => (
+          <CustomMainHeader {...(props as any)} bellTarget="/(adminDashboard)/notifications" />
+        ),
       }}
     >
       {[
@@ -48,6 +52,7 @@ export default function AdminDashboardLayout() {
         { name: 'manage-clients', title: 'Manage Clients' },
         { name: 'manage-orders', title: 'Manage Orders' },
         { name: 'manage-kits', title: 'Manage Kits' },
+        { name: 'notifications', title: 'Notifications' },
         { name: 'review-req-dashboard', title: 'Warranty Dashboard' },
         { name: 'review-req-warranty-status', title: 'Requests' },
         { name: 'review-claim-fulldetails', title: 'Complete Details' },

@@ -148,7 +148,9 @@ export default function CustomHeader({ navigation, route, options }: NativeStack
   );
 }
 
-export function CustomMainHeader({ navigation, route, options }: DrawerHeaderProps) {
+type CustomMainHeaderProps = DrawerHeaderProps & { bellTarget?: string };
+
+export function CustomMainHeader({ navigation, route, options, bellTarget }: CustomMainHeaderProps) {
   const title = options.title ?? route.name;
 
   return (
@@ -186,7 +188,7 @@ export function CustomMainHeader({ navigation, route, options }: DrawerHeaderPro
         {/* Right section: Bell */}
         {/* <BellWithNotification /> */}
         <View style={{ position: 'absolute', right: 10, top: -3 }}>
-          <BellWithNotification />
+          <BellWithNotification target={bellTarget} />
         </View>
       </View>
     </View>
