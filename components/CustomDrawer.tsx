@@ -31,31 +31,7 @@ const CustomDrawer = (props: any) => {
       <View className="mt-6">
         <DrawerItem
           label="Home"
-          // onPress={() => {
-          //   props.navigation.closeDrawer(); // always close the drawer
-
-          //   // match actual full path including layout segment
-          //   if (pathname !== '/(main)/dashboard') {
-          //     router.push('/(main)/dashboard');
-          //   }
-          // }}
           onPress={() => router.push('/dashboard')}
-          // onPress={() => {
-          //   if (pathname !== '/dashboard') {
-          //     props.navigation.closeDrawer();
-          //     // setTimeout(() => {
-          //     router.replace('/dashboard');
-          //     // }, 100);
-          //   } else {
-          //     props.navigation.closeDrawer();
-          //   }
-          // }}
-          // props.navigation.closeDrawer();
-          // if (pathname !== '/dashboard') {
-          //   router.push('/dashboard');
-          // }
-          // let drawer close naturally
-          // }}
           icon={({ size }) => <Entypo name="home" size={size} color="#facc15" />}
           labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
           style={{ backgroundColor: 'transparent' }}
@@ -69,13 +45,7 @@ const CustomDrawer = (props: any) => {
           style={{ backgroundColor: 'transparent' }}
         />
 
-        {/* <DrawerItem
-          label="Warranty Status"
-          onPress={() => router.push('/warranty-status')}
-          icon={({ size }) => <FontAwesome name="id-card-o" size={24} color="#facc15" />}
-          labelStyle={{ color: '#facc15', fontWeight: 'bold' }}
-          style={{ backgroundColor: 'transparent' }}
-        /> */}
+
 
         <DrawerItem
           label="Warranty"
