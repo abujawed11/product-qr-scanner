@@ -46,16 +46,40 @@ export default function ClaimMediaWizard() {
     // ---- Mutation for claim submission ----
     const submitClaimMutation = useMutation({
         mutationFn: async (formData: FormData) => {
-            const response = await api.post("/warranty-claims/", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-                timeout: 120_000,
-                onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-                    if (progressEvent.total) {
-                        setUploadProgress(100 * progressEvent.loaded / progressEvent.total);
+            let lastError;
+            const maxRetries = 3;
+            
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    const response = await api.post("/warranty-claims/", formData, {
+                        headers: { "Content-Type": "multipart/form-data" },
+                        timeout: 600000, // 10 minutes for large file uploads with multiple media files
+                        onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+                            if (progressEvent.total) {
+                                const progress = 100 * progressEvent.loaded / progressEvent.total;
+                                // Show retry attempt in progress
+                                const displayProgress = attempt > 1 ? 
+                                    `Attempt ${attempt}/${maxRetries}: ${Math.round(progress)}%` : 
+                                    Math.round(progress);
+                                setUploadProgress(typeof displayProgress === 'string' ? progress : displayProgress);
+                            }
+                        }
+                    });
+                    return response;
+                } catch (error) {
+                    lastError = error;
+                    console.log(`Upload attempt ${attempt} failed:`, error);
+                    
+                    if (attempt < maxRetries) {
+                        // Wait before retry (exponential backoff)
+                        await new Promise(resolve => setTimeout(resolve, attempt * 2000));
+                        setUploadProgress(0); // Reset progress for retry
                     }
                 }
-            });
-            return response;
+            }
+            
+            // If all retries failed, throw the last error
+            throw lastError;
         },
         onSuccess: (response, variables, context) => {
             setIsSubmitting(false);
@@ -77,15 +101,31 @@ export default function ClaimMediaWizard() {
         onError: (error: AxiosError) => {
             setIsSubmitting(false);
             setUploadProgress(0);
-            if (error.response && error.response.data && typeof error.response.data === "object") {
+            let errorMessage = "Failed to submit claim after multiple attempts.";
+            
+            if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+                errorMessage = "Upload timed out after retries. Please check your internet connection and try again. Consider reducing image/video file sizes if the problem persists.";
+            } else if (error.response?.status === 413) {
+                errorMessage = "Files are too large for server. Try these solutions:\n\n• Use fewer files (max 15-20)\n• Take smaller images/videos\n• Remove some video files (images are smaller)\n• Check your internet connection\n\nImages are automatically compressed, but videos can be very large.";
+            } else if (error.response?.status && error.response?.status >= 500) {
+                errorMessage = "Server error after retries. Please try again later.";
+            } else if (error.response && error.response.data && typeof error.response.data === "object") {
                 const data = error.response.data as any;
-                Alert.alert("Submission Error", data.detail || JSON.stringify(data));
-            } else {
-                Alert.alert(
-                    "Submission Error",
-                    "Could not submit your claim. Please check your network or try again."
-                );
+                errorMessage = data.detail || JSON.stringify(data);
             }
+            
+            Alert.alert("Upload Failed", errorMessage, [
+                { text: "OK", style: "default" },
+                { 
+                    text: "Try Again", 
+                    style: "default",
+                    onPress: () => {
+                        // Reset and allow user to try again
+                        setIsSubmitting(false);
+                        setUploadProgress(0);
+                    }
+                }
+            ]);
         }
     });
 
@@ -226,6 +266,67 @@ export default function ClaimMediaWizard() {
 
     // ----- MUTATION-BASED SUBMIT -----
     async function handleSubmit() {
+        // Count and validate files first
+        let totalFiles = 0;
+        let estimatedTotalSize = 0;
+        
+        Object.entries(media).forEach(([stepKey, mediaObj]) => {
+            (["image", "video"] as const).forEach((mediaType) => {
+                const uri = mediaObj[mediaType];
+                if (typeof uri === "string" && uri) {
+                    totalFiles++;
+                }
+            });
+        });
+
+        console.log(`📊 Preparing to upload ${totalFiles} files`);
+        
+        if (totalFiles === 0) {
+            Alert.alert("No Files", "Please add at least one image or video before submitting.");
+            return;
+        }
+
+        if (totalFiles > 20) {
+            Alert.alert(
+                "Too Many Files", 
+                `You have ${totalFiles} files. Consider reducing the number of files or use smaller file sizes. Maximum recommended: 20 files.`,
+                [
+                    { text: "Cancel", style: "cancel" },
+                    { text: "Upload Anyway", onPress: () => proceedWithSubmit() }
+                ]
+            );
+            return;
+        }
+
+        // Check total file size (estimate)
+        const { calculateTotalMediaSize } = await import("@/utils/mediaUtils");
+        const sizeInfo = await calculateTotalMediaSize(media);
+        
+        if (sizeInfo.totalSize > 200 * 1024 * 1024) { // 200MB
+            Alert.alert(
+                "Files Too Large", 
+                `Total size: ${(sizeInfo.totalSize / (1024 * 1024)).toFixed(1)}MB exceeds 200MB server limit.\n\nPlease remove some large video files and try again.`,
+                [{ text: "OK", style: "default" }]
+            );
+            return;
+        }
+
+        if (sizeInfo.totalSize > 150 * 1024 * 1024) { // 150MB warning
+            Alert.alert(
+                "Large Upload Warning", 
+                `Total size: ${(sizeInfo.totalSize / (1024 * 1024)).toFixed(1)}MB is quite large. This may take several minutes to upload.\n\nDo you want to continue?`,
+                [
+                    { text: "Cancel", style: "cancel" },
+                    { text: "Continue", onPress: () => proceedWithSubmit() }
+                ]
+            );
+            return;
+        }
+
+        proceedWithSubmit();
+    }
+
+    function proceedWithSubmit() {
         const formData = new FormData();
         for (const key of [
             "clientId", "companyName", "clientName", "phone", "email", "orderId", "kitId", "kitNo", "projectId", "purchaseDate"

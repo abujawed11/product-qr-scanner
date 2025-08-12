@@ -161,6 +161,7 @@ const QRScanner = () => {
 
             const response = await api.post('/upload-qr/', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
+                timeout: 300000, // 5 minutes for file upload
             });
 
             // For normal scan

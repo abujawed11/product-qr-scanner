@@ -47,7 +47,7 @@ export default function TestUploadScreen() {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        timeout: 120000,
+        timeout: 300000, // 5 minutes for test uploads
         onUploadProgress: progressEvent => {
           if (progressEvent.total) {
             const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);

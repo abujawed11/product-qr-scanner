@@ -3,10 +3,10 @@
 //==================Working========================
 // components/MediaStep.tsx
 import { StepMedia } from "@/types/StepMedia";
-import { compressImage } from "@/utils/mediaUtils";
+import { compressImage, formatFileSize, getFileSize } from "@/utils/mediaUtils";
 import { ResizeMode, Video } from "expo-av";
 import * as ImagePicker from "expo-image-picker";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -24,6 +24,33 @@ export type MediaStepProps = {
 };
 
 export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepProps) {
+    const [imageSizeBytes, setImageSizeBytes] = useState<number>(0);
+    const [videoSizeBytes, setVideoSizeBytes] = useState<number>(0);
+    const [loadingSizes, setLoadingSizes] = useState<boolean>(false);
+
+    // Calculate file sizes when media changes
+    useEffect(() => {
+        const calculateSizes = async () => {
+            setLoadingSizes(true);
+            let imageSize = 0;
+            let videoSize = 0;
+
+            if (media[step.key]?.image) {
+                imageSize = await getFileSize(media[step.key].image!);
+            }
+
+            if (media[step.key]?.video) {
+                videoSize = await getFileSize(media[step.key].video!);
+            }
+
+            setImageSizeBytes(imageSize);
+            setVideoSizeBytes(videoSize);
+            setLoadingSizes(false);
+        };
+
+        calculateSizes();
+    }, [media[step.key]?.image, media[step.key]?.video, step.key]);
+
     async function pickImageFromGallery() {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -111,6 +138,21 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
                             source={{ uri: media[step.key]?.image! }}
                             style={{ width: "100%", height: 100, borderRadius: 10 }}
                         />
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+                            <Text style={{ color: "#9CA3AF", fontSize: 12 }}>
+                                📷 Size: {loadingSizes ? "Calculating..." : formatFileSize(imageSizeBytes)}
+                            </Text>
+                            <View style={{ 
+                                paddingHorizontal: 6, 
+                                paddingVertical: 2, 
+                                backgroundColor: imageSizeBytes > 5 * 1024 * 1024 ? "#DC2626" : imageSizeBytes > 2 * 1024 * 1024 ? "#F59E0B" : "#10B981",
+                                borderRadius: 4 
+                            }}>
+                                <Text style={{ color: "white", fontSize: 10, fontWeight: "bold" }}>
+                                    {imageSizeBytes > 5 * 1024 * 1024 ? "LARGE" : imageSizeBytes > 2 * 1024 * 1024 ? "MEDIUM" : "OK"}
+                                </Text>
+                            </View>
+                        </View>
                         <TouchableOpacity
                             style={{ marginTop: 8, backgroundColor: "#374151", padding: 8, borderRadius: 8 }}
                             onPress={() => setMedia(m => ({
@@ -149,6 +191,21 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
                             resizeMode={ResizeMode.CONTAIN}
                             style={{ width: "100%", height: 120, borderRadius: 10 }}
                         />
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+                            <Text style={{ color: "#9CA3AF", fontSize: 12 }}>
+                                🎥 Size: {loadingSizes ? "Calculating..." : formatFileSize(videoSizeBytes)}
+                            </Text>
+                            <View style={{ 
+                                paddingHorizontal: 6, 
+                                paddingVertical: 2, 
+                                backgroundColor: videoSizeBytes > 20 * 1024 * 1024 ? "#DC2626" : videoSizeBytes > 10 * 1024 * 1024 ? "#F59E0B" : "#10B981",
+                                borderRadius: 4 
+                            }}>
+                                <Text style={{ color: "white", fontSize: 10, fontWeight: "bold" }}>
+                                    {videoSizeBytes > 20 * 1024 * 1024 ? "LARGE" : videoSizeBytes > 10 * 1024 * 1024 ? "MEDIUM" : "OK"}
+                                </Text>
+                            </View>
+                        </View>
                         <TouchableOpacity
                             style={{ marginTop: 8, backgroundColor: "#374151", padding: 8, borderRadius: 8 }}
                             onPress={() => setMedia(m => ({
@@ -177,6 +234,34 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
                     </View>
                 )}
             </ScrollView>
+
+            {/* Step Size Summary */}
+            {(imageSizeBytes > 0 || videoSizeBytes > 0) && (
+                <View style={{ 
+                    backgroundColor: "#1F2937", 
+                    marginHorizontal: 24, 
+                    padding: 12, 
+                    borderRadius: 8,
+                    marginBottom: 8 
+                }}>
+                    <Text style={{ color: "#FAD90E", fontWeight: "bold", marginBottom: 4 }}>
+                        Step Total:
+                    </Text>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                        <Text style={{ color: "#9CA3AF", fontSize: 12 }}>
+                            📁 Size: {formatFileSize(imageSizeBytes + videoSizeBytes)}
+                        </Text>
+                        <Text style={{ color: "#9CA3AF", fontSize: 12 }}>
+                            Files: {(imageSizeBytes > 0 ? 1 : 0) + (videoSizeBytes > 0 ? 1 : 0)}
+                        </Text>
+                    </View>
+                    {(imageSizeBytes + videoSizeBytes) > 50 * 1024 * 1024 && (
+                        <Text style={{ color: "#DC2626", fontSize: 11, fontStyle: "italic", marginTop: 4 }}>
+                            ⚠️ This step has large files that may cause upload issues
+                        </Text>
+                    )}
+                </View>
+            )}
 
             {/* Fixed Buttons Row */}
             <SafeAreaView

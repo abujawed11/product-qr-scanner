@@ -6,6 +6,7 @@ import { BASE_URL } from './constants';
 
 const api = axios.create({
   baseURL: BASE_URL,
+  timeout: 300000, // 5 minutes default timeout for all requests
 });
 
 // ✅ Request Interceptor (adds token to every request)
