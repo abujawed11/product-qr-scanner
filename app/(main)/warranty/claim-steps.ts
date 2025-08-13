@@ -14,7 +14,7 @@ export const claimSteps: ClaimStep[] = [
     title: 'Step 1: Marking & Layout',
     instruction: 'Upload a photo showing marked pedestal positions (400x400mm), layout grid, and dimensions on the weathering course.',
     // mediaType: 'image',
-    demoVideo: 'https://task.sun-rack.com/uploads/bluebase.mp4',
+    demoVideo: 'https://rcckitportal.sun-rack.com/media/demo-images/step1-marking-layout.png',
     mediaTypes: ['image', 'video'],
   },
   {
@@ -22,7 +22,7 @@ export const claimSteps: ClaimStep[] = [
     title: 'Step 2: Cut Weathering Course',
     instruction: 'Upload a photo after cutting/removal of the weathering layer and cleaning of slab at marked locations.',
     // mediaType: 'image',
-    demoVideo: 'https://yourcdn.com/demo1.mp4',
+    demoVideo: 'https://rcckitportal.sun-rack.com/media/demo-images/step2-cut-weathering-course.png',
     mediaTypes: ['image', 'video'],
   },
   {
@@ -30,7 +30,7 @@ export const claimSteps: ClaimStep[] = [
     title: 'Step 3: Installing Columns',
     instruction: 'Upload a photo showing FC20 and BC20 columns placed at their marks and checked with a spirit level.',
     // mediaType: 'image',
-    demoVideo: 'https://yourcdn.com/demo1.mp4',
+    demoVideo: 'https://rcckitportal.sun-rack.com/media/demo-images/step3-installing-columns.png',
     mediaTypes: ['image', 'video'],
   },
   {
@@ -38,7 +38,7 @@ export const claimSteps: ClaimStep[] = [
     title: 'Step 4: Fixing Columns',
     instruction: 'Upload a close-up photo of anchor bolts fixed through the base plate to the mother slab, with spirit level.',
     // mediaType: 'image',
-    demoVideo: 'https://yourcdn.com/demo1.mp4',
+    demoVideo: 'https://rcckitportal.sun-rack.com/media/demo-images/step4-fixing-columns.png',
     mediaTypes: ['image', 'video'],
   },
   {
@@ -46,7 +46,7 @@ export const claimSteps: ClaimStep[] = [
     title: 'Step 5: Rafter Installation',
     instruction: 'Upload a photo of rafters fixed diagonally with bolts/washers, showing tilt angle and correct alignment.',
     // mediaType: 'image',
-    demoVideo: 'https://yourcdn.com/demo1.mp4',
+    demoVideo: 'https://rcckitportal.sun-rack.com/media/demo-images/step5-rafter-installation.png',
     mediaTypes: ['image', 'video'],
   },
   {
@@ -54,7 +54,7 @@ export const claimSteps: ClaimStep[] = [
     title: 'Step 6: Purlin Installation',
     instruction: 'Upload a photo of all 4 purlins fixed horizontally below module area, showing bolt-washer connections.',
     // mediaType: 'image',
-    demoVideo: 'https://yourcdn.com/demo1.mp4',
+    demoVideo: 'https://rcckitportal.sun-rack.com/media/demo-images/step6-purlin-installation.png',
     mediaTypes: ['image', 'video'],
   },
   {
@@ -62,7 +62,7 @@ export const claimSteps: ClaimStep[] = [
     title: 'Step 7: Install Bracing Piece (BP)',
     instruction: 'Upload a photo of bracing piece fixed to columns at proper elevation and orientation.',
     // mediaType: 'image',
-    demoVideo: 'https://yourcdn.com/demo1.mp4',
+    demoVideo: 'https://rcckitportal.sun-rack.com/media/demo-images/step7-install-bracing-piece.png',
     mediaTypes: ['image', 'video'],
   },
   {
@@ -70,7 +70,7 @@ export const claimSteps: ClaimStep[] = [
     title: 'Step 8: Side Bracing Installation (SB)',
     instruction: 'Upload a photo of side bracings mounted from bracing piece to rafter midpoint, forming a triangle.',
     // mediaType: 'image',
-    demoVideo: 'https://yourcdn.com/demo1.mp4',
+    demoVideo: 'https://rcckitportal.sun-rack.com/media/demo-images/step8-side-bracing-installation.png',
     mediaTypes: ['image', 'video'],
   },
   {
@@ -78,7 +78,7 @@ export const claimSteps: ClaimStep[] = [
     title: 'Step 9: Diagonal Bracing Installation (DB1 & DB2)',
     instruction: 'Upload a photo showing diagonal bracings installed on both front and back columns, bolts visible.',
     // mediaType: 'image',
-    demoVideo: 'https://yourcdn.com/demo1.mp4',
+    demoVideo: 'https://rcckitportal.sun-rack.com/media/demo-images/step9-diagonal-bracing-installation.png',
     mediaTypes: ['image', 'video'],
   },
   {
@@ -86,7 +86,7 @@ export const claimSteps: ClaimStep[] = [
     title: 'Step 10: Pedestal Casting',
     instruction: 'Upload a photo of RCC pedestal casting in progress or completed at all columns; show anchor bolts.',
     // mediaType: 'image',
-    demoVideo: 'https://yourcdn.com/demo1.mp4',
+    demoVideo: 'https://rcckitportal.sun-rack.com/media/demo-images/step10-pedestal-casting.png',
     mediaTypes: ['image', 'video'],
   },
   {
@@ -94,7 +94,7 @@ export const claimSteps: ClaimStep[] = [
     title: 'Step 11: PV Module Installation',
     instruction: 'Upload a photo showing all 6 PV modules properly mounted and secured to purlins.',
     // mediaType: 'image',
-    demoVideo: 'https://yourcdn.com/demo1.mp4',
+    demoVideo: 'https://rcckitportal.sun-rack.com/media/demo-images/step11-pv-module-installation.png',
     mediaTypes: ['image', 'video'],
   },
   {
@@ -102,7 +102,7 @@ export const claimSteps: ClaimStep[] = [
     title: 'Step 12: Final Checks',
     instruction: 'Upload a photo confirming alignment, joints, bracing, and completed structure as per QA checklist.',
     // mediaType: 'image',
-    demoVideo: 'https://yourcdn.com/demo1.mp4',
+    demoVideo: 'https://rcckitportal.sun-rack.com/media/demo-images/step12-final-checks.png',
     mediaTypes: ['image', 'video'],
   },
 ];

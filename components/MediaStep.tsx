@@ -8,6 +8,7 @@ import { ResizeMode, Video } from "expo-av";
 import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import ImageView from "react-native-image-viewing";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export type MediaStepProps = {
@@ -27,6 +28,7 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
     const [imageSizeBytes, setImageSizeBytes] = useState<number>(0);
     const [videoSizeBytes, setVideoSizeBytes] = useState<number>(0);
     const [loadingSizes, setLoadingSizes] = useState<boolean>(false);
+    const [demoImageUri, setDemoImageUri] = useState<string | null>(null);
 
     // Calculate file sizes when media changes
     useEffect(() => {
@@ -131,12 +133,60 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
                 <Text style={{ color: "#FAD90E", fontWeight: "bold", fontSize: 18, marginBottom: 6 }}>{step.title}</Text>
                 <Text style={{ color: "#FFF", marginBottom: 8 }}>{step.instruction}</Text>
                 {step.demoVideo && (
-                    <Video
-                        source={{ uri: step.demoVideo }}
-                        useNativeControls
-                        resizeMode={ResizeMode.CONTAIN}
-                        style={{ width: "100%", height: 180, borderRadius: 10, marginBottom: 16 }}
-                    />
+                    (() => {
+                        const isImage = step.demoVideo?.match(/\.(jpg|jpeg|png|gif|bmp|webp)(\?.*)?$/i);
+                        const isVideo = step.demoVideo?.match(/\.(mp4|mov|avi|mkv|webm|m4v)(\?.*)?$/i);
+                        
+                        if (isImage) {
+                            console.log('📸 Displaying demo image:', step.demoVideo);
+                            return (
+                                <View>
+                                    <Text style={{ color: "#FFF", fontSize: 12, marginBottom: 4 }}>Demo Image:</Text>
+                                    <TouchableOpacity
+                                        onPress={() => setDemoImageUri(step.demoVideo || null)}
+                                        activeOpacity={0.8}
+                                    >
+                                        <Image
+                                            source={{ uri: step.demoVideo }}
+                                            style={{ width: "100%", height: 250, borderRadius: 10, marginBottom: 16 }}
+                                            resizeMode="contain"
+                                            onLoad={() => console.log('✅ Demo image loaded successfully')}
+                                            onError={(error) => console.log('❌ Demo image failed to load:', error)}
+                                        />
+                                        <View style={{
+                                            position: 'absolute',
+                                            bottom: 24,
+                                            right: 8,
+                                            backgroundColor: 'rgba(0,0,0,0.7)',
+                                            paddingHorizontal: 8,
+                                            paddingVertical: 4,
+                                            borderRadius: 12
+                                        }}>
+                                            <Text style={{ color: '#FFF', fontSize: 10 }}>Tap to enlarge</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                            );
+                        } else if (isVideo) {
+                            return (
+                                <Video
+                                    source={{ uri: step.demoVideo }}
+                                    useNativeControls
+                                    resizeMode={ResizeMode.CONTAIN}
+                                    style={{ width: "100%", height: 180, borderRadius: 10, marginBottom: 16 }}
+                                />
+                            );
+                        } else {
+                            // Default to image if extension is unclear
+                            return (
+                                <Image
+                                    source={{ uri: step.demoVideo }}
+                                    style={{ width: "100%", height: 180, borderRadius: 10, marginBottom: 16 }}
+                                    resizeMode="contain"
+                                />
+                            );
+                        }
+                    })()
                 )}
 
                 {/* Image Upload Section */}
@@ -310,6 +360,20 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
                     <Text style={{ color: "#000", fontWeight: "bold" }}>Next</Text>
                 </TouchableOpacity>
             </SafeAreaView>
+
+            {/* Full-screen Demo Image Viewer */}
+            {demoImageUri && (
+                <ImageView
+                    images={[{ uri: demoImageUri }]}
+                    imageIndex={0}
+                    visible={true}
+                    onRequestClose={() => setDemoImageUri(null)}
+                    backgroundColor="black"
+                    swipeToCloseEnabled={true}
+                    doubleTapToZoomEnabled={true}
+                    presentationStyle="fullScreen"
+                />
+            )}
         </View>
     );
 }
