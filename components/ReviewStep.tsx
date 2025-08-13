@@ -41,12 +41,28 @@ export function ReviewStep({
     useEffect(() => {
         const calculateTotalSize = async () => {
             setCalculatingSize(true);
-            const sizeInfo = await calculateTotalMediaSize(media);
-            setTotalSizeInfo(sizeInfo);
-            setCalculatingSize(false);
+            try {
+                console.log('🔄 Calculating total media size for review...');
+                const sizeInfo = await calculateTotalMediaSize(media);
+                setTotalSizeInfo(sizeInfo);
+                console.log(`✅ Total calculated: ${sizeInfo.totalSize} bytes, ${sizeInfo.fileCount} files`);
+            } catch (error) {
+                console.warn('Error calculating total media size:', error);
+                // Set fallback values
+                setTotalSizeInfo({ 
+                    totalSize: 0, 
+                    fileCount: Object.values(media).filter(m => m.image || m.video).length, 
+                    breakdown: [] 
+                });
+            } finally {
+                setCalculatingSize(false);
+            }
         };
 
-        calculateTotalSize();
+        // Add small delay to ensure all sizes are properly calculated
+        const timeoutId = setTimeout(calculateTotalSize, 1000);
+        
+        return () => clearTimeout(timeoutId);
     }, [media]);
 
     const canSubmit = accepted && !!location && !locationLoading;

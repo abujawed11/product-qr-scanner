@@ -20,16 +20,115 @@ export async function compressImage(imageUri: string): Promise<string> {
     }
 }
 
-// Get actual file size
+// Cache for file sizes to prevent repeated calculations
+const fileSizeCache = new Map<string, number>();
+
+// Helper function to detect file type from URI
+function isVideoFile(uri: string): boolean {
+    const videoExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.m4v', '.3gp', '.webm'];
+    const lowerUri = uri.toLowerCase();
+    return videoExtensions.some(ext => lowerUri.includes(ext)) || lowerUri.includes('video');
+}
+
+// Helper function to check if URI is a local file
+function isLocalFile(uri: string): boolean {
+    return uri.startsWith('file://') || uri.startsWith('content://') || uri.startsWith('ph://');
+}
+
+// Get actual file size using FileSystem for better reliability
 export async function getFileSize(uri: string): Promise<number> {
+    // Check cache first
+    if (fileSizeCache.has(uri)) {
+        const cachedSize = fileSizeCache.get(uri)!;
+        console.log(`📋 Using cached size for ${uri.split('/').pop()}: ${formatFileSize(cachedSize)}`);
+        return cachedSize;
+    }
     try {
-        const response = await fetch(uri);
-        const blob = await response.blob();
-        console.log(`📏 File size for ${uri.split('/').pop()}: ${formatFileSize(blob.size)}`);
+        // Try FileSystem.getInfoAsync first (more reliable for local files)
+        const FileSystem = await import('expo-file-system');
+        
+        console.log(`🔍 Attempting to get file info for: ${uri}`);
+        const fileInfo = await FileSystem.getInfoAsync(uri);
+        
+        if (fileInfo.exists && 'size' in fileInfo && fileInfo.size !== undefined) {
+            const size = fileInfo.size;
+            console.log(`📏 FileSystem success - File size for ${uri.split('/').pop()}: ${formatFileSize(size)}`);
+            fileSizeCache.set(uri, size); // Cache the result
+            return size;
+        }
+        
+        console.log(`⚠️ FileSystem method failed or returned no size. File exists: ${fileInfo.exists}`);
+        
+        // For mobile file URIs that might not work with fetch, try a different approach
+        if (isLocalFile(uri)) {
+            console.log('📏 Local file detected, trying alternative approach...');
+            
+            // Don't try to read large video files as base64 (memory intensive)
+            if (isVideoFile(uri)) {
+                console.log('📏 Video file detected, using conservative estimate...');
+                const estimatedSize = 25 * 1024 * 1024; // 25MB estimate for videos
+                fileSizeCache.set(uri, estimatedSize);
+                return estimatedSize;
+            }
+            
+            // Try reading the file to get its size (only for smaller files like images)
+            try {
+                const content = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+                const sizeFromBase64 = Math.ceil(content.length * 0.75); // Approximate size from base64
+                console.log(`📏 Base64 method - File size for ${uri.split('/').pop()}: ${formatFileSize(sizeFromBase64)}`);
+                fileSizeCache.set(uri, sizeFromBase64);
+                return sizeFromBase64;
+            } catch (readError) {
+                console.warn('📏 Base64 read failed:', readError);
+                // Fall through to network methods
+            }
+        }
+        
+        // Fallback to fetch method for remote URLs
+        console.log('📏 Trying fetch method as fallback...');
+        const response = await fetch(uri, { method: 'HEAD' }); // Use HEAD to avoid downloading full file
+        const contentLength = response.headers.get('content-length');
+        
+        if (contentLength) {
+            const size = parseInt(contentLength);
+            console.log(`📏 Fetch HEAD success - File size for ${uri.split('/').pop()}: ${formatFileSize(size)}`);
+            fileSizeCache.set(uri, size);
+            return size;
+        }
+        
+        // Last resort - actually fetch the file
+        console.log('📏 Trying full fetch as last resort...');
+        const fullResponse = await fetch(uri);
+        const blob = await fullResponse.blob();
+        console.log(`📏 Full fetch success - File size for ${uri.split('/').pop()}: ${formatFileSize(blob.size)}`);
+        fileSizeCache.set(uri, blob.size); // Cache the result
         return blob.size;
+        
     } catch (error) {
         console.warn('Could not get file size:', error);
-        return 0;
+        
+        // Return estimated size based on file type as last resort
+        let estimatedSize;
+        if (isVideoFile(uri)) {
+            console.log('📏 Using estimated video size: 20MB (fallback)');
+            estimatedSize = 20 * 1024 * 1024; // Estimate 20MB for videos (more conservative)
+        } else {
+            console.log('📏 Using estimated image size: 1MB (fallback)');
+            estimatedSize = 1 * 1024 * 1024; // Estimate 1MB for images (compressed)
+        }
+        fileSizeCache.set(uri, estimatedSize); // Cache the estimated size
+        return estimatedSize;
+    }
+}
+
+// Clear the file size cache (useful when files are deleted)
+export function clearFileSizeCache(uri?: string): void {
+    if (uri) {
+        fileSizeCache.delete(uri);
+        console.log(`🗑️ Cleared cache for ${uri.split('/').pop()}`);
+    } else {
+        fileSizeCache.clear();
+        console.log('🗑️ Cleared entire file size cache');
     }
 }
 

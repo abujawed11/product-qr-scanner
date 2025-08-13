@@ -3,7 +3,7 @@
 //==================Working========================
 // components/MediaStep.tsx
 import { StepMedia } from "@/types/StepMedia";
-import { compressImage, formatFileSize, getFileSize } from "@/utils/mediaUtils";
+import { clearFileSizeCache, compressImage, formatFileSize, getFileSize } from "@/utils/mediaUtils";
 import { ResizeMode, Video } from "expo-av";
 import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
@@ -35,12 +35,18 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
             let imageSize = 0;
             let videoSize = 0;
 
-            if (media[step.key]?.image) {
-                imageSize = await getFileSize(media[step.key].image!);
-            }
+            try {
+                if (media[step.key]?.image) {
+                    console.log(`🔍 Calculating size for image: ${media[step.key].image}`);
+                    imageSize = await getFileSize(media[step.key].image!);
+                }
 
-            if (media[step.key]?.video) {
-                videoSize = await getFileSize(media[step.key].video!);
+                if (media[step.key]?.video) {
+                    console.log(`🔍 Calculating size for video: ${media[step.key].video}`);
+                    videoSize = await getFileSize(media[step.key].video!);
+                }
+            } catch (error) {
+                console.warn('Error calculating file sizes:', error);
             }
 
             setImageSizeBytes(imageSize);
@@ -48,7 +54,10 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
             setLoadingSizes(false);
         };
 
-        calculateSizes();
+        // Add a small delay to ensure file is properly saved before calculating size
+        const timeoutId = setTimeout(calculateSizes, 500);
+        
+        return () => clearTimeout(timeoutId);
     }, [media[step.key]?.image, media[step.key]?.video, step.key]);
 
     async function pickImageFromGallery() {
@@ -140,7 +149,7 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
                         />
                         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
                             <Text style={{ color: "#9CA3AF", fontSize: 12 }}>
-                                📷 Size: {loadingSizes ? "Calculating..." : formatFileSize(imageSizeBytes)}
+                                📷 Size: {loadingSizes ? "⏳ Calculating..." : formatFileSize(imageSizeBytes)}
                             </Text>
                             <View style={{ 
                                 paddingHorizontal: 6, 
@@ -155,9 +164,15 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
                         </View>
                         <TouchableOpacity
                             style={{ marginTop: 8, backgroundColor: "#374151", padding: 8, borderRadius: 8 }}
-                            onPress={() => setMedia(m => ({
-                                ...m, [step.key]: { ...m[step.key], image: undefined }
-                            }))}
+                            onPress={() => {
+                                const imageUri = media[step.key]?.image;
+                                if (imageUri) {
+                                    clearFileSizeCache(imageUri); // Clear cache when deleting
+                                }
+                                setMedia(m => ({
+                                    ...m, [step.key]: { ...m[step.key], image: undefined }
+                                }));
+                            }}
                         >
                             <Text style={{ color: "#FFF", textAlign: "center", fontWeight: "bold" }}>
                                 Delete Image
@@ -193,7 +208,7 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
                         />
                         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
                             <Text style={{ color: "#9CA3AF", fontSize: 12 }}>
-                                🎥 Size: {loadingSizes ? "Calculating..." : formatFileSize(videoSizeBytes)}
+                                🎥 Size: {loadingSizes ? "⏳ Calculating..." : formatFileSize(videoSizeBytes)}
                             </Text>
                             <View style={{ 
                                 paddingHorizontal: 6, 
@@ -208,9 +223,15 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
                         </View>
                         <TouchableOpacity
                             style={{ marginTop: 8, backgroundColor: "#374151", padding: 8, borderRadius: 8 }}
-                            onPress={() => setMedia(m => ({
-                                ...m, [step.key]: { ...m[step.key], video: undefined }
-                            }))}
+                            onPress={() => {
+                                const videoUri = media[step.key]?.video;
+                                if (videoUri) {
+                                    clearFileSizeCache(videoUri); // Clear cache when deleting
+                                }
+                                setMedia(m => ({
+                                    ...m, [step.key]: { ...m[step.key], video: undefined }
+                                }));
+                            }}
                         >
                             <Text style={{ color: "#FFF", textAlign: "center", fontWeight: "bold" }}>
                                 Delete Video
