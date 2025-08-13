@@ -9,17 +9,20 @@ import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
 import * as Print from "expo-print";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import * as Sharing from "expo-sharing";
 import React, { useEffect, useRef, useState } from "react";
 import {
-    BackHandler,
-    Image,
-    Linking,
-    Platform,
-    Pressable,
-    ScrollView,
-    Text,
-    View,
+  Alert,
+  BackHandler,
+  Image,
+  Linking,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View
 } from "react-native";
+import ImageView from "react-native-image-viewing";
 import { ActivityIndicator } from "react-native-paper";
 
 dayjs.extend(relativeTime);
@@ -212,6 +215,422 @@ export default function ReviewClaimFullDetailsScreen() {
   } | null>(null);
 
   const [downloading, setDownloading] = useState(false);
+  const [mediaLoading, setMediaLoading] = useState(false);
+  const [mediaError, setMediaError] = useState<string | null>(null);
+
+  // Download media function
+  const downloadMedia = async (uri: string, type: 'image' | 'video') => {
+    try {
+      setDownloading(true);
+      
+      // Request permissions
+      const permission = await MediaLibrary.requestPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert('Permission Required', 'Permission to access media library is required to download.');
+        return;
+      }
+
+      // Get file extension from URI
+      const fileName = uri.split('/').pop()?.split('?')[0] || `${type}_${Date.now()}`;
+      const localPath = FileSystem.cacheDirectory + fileName;
+
+      // Download the file
+      const downloadResult = await FileSystem.downloadAsync(uri, localPath);
+      
+      // Save to device
+      const asset = await MediaLibrary.createAssetAsync(downloadResult.uri);
+      await MediaLibrary.createAlbumAsync('Downloads', asset, false);
+      
+      Alert.alert('Success', `${type === 'image' ? 'Image' : 'Video'} saved to Downloads folder.`);
+    } catch (error) {
+      console.error('Download error:', error);
+      Alert.alert('Error', 'Failed to download file. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  // Share media function
+  const shareMedia = async (uri: string) => {
+    try {
+      setDownloading(true);
+      
+      if (await Sharing.isAvailableAsync()) {
+        let shareUri = uri;
+        
+        // If it's a remote URL, download it first
+        if (uri.startsWith('http')) {
+          console.log('Downloading remote file for sharing...');
+          const fileName = uri.split('/').pop()?.split('?')[0] || `shared_file_${Date.now()}`;
+          const localPath = FileSystem.cacheDirectory + fileName;
+          
+          const downloadResult = await FileSystem.downloadAsync(uri, localPath);
+          shareUri = downloadResult.uri;
+          console.log('Downloaded to local path for sharing:', shareUri);
+        }
+        
+        await Sharing.shareAsync(shareUri);
+      } else {
+        Alert.alert('Sharing not available', 'Sharing is not available on this device.');
+      }
+    } catch (error) {
+      console.error('Share error:', error);
+      Alert.alert('Error', 'Failed to share file. Please try downloading instead.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  // Professional Image Viewer with Zoom (Expo Go compatible)
+  function EnhancedImagePreview({ uri, onClose }: { uri: string; onClose: () => void }) {
+    const images = [{ uri }];
+
+    const HeaderComponent = () => (
+      <View style={{ 
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingTop: 50,
+        paddingBottom: 16
+      }}>
+        <Pressable
+          onPress={onClose}
+          style={{ backgroundColor: 'rgba(0,0,0,0.7)', padding: 12, borderRadius: 50 }}
+        >
+          <Ionicons name="close" size={24} color="white" />
+        </Pressable>
+        
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <Pressable
+            onPress={() => shareMedia(uri)}
+            style={{ backgroundColor: 'rgba(0,0,0,0.7)', padding: 12, borderRadius: 50 }}
+            disabled={downloading}
+          >
+            <Ionicons name="share-outline" size={20} color="white" />
+          </Pressable>
+          
+          <Pressable
+            onPress={() => downloadMedia(uri, 'image')}
+            style={{ backgroundColor: 'rgba(0,0,0,0.7)', padding: 12, borderRadius: 50 }}
+            disabled={downloading}
+          >
+            {downloading ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <Ionicons name="download-outline" size={20} color="white" />
+            )}
+          </Pressable>
+        </View>
+      </View>
+    );
+
+    const FooterComponent = () => (
+      <View style={{ 
+        paddingHorizontal: 16,
+        paddingBottom: 50,
+        paddingTop: 16
+      }}>
+        <View style={{ backgroundColor: 'rgba(0,0,0,0.7)', padding: 12, borderRadius: 8 }}>
+          <Text style={{ color: 'white', textAlign: 'center', fontSize: 14 }}>
+            Pinch to zoom • Double tap to reset • Swipe down to close
+          </Text>
+        </View>
+      </View>
+    );
+
+    return (
+      <ImageView
+        images={images}
+        imageIndex={0}
+        visible={true}
+        onRequestClose={onClose}
+        HeaderComponent={HeaderComponent}
+        FooterComponent={FooterComponent}
+        backgroundColor="black"
+        swipeToCloseEnabled={true}
+        doubleTapToZoomEnabled={true}
+        presentationStyle="fullScreen"
+      />
+    );
+  }
+
+  // Enhanced Video Preview Component with Better Controls
+  function EnhancedVideoPreview({ uri, onClose }: { uri: string; onClose: () => void }) {
+    const videoRef = useRef<Video>(null);
+    const [videoLoaded, setVideoLoaded] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(true);
+    const [buffering, setBuffering] = useState(false);
+    const [duration, setDuration] = useState(0);
+    const [position, setPosition] = useState(0);
+    const [showControls, setShowControls] = useState(true);
+    const [videoError, setVideoError] = useState<string | null>(null);
+    const [quality, setQuality] = useState<'high' | 'medium' | 'low'>('medium');
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        if (showControls && isPlaying) {
+          setShowControls(false);
+        }
+      }, 5000); // Increased to 5 seconds
+
+      return () => clearTimeout(timer);
+    }, [showControls, isPlaying]);
+
+    const togglePlayPause = async () => {
+      try {
+        if (videoRef.current) {
+          if (isPlaying) {
+            await videoRef.current.pauseAsync();
+          } else {
+            await videoRef.current.playAsync();
+          }
+          setIsPlaying(!isPlaying);
+        }
+      } catch (error) {
+        console.warn('Video play/pause error:', error);
+      }
+    };
+
+    const seekTo = async (seconds: number) => {
+      try {
+        if (videoRef.current) {
+          await videoRef.current.setPositionAsync(seconds * 1000);
+        }
+      } catch (error) {
+        console.warn('Video seek error:', error);
+      }
+    };
+
+    const formatTime = (seconds: number) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const handleVideoError = (error: any) => {
+      console.error('Video error:', error);
+      setVideoError('Failed to load video. The file might be corrupted or too large.');
+      setVideoLoaded(true);
+      setBuffering(false);
+    };
+
+    const handleLoad = (status: any) => {
+      setVideoLoaded(true);
+      setBuffering(false);
+      if (status.durationMillis) {
+        setDuration(status.durationMillis / 1000);
+      }
+    };
+
+    const handlePlaybackStatusUpdate = (status: any) => {
+      if (status.isLoaded) {
+        setPosition(status.positionMillis / 1000);
+        setBuffering(status.isBuffering);
+        setIsPlaying(status.isPlaying);
+      }
+    };
+
+    return (
+      <View className="absolute top-0 left-0 right-0 bottom-0 z-50 bg-black items-center justify-center">
+        <Pressable
+          onPress={() => {
+            console.log('Video screen tapped, current showControls:', showControls);
+            setShowControls(!showControls);
+          }}
+          style={{ 
+            position: 'absolute', 
+            top: 0, 
+            left: 0, 
+            right: 0, 
+            bottom: 0,
+            zIndex: 1
+          }}
+        />
+
+        {/* Loading/Error States */}
+        {!videoLoaded && !videoError && (
+          <View className="absolute z-10">
+            <ActivityIndicator size="large" color="#FAD90E" />
+            <Text className="text-white mt-2">Loading video...</Text>
+          </View>
+        )}
+
+        {videoError && (
+          <View className="absolute z-10 bg-red-600/90 p-4 rounded-lg mx-4">
+            <Text className="text-white text-center font-bold mb-2">Video Error</Text>
+            <Text className="text-white text-center text-sm mb-4">{videoError}</Text>
+            <Pressable
+              onPress={onClose}
+              className="bg-white/20 p-2 rounded-lg"
+            >
+              <Text className="text-white text-center font-bold">Close</Text>
+            </Pressable>
+          </View>
+        )}
+
+        {/* Video Player */}
+        {!videoError && (
+          <Video
+            ref={videoRef}
+            source={{ uri }}
+            style={{ width: '100%', height: '100%' }}
+            resizeMode={ResizeMode.CONTAIN}
+            shouldPlay={isPlaying}
+            isLooping={false}
+            onLoad={handleLoad}
+            onError={handleVideoError}
+            onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+            useNativeControls={false}
+          />
+        )}
+
+        {/* Buffering Indicator */}
+        {buffering && videoLoaded && (
+          <View className="absolute">
+            <ActivityIndicator size="large" color="#FAD90E" />
+            <Text className="text-white mt-2">Buffering...</Text>
+          </View>
+        )}
+
+        {/* Custom Controls */}
+        {showControls && videoLoaded && !videoError && (
+          <>
+            {/* Top Controls */}
+            <View style={{ 
+              position: 'absolute', 
+              top: 48, 
+              left: 16, 
+              right: 16, 
+              flexDirection: 'row', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              zIndex: 10
+            }}>
+              <Pressable
+                onPress={onClose}
+                style={{ backgroundColor: 'rgba(0,0,0,0.7)', padding: 12, borderRadius: 50 }}
+              >
+                <Ionicons name="close" size={24} color="white" />
+              </Pressable>
+              
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                <Pressable
+                  onPress={() => shareMedia(uri)}
+                  style={{ backgroundColor: 'rgba(0,0,0,0.7)', padding: 12, borderRadius: 50 }}
+                  disabled={downloading}
+                >
+                  <Ionicons name="share-outline" size={18} color="white" />
+                </Pressable>
+                
+                <Pressable
+                  onPress={() => downloadMedia(uri, 'video')}
+                  style={{ backgroundColor: 'rgba(0,0,0,0.7)', padding: 12, borderRadius: 50 }}
+                  disabled={downloading}
+                >
+                  {downloading ? (
+                    <ActivityIndicator size="small" color="white" />
+                  ) : (
+                    <Ionicons name="download-outline" size={18} color="white" />
+                  )}
+                </Pressable>
+                
+                <Pressable
+                  onPress={() => setQuality(quality === 'high' ? 'medium' : quality === 'medium' ? 'low' : 'high')}
+                  style={{ backgroundColor: 'rgba(0,0,0,0.7)', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 50 }}
+                >
+                  <Text style={{ color: 'white', fontSize: 12, fontWeight: 'bold' }}>{quality.toUpperCase()}</Text>
+                </Pressable>
+              </View>
+            </View>
+
+            {/* Center Play/Pause Button - Only show when paused */}
+            {!isPlaying && (
+              <Pressable
+                onPress={togglePlayPause}
+                style={{ 
+                  backgroundColor: 'rgba(0,0,0,0.7)', 
+                  padding: 20, 
+                  borderRadius: 50,
+                  zIndex: 10
+                }}
+              >
+                <Ionicons 
+                  name="play" 
+                  size={50} 
+                  color="white" 
+                />
+              </Pressable>
+            )}
+
+            {/* Bottom Controls */}
+            <View style={{ 
+              position: 'absolute', 
+              bottom: 48, 
+              left: 16, 
+              right: 16,
+              zIndex: 10
+            }}>
+              <View style={{ backgroundColor: 'rgba(0,0,0,0.7)', padding: 16, borderRadius: 8 }}>
+                {/* Progress Bar */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                  <Text style={{ color: 'white', fontSize: 12, marginRight: 8 }}>
+                    {formatTime(position)}
+                  </Text>
+                  <View style={{ flex: 1, height: 4, backgroundColor: '#666', borderRadius: 2, marginHorizontal: 8 }}>
+                    <View 
+                      style={{ 
+                        height: 4, 
+                        backgroundColor: '#FAD90E', 
+                        borderRadius: 2,
+                        width: `${duration > 0 ? (position / duration) * 100 : 0}%` 
+                      }}
+                    />
+                  </View>
+                  <Text style={{ color: 'white', fontSize: 12, marginLeft: 8 }}>
+                    {formatTime(duration)}
+                  </Text>
+                </View>
+
+                {/* Control Buttons */}
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 24 }}>
+                  <Pressable
+                    onPress={() => seekTo(Math.max(0, position - 10))}
+                    style={{ padding: 8 }}
+                  >
+                    <Ionicons name="play-back" size={24} color="white" />
+                  </Pressable>
+                  
+                  <Pressable
+                    onPress={togglePlayPause}
+                    style={{ padding: 8 }}
+                  >
+                    <Ionicons 
+                      name={isPlaying ? "pause" : "play"} 
+                      size={32} 
+                      color="white" 
+                    />
+                  </Pressable>
+                  
+                  <Pressable
+                    onPress={() => seekTo(Math.min(duration, position + 10))}
+                    style={{ padding: 8 }}
+                  >
+                    <Ionicons name="play-forward" size={24} color="white" />
+                  </Pressable>
+                </View>
+
+                {/* Instructions */}
+                <Text style={{ color: 'white', textAlign: 'center', fontSize: 12, marginTop: 8, opacity: 0.7 }}>
+                  Tap screen to {showControls ? 'hide' : 'show'} controls
+                </Text>
+              </View>
+            </View>
+          </>
+        )}
+      </View>
+    );
+  }
 
   function handleBack() {
     if (from === "review-req-warranty-status" && status) {
@@ -474,22 +893,55 @@ export default function ReviewClaimFullDetailsScreen() {
                     return (
                       <Pressable
                         key={up.id}
-                        onPress={() => setPreviewMedia({ uri, type: up.media_type })}
+                        onPress={() => {
+                          setMediaLoading(true);
+                          setMediaError(null);
+                          setPreviewMedia({ uri, type: up.media_type });
+                        }}
+                        className="relative"
                       >
                         {up.media_type === "image" ? (
-                          <Image
-                            source={{ uri }}
-                            className="w-32 h-32 rounded-lg m-1 bg-gray-100"
-                            resizeMode="cover"
-                          />
+                          <View className="relative">
+                            <Image
+                              source={{ uri }}
+                              className="w-32 h-32 rounded-lg m-1 bg-gray-100"
+                              resizeMode="cover"
+                              onLoadStart={() => setMediaLoading(true)}
+                              onLoad={() => setMediaLoading(false)}
+                              onError={() => {
+                                setMediaLoading(false);
+                                setMediaError('Failed to load image');
+                              }}
+                            />
+                            {/* Image overlay icon */}
+                            <View className="absolute top-2 right-2 bg-black/50 rounded-full p-1">
+                              <Ionicons name="image" size={12} color="white" />
+                            </View>
+                          </View>
                         ) : (
-                          <Video
-                            source={{ uri }}
-                            style={{ width: 130, height: 130, margin: 4, borderRadius: 12 }}
-                            useNativeControls={false}
-                            isLooping
-                            resizeMode={ResizeMode.COVER}
-                          />
+                          <View className="relative">
+                            <Video
+                              source={{ uri }}
+                              style={{ width: 130, height: 130, margin: 4, borderRadius: 12 }}
+                              useNativeControls={false}
+                              isLooping={false}
+                              isMuted={true}
+                              resizeMode={ResizeMode.COVER}
+                              onLoad={() => setMediaLoading(false)}
+                              onError={() => {
+                                setMediaLoading(false);
+                                setMediaError('Failed to load video');
+                              }}
+                            />
+                            {/* Video overlay icon */}
+                            <View className="absolute top-2 right-2 bg-black/70 rounded-full p-1">
+                              <Ionicons name="play" size={12} color="white" />
+                            </View>
+                            {/* Video duration overlay (if available) */}
+                            <View className="absolute bottom-2 right-2 bg-black/70 rounded px-1">
+                              <Text className="text-white text-xs">VIDEO</Text>
+                            </View>
+                          </View>
                         )}
                       </Pressable>
                     );
@@ -515,31 +967,19 @@ export default function ReviewClaimFullDetailsScreen() {
         </View>
       </ScrollView>
 
-      {/* Fullscreen Preview */}
+      {/* Enhanced Fullscreen Preview */}
       {previewMedia && (
-        <View className="absolute top-0 left-0 right-0 bottom-0 z-50 bg-black/90 items-center justify-center">
-          <Pressable
-            onPress={() => setPreviewMedia(null)}
-            className="absolute top-0 left-0 right-0 bottom-0"
+        previewMedia.type === "image" ? (
+          <EnhancedImagePreview 
+            uri={previewMedia.uri} 
+            onClose={() => setPreviewMedia(null)} 
           />
-          {previewMedia.type === "image" ? (
-            <Image source={{ uri: previewMedia.uri }} className="w-full h-full" resizeMode="contain" />
-          ) : (
-            <Video
-              source={{ uri: previewMedia.uri }}
-              style={{ width: "100%", height: "100%" }}
-              resizeMode={ResizeMode.CONTAIN}
-              useNativeControls
-              shouldPlay
-            />
-          )}
-          <Pressable
-            onPress={() => setPreviewMedia(null)}
-            className="absolute top-5 left-5 bg-white/90 p-2 rounded-full"
-          >
-            <Ionicons name="arrow-back" size={24} color="black" />
-          </Pressable>
-        </View>
+        ) : (
+          <EnhancedVideoPreview 
+            uri={previewMedia.uri} 
+            onClose={() => setPreviewMedia(null)} 
+          />
+        )
       )}
     </>
   );

@@ -3,19 +3,66 @@ import * as ImageManipulator from "expo-image-manipulator";
 
 export async function compressImage(imageUri: string): Promise<string> {
     try {
-        console.log('🗜️ Compressing image for warranty claim...');
+        console.log('🗜️ Compressing image while preserving original dimensions...');
+        
+        // First, just compress without any resizing to preserve exact dimensions
         const manipResult = await ImageManipulator.manipulateAsync(
             imageUri,
-            [{ resize: { width: 1280, height: 720 } }], // Reduced resolution for smaller files
+            [], // No manipulations = keep original dimensions
             { 
-                compress: 0.5, // More aggressive compression to reduce file size
+                compress: 0.5, // Compress to reduce file size while maintaining quality
                 format: ImageManipulator.SaveFormat.JPEG 
             }
         );
-        console.log('✅ Image compressed successfully');
+        
+        console.log('✅ Image compressed successfully - original dimensions preserved');
         return manipResult.uri;
     } catch (err) {
         console.warn('⚠️ Image compression failed, using original:', err);
+        return imageUri;
+    }
+}
+
+// Alternative compression function that can resize extremely large images if needed
+export async function compressImageWithOptionalResize(imageUri: string, maxFileSize: number = 5 * 1024 * 1024): Promise<string> {
+    try {
+        console.log('🗜️ Compressing image with optional resize if needed...');
+        
+        // First try compression without resizing
+        let manipResult = await ImageManipulator.manipulateAsync(
+            imageUri,
+            [],
+            { 
+                compress: 0.7,
+                format: ImageManipulator.SaveFormat.JPEG 
+            }
+        );
+        
+        // Check file size after compression
+        const compressedSize = await getFileSize(manipResult.uri);
+        console.log(`📏 Compressed size: ${formatFileSize(compressedSize)}`);
+        
+        // If still too large and over 4K resolution, then resize
+        if (compressedSize > maxFileSize) {
+            console.log('📐 File still large, trying with resize...');
+            
+            manipResult = await ImageManipulator.manipulateAsync(
+                imageUri,
+                [{ resize: { width: 2048, height: 2048 } }], // Max 2K if absolutely needed
+                { 
+                    compress: 0.6,
+                    format: ImageManipulator.SaveFormat.JPEG 
+                }
+            );
+            
+            const finalSize = await getFileSize(manipResult.uri);
+            console.log(`📏 Final size after resize: ${formatFileSize(finalSize)}`);
+        }
+        
+        console.log('✅ Image compression completed');
+        return manipResult.uri;
+    } catch (err) {
+        console.warn('⚠️ Image compression with resize failed, using original:', err);
         return imageUri;
     }
 }
