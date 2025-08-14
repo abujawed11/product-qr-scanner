@@ -5,13 +5,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Alert,
-  BackHandler,
-  RefreshControl,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    Alert,
+    BackHandler,
+    RefreshControl,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 interface SavedOrder {
@@ -71,13 +71,15 @@ const MyScansScreen: React.FC = () => {
     data: scans = [],
     isLoading: loadingScans,
     isRefetching: refetchingScans,
+    isError: scansError,
     refetch: refetchScans,
   } = useQuery<SavedOrder[]>({
     queryKey: ["myScans_savedOrders"],
     queryFn: async () => {
       const res = await api.get('/saved-orders/');
       return res.data as SavedOrder[];
-    }
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   // Query for user's warranty claims
@@ -85,17 +87,21 @@ const MyScansScreen: React.FC = () => {
     data: claims = [],
     isLoading: loadingClaims,
     isRefetching: refetchingClaims,
+    isError: claimsError,
     refetch: refetchClaims,
   } = useQuery<WarrantyClaim[]>({
     queryKey: ["myScans_claims"],
     queryFn: async () => {
       const res = await api.get('/warranty-claims-status/');
       return res.data as WarrantyClaim[];
-    }
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const loading = loadingScans || loadingClaims;
   const refreshing = refetchingScans || refetchingClaims;
+  const hasError = scansError || claimsError;
+  
   const onRefresh = () => {
     refetchScans();
     refetchClaims();
@@ -126,7 +132,24 @@ const MyScansScreen: React.FC = () => {
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-black">
-        <Text className="text-lg text-white">Loading...</Text>
+        <Text className="text-lg text-white">Loading scans...</Text>
+      </View>
+    );
+  }
+
+  // 🔥 Add error handling with retry
+  if (hasError && scans.length === 0) {
+    return (
+      <View className="flex-1 justify-center items-center bg-black px-4">
+        <Text className="text-white text-lg text-center mb-4">
+          Failed to load scans. Please check your connection.
+        </Text>
+        <TouchableOpacity
+          onPress={onRefresh}
+          className="bg-yellow-400 px-6 py-2 rounded-full"
+        >
+          <Text className="text-black text-sm font-semibold">Retry</Text>
+        </TouchableOpacity>
       </View>
     );
   }

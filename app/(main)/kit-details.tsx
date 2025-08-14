@@ -7,15 +7,15 @@ import { mapCodeToCity } from '@/utils/mapCodeToCity';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    BackHandler,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  BackHandler,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 interface WarrantyClaim {
@@ -30,10 +30,6 @@ export default function KitDetailsScreen() {
   const { scan_id, kit_id, all_scanned, total_kits } = useLocalSearchParams();
   const { user } = useAuth();
   const { refreshKey } = useRefresh();
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<any>(null);
-  const [error, setError] = useState('');
-
 
   const allScanned = all_scanned === "true";
 
@@ -48,39 +44,40 @@ export default function KitDetailsScreen() {
     }, [])
   );
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        if (scan_id) {
-          const res = await api.get(`/kit-scan-details/${scan_id}/`);
-          setData(res.data);
-          console.log(res.data)
-        } else if (kit_id) {
-          const res = await api.get(`/kit/${kit_id}/`);
-          setData({ kit: res.data, kit_id: kit_id });
-        } else {
-          throw new Error('Missing scan_id or kit_id');
-        }
-      } catch (err) {
-        setError('Failed to fetch kit details');
-      } finally {
-        setLoading(false);
+  // 🔥 Convert to React Query for automatic network recovery
+  const {
+    data,
+    isLoading: loading,
+    isError,
+    error,
+    refetch: refetchKitData
+  } = useQuery({
+    queryKey: ['kitDetails', scan_id || kit_id],
+    queryFn: async () => {
+      if (scan_id) {
+        const res = await api.get(`/kit-scan-details/${scan_id}/`);
+        console.log('Kit scan details:', res.data);
+        return res.data;
+      } else if (kit_id) {
+        const res = await api.get(`/kit/${kit_id}/`);
+        return { kit: res.data, kit_id: kit_id };
+      } else {
+        throw new Error('Missing scan_id or kit_id');
       }
-    };
-
-    fetchData();
-  }, [scan_id, kit_id]);
+    },
+    enabled: !!(scan_id || kit_id), // Only run if we have an ID
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   const {
     data: claims = [],
   } = useQuery<WarrantyClaim[]>({
-    queryKey: ['kitDetails'],
+    queryKey: ['warrantyClaims', 'status'],
     queryFn: async () => {
       const res = await api.get('/warranty-claims-status/');
       return res.data as WarrantyClaim[];
     },
-    staleTime: 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const claimedTripleToWarReqId = React.useMemo(() => {
@@ -107,16 +104,25 @@ export default function KitDetailsScreen() {
     return (
       <View className="flex-1 justify-center items-center" style={{ backgroundColor: COLORS.background }}>
         <ActivityIndicator size="large" color={COLORS.text} />
+        <Text className="text-center mt-2" style={{ color: COLORS.text }}>
+          Loading kit details...
+        </Text>
       </View>
     );
   }
 
-  if (error || !data) {
+  if (isError || !data) {
     return (
       <View className="flex-1 justify-center items-center px-4" style={{ backgroundColor: COLORS.background }}>
-        <Text className="text-center text-lg" style={{ color: COLORS.text }}>
-          {error || 'No data found.'}
+        <Text className="text-center text-lg mb-4" style={{ color: COLORS.text }}>
+          {error?.message || 'Failed to load kit details'}
         </Text>
+        <TouchableOpacity
+          onPress={() => refetchKitData()}
+          className="bg-yellow-400 px-6 py-2 rounded-full"
+        >
+          <Text className="text-black text-sm font-semibold">Retry</Text>
+        </TouchableOpacity>
       </View>
     );
   }

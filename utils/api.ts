@@ -26,12 +26,13 @@ api.interceptors.request.use(async config => {
   return config;
 });
 
-// ✅ Response Interceptor (refreshes token on 401)
+// ✅ Response Interceptor (refreshes token on 401, handles network errors)
 api.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
 
+    // Handle 401 - Token refresh
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
@@ -56,6 +57,24 @@ api.interceptors.response.use(
           { text: 'OK', onPress: () => callGlobalLogout() },
         ]);
       }
+    }
+
+    // 🔥 Enhanced network error handling
+    if (!error.response) {
+      // Network error (no response received)
+      console.log('🔥 Network Error:', error.message);
+      
+      if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+        console.log('⏰ Request timeout');
+        // Don't show alert for timeouts - let React Query handle retries
+      } else if (error.message === 'Network Error' || error.code === 'NETWORK_ERROR') {
+        console.log('📵 Network connection failed');
+        // Don't show alert - let React Query handle retries
+      }
+    } else if (error.response.status >= 500) {
+      // Server error
+      console.log('🔥 Server Error:', error.response.status);
+      // Don't show alert for server errors - let React Query handle retries
     }
 
     return Promise.reject(error);
