@@ -3,15 +3,16 @@ import { AdminOrderCard } from "@/components/AdminOrderCard";
 import { FilterSortBar } from "@/components/FilterSortBar";
 import { AdminOrder } from "@/types/adminOrder.types";
 import api from "@/utils/api";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
-    ActivityIndicator,
-    RefreshControl,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 const ACCENT = "#FAD90E";
@@ -24,47 +25,75 @@ interface PaginatedResponse<T> {
 }
 
 export default function ManageOrdersScreen() {
-  const [paginated, setPaginated] = useState<PaginatedResponse<AdminOrder> | null>(null);
-  const [orders, setOrders] = useState<AdminOrder[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"desc" | "asc">("desc");
+  const [currentPage, setCurrentPage] = useState<string | null>(null);
 
   const router = useRouter();
   const scrollRef = useRef<ScrollView>(null);
 
-  const fetchOrders = useCallback(async (url?: string) => {
-    setLoading(true);
-    try {
+  // 🔥 Convert to React Query for automatic network recovery
+  const {
+    data: paginatedData,
+    isLoading: loading,
+    isError,
+    error,
+    refetch,
+    isRefetching
+  } = useQuery<PaginatedResponse<AdminOrder>>({
+    queryKey: ['adminOrders', search, sort, currentPage],
+    queryFn: async () => {
       const params: any = {};
       if (search) params.search = search;
       params.ordering = sort === "desc" ? "-created_at" : "created_at";
-      const endpoint = url ?? "/admin/orders/";
+      const endpoint = currentPage ?? "/admin/orders/";
       const response = await api.get<PaginatedResponse<AdminOrder>>(endpoint, { params });
-      // console.log("Admin Order data: -->",response.data.results[0].order_id);
-      setPaginated(response.data);
-      setOrders(response.data.results);
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
-    } catch (error) {
-      console.error("Failed to fetch orders", error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
+      
+      // Scroll to top when new data loads
+      setTimeout(() => {
+        scrollRef.current?.scrollTo({ y: 0, animated: true });
+      }, 100);
+      
+      return response.data;
+    },
+    staleTime: 2 * 60 * 1000, // 2 minutes - admin data changes more frequently
+  });
+
+  const orders = paginatedData?.results || [];
+  const paginated = paginatedData;
+
+  const goNext = () => {
+    if (paginated?.next) {
+      setCurrentPage(paginated.next);
     }
-  }, [search, sort]);
+  };
+  
+  const goPrev = () => {
+    if (paginated?.previous) {
+      setCurrentPage(paginated.previous);
+    }
+  };
 
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+  const resetToFirstPage = () => {
+    setCurrentPage(null);
+  };
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    fetchOrders();
-  }, [fetchOrders]);
-
-  const goNext = () => paginated?.next && fetchOrders(paginated.next);
-  const goPrev = () => paginated?.previous && fetchOrders(paginated.previous);
+  // Show error state
+  if (isError) {
+    return (
+      <View className="flex-1 bg-[#0F1112] justify-center items-center px-4">
+        <Text className="text-white text-lg text-center mb-4">
+          Failed to load orders. Please check your connection.
+        </Text>
+        <TouchableOpacity
+          onPress={() => refetch()}
+          className="bg-[#fad90e] px-6 py-2 rounded-full"
+        >
+          <Text className="text-[#0f1112] font-semibold">Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-[#0F1112] p-5">
@@ -74,7 +103,7 @@ export default function ManageOrdersScreen() {
           Manage Orders
         </Text>
         <TouchableOpacity
-          onPress={() => fetchOrders()}
+          onPress={() => refetch()}
           className="bg-[#fad90e] px-4 py-2 rounded-xl"
           accessibilityLabel="Refresh Orders"
           activeOpacity={0.8}
@@ -90,10 +119,10 @@ export default function ManageOrdersScreen() {
         setSearch={setSearch}
         sort={sort}
         setSort={setSort}
-        onFilter={() => fetchOrders()}
+        onFilter={resetToFirstPage}
       />
 
-      {loading && !refreshing ? (
+      {loading && !isRefetching ? (
         <ActivityIndicator size="large" color={ACCENT} style={{ marginTop: 60 }} />
       ) : (
         <ScrollView
@@ -101,8 +130,8 @@ export default function ManageOrdersScreen() {
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
+              refreshing={isRefetching}
+              onRefresh={refetch}
               tintColor={ACCENT}
             />
           }

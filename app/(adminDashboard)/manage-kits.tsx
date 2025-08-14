@@ -2,13 +2,16 @@
 import { Kit } from '@/types/kit.types';
 import api from '@/utils/api';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
+    ActivityIndicator,
     Alert,
     KeyboardAvoidingView,
     Modal,
     Platform,
+    RefreshControl,
     SafeAreaView,
     ScrollView,
     Text,
@@ -18,22 +21,45 @@ import {
 } from 'react-native';
 
 export default function ManageKits() {
-    const [kits, setKits] = useState<Kit[]>([]);
-    const [loading, setLoading] = useState(false);
     const [editKit, setEditKit] = useState<Kit | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const queryClient = useQueryClient();
 
-    const fetchKits = async () => {
-        setLoading(true);
-        try {
+    // 🔥 Convert to React Query for automatic network recovery
+    const {
+        data: kits = [],
+        isLoading: loading,
+        isError,
+        error,
+        refetch,
+        isRefetching
+    } = useQuery<Kit[]>({
+        queryKey: ['adminKits'],
+        queryFn: async () => {
             const res = await api.get('/admin/kits/');
-            setKits(res.data.results);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+            return res.data.results;
+        },
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    });
+
+    // 🔥 Update kit mutation
+    const updateKitMutation = useMutation({
+        mutationFn: async (data: { kitId: string; kitData: any }) => {
+            return api.put(`/admin/kits/${data.kitId}/update/`, {
+                ...data.kitData,
+                clearance: parseFloat(data.kitData.clearance),
+                price: parseFloat(data.kitData.price),
+            });
+        },
+        onSuccess: () => {
+            setModalVisible(false);
+            queryClient.invalidateQueries({ queryKey: ['adminKits'] });
+            queryClient.invalidateQueries({ queryKey: ['productKits'] }); // Also refresh user-facing product info
+        },
+        onError: (err: any) => {
+            Alert.alert('Error', err.response?.data?.error || 'Failed to update');
+        },
+    });
 
     const {
         control,
@@ -70,22 +96,37 @@ export default function ManageKits() {
     };
 
     const onSubmit = async (data: any) => {
-        try {
-            await api.put(`/admin/kits/${editKit!.kit_id}/update/`, {
-                ...data,
-                clearance: parseFloat(data.clearance),
-                price: parseFloat(data.price),
-            });
-            setModalVisible(false);
-            fetchKits();
-        } catch (err: any) {
-            Alert.alert('Error', err.response?.data?.error || 'Failed to update');
-        }
+        if (!editKit) return;
+        updateKitMutation.mutate({
+            kitId: editKit.kit_id,
+            kitData: data
+        });
     };
 
-    useEffect(() => {
-        fetchKits();
-    }, []);
+    if (loading) {
+        return (
+            <SafeAreaView className="flex-1 bg-black justify-center items-center">
+                <ActivityIndicator size="large" color="#FAD90E" />
+                <Text className="text-white mt-2">Loading kits...</Text>
+            </SafeAreaView>
+        );
+    }
+
+    if (isError) {
+        return (
+            <SafeAreaView className="flex-1 bg-black justify-center items-center px-4">
+                <Text className="text-white text-lg text-center mb-4">
+                    Failed to load kits. Please check your connection.
+                </Text>
+                <TouchableOpacity
+                    onPress={() => refetch()}
+                    className="bg-yellow-400 px-6 py-2 rounded-full"
+                >
+                    <Text className="text-black font-semibold">Retry</Text>
+                </TouchableOpacity>
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView className="flex-1 bg-black">
@@ -93,6 +134,14 @@ export default function ManageKits() {
                 className="px-6 pt-10"
                 contentContainerStyle={{ paddingBottom: 60 }}
                 keyboardShouldPersistTaps="handled"
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isRefetching}
+                        onRefresh={refetch}
+                        colors={['#FAD90E']}
+                        progressBackgroundColor="#000"
+                    />
+                }
             >
                 <Text className="text-2xl font-bold text-yellow-400 text-center mb-6">Manage Kits</Text>
 
@@ -180,12 +229,16 @@ export default function ManageKits() {
 
                             <TouchableOpacity
                                 onPress={handleSubmit(onSubmit)}
-                                disabled={!isDirty}
-                                className={`p-4 rounded-xl mb-4 ${isDirty ? 'bg-yellow-400' : 'bg-gray-400'}`}
+                                disabled={!isDirty || updateKitMutation.isPending}
+                                className={`p-4 rounded-xl mb-4 ${isDirty && !updateKitMutation.isPending ? 'bg-yellow-400' : 'bg-gray-400'}`}
                             >
-                                <Text className="text-center font-bold text-black">
-                                    Update Kit
-                                </Text>
+                                {updateKitMutation.isPending ? (
+                                    <ActivityIndicator color="black" />
+                                ) : (
+                                    <Text className="text-center font-bold text-black">
+                                        Update Kit
+                                    </Text>
+                                )}
                             </TouchableOpacity>
 
                             <TouchableOpacity onPress={() => setModalVisible(false)}>

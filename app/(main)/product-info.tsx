@@ -1,13 +1,15 @@
 
 import api from '@/utils/api'; // Your API utility
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
 import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import {
     ActivityIndicator,
     BackHandler,
     ScrollView,
     Text,
+    TouchableOpacity,
     View,
 } from 'react-native';
 
@@ -36,9 +38,6 @@ interface KitGroup {
 }
 
 export default function ProductInfo() {
-    const [kitGroups, setKitGroups] = useState<KitGroup[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-
     useFocusEffect(
         useCallback(() => {
             const onBackPress = () => {
@@ -50,51 +49,70 @@ export default function ProductInfo() {
         }, [])
     );
 
-    useEffect(() => {
-        (async () => {
-            try {
-                const res = await api.get('/kits/');
-                const flatKits: Kit[] = res.data || [];
+    // 🔥 Convert to React Query for automatic network recovery
+    const {
+        data: kitGroups = [],
+        isLoading: loading,
+        isError,
+        error,
+        refetch
+    } = useQuery<KitGroup[]>({
+        queryKey: ['productKits'],
+        queryFn: async () => {
+            const res = await api.get('/kits/');
+            const flatKits: Kit[] = res.data || [];
 
-                // Group by matrix (tilt) and region
-                const groups: KitGroup[] = [];
-                flatKits.forEach((kit: Kit) => {
-                    const matrix = kit.tilt_angle === 10
-                        ? "Matrix A – 10° Tilt"
-                        : kit.tilt_angle === 15
-                        ? "Matrix B – 15° Tilt"
-                        : `Matrix – ${kit.tilt_angle}° Tilt`;
-                    const region = kit.region || 'Other Regions';
-                    // Format clearance for display
-                    const clearanceStr = parseFloat(kit.clearance.toString()) + ' ft';
-                    // Format panels string for display
-                    const panelsStr = kit.num_panels + (kit.num_panels > 1 ? ' Panels' : ' Panel');
-                    let group = groups.find(g => g.matrix === matrix && g.region === region);
-                    if (!group) {
-                        group = { matrix, region, data: [] };
-                        groups.push(group);
-                    }
-                    group.data.push({
-                        clearance: clearanceStr,
-                        config: kit.configuration,
-                        panels: panelsStr,
-                        price: (kit.currency === "INR" ? "₹" : "") + parseFloat(kit.price as string),
-                    });
+            // Group by matrix (tilt) and region
+            const groups: KitGroup[] = [];
+            flatKits.forEach((kit: Kit) => {
+                const matrix = kit.tilt_angle === 10
+                    ? "Matrix A – 10° Tilt"
+                    : kit.tilt_angle === 15
+                    ? "Matrix B – 15° Tilt"
+                    : `Matrix – ${kit.tilt_angle}° Tilt`;
+                const region = kit.region || 'Other Regions';
+                // Format clearance for display
+                const clearanceStr = parseFloat(kit.clearance.toString()) + ' ft';
+                // Format panels string for display
+                const panelsStr = kit.num_panels + (kit.num_panels > 1 ? ' Panels' : ' Panel');
+                let group = groups.find(g => g.matrix === matrix && g.region === region);
+                if (!group) {
+                    group = { matrix, region, data: [] };
+                    groups.push(group);
+                }
+                group.data.push({
+                    clearance: clearanceStr,
+                    config: kit.configuration,
+                    panels: panelsStr,
+                    price: (kit.currency === "INR" ? "₹" : "") + parseFloat(kit.price as string),
                 });
-                setKitGroups(groups);
-            } catch (err) {
-                console.error("Failed to load kits", err);
-            } finally {
-                setLoading(false);
-            }
-        })();
-    }, []);
+            });
+            return groups;
+        },
+        staleTime: 10 * 60 * 1000, // 10 minutes - product data doesn't change often
+    });
 
     if (loading) {
         return (
             <View className="flex-1 bg-black justify-center items-center">
                 <ActivityIndicator color="#FAD90E" size="large" />
                 <Text style={{ color: "white", marginTop: 10 }}>Loading kits...</Text>
+            </View>
+        );
+    }
+
+    if (isError) {
+        return (
+            <View className="flex-1 bg-black justify-center items-center px-4">
+                <Text style={{ color: "white", fontSize: 18, textAlign: 'center', marginBottom: 16 }}>
+                    Failed to load product information
+                </Text>
+                <TouchableOpacity
+                    onPress={() => refetch()}
+                    style={{ backgroundColor: "#FAD90E", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8 }}
+                >
+                    <Text style={{ color: "black", fontWeight: 'bold' }}>Retry</Text>
+                </TouchableOpacity>
             </View>
         );
     }

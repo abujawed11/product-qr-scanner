@@ -136,7 +136,7 @@ const WarrantyStatusPage: React.FC = () => {
   // Now it’s safe to conditionally return UI
   if (isLoading && !isRefetching) {
     return (
-      <View className="flex-1 justify-center items-center bg-[#FAD90E]">
+      <View className="flex-1 justify-center items-center bg-yellow-100">
         <ActivityIndicator size="large" color="black" />
         <Text className="mt-2 text-black">Loading...</Text>
       </View>
@@ -145,7 +145,7 @@ const WarrantyStatusPage: React.FC = () => {
 
   if (isError || !data) {
     return (
-      <View className="flex-1 justify-center items-center bg-[#FAD90E] px-4">
+      <View className="flex-1 justify-center items-center bg-yellow-100 px-4">
         <Text className="text-lg text-red-600 text-center">Warranty request not found.</Text>
         <TouchableOpacity className="mt-4 px-5 py-2 bg-black rounded-lg" onPress={onRefresh}>
           <Text className="text-[#FAD90E] font-bold">Retry</Text>
@@ -158,13 +158,13 @@ const WarrantyStatusPage: React.FC = () => {
 
   return (
     <ScrollView
-      className="bg-[#FAD90E] flex-1 px-4 pt-0"
+      className="bg-yellow-100 flex-1 px-4 pt-0"
       refreshControl={
         <RefreshControl
           refreshing={isRefetching}
           onRefresh={onRefresh}
           colors={['#000000']}
-          progressBackgroundColor="#FAD90E"
+          progressBackgroundColor="#fef3c7"
         />
       }
     >
