@@ -76,11 +76,17 @@ export default function LoginScreen() {
     // ✅ Redirect based on updated user after login
     useEffect(() => {
         if (user) {
-            if (user.account_type === 'admin') {
-                // console.log("Account Type",user.account_type)
+            // 🔧 Check for developer access (hidden from normal users)
+            const isDeveloper = user.username === 'developer' || 
+                               user.username === 'dev_admin' || 
+                               user.username === 'abujawed11' ||
+                               user.email === 'developer@company.com';
+            
+            if (isDeveloper) {
+                router.replace('/(developer)');
+            } else if (user.account_type === 'admin') {
                 router.replace('/(adminDashboard)');
             } else {
-                // console.log("Account Type",user.account_type)
                 router.replace('/dashboard');
             }
         }

@@ -6,7 +6,7 @@ export interface User {
   username: string;
   email: string;
   client_id: string;  // ✅ updated from customer_id
-  account_type: 'admin' | 'client';
+  account_type: 'admin' | 'client' | 'developer';
   is_active: boolean;
   company_name: string
 }

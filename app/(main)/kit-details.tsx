@@ -280,13 +280,13 @@ export default function KitDetailsScreen() {
           </View>
         )}
 
-        {isClaimed && (
+        {/* {isClaimed && (
           <View className="mb-4 px-2 py-3 rounded-xl bg-yellow-100 border border-yellow-400">
             <Text className="text-yellow-700 text-base font-semibold text-center">
               You have already applied for Warranty for this Kit.
             </Text>
           </View>
-        )}
+        )} */}
 
 
       </ScrollView>

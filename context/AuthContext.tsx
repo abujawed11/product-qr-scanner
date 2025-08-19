@@ -77,6 +77,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       scheduleTokenRefresh(access);
 
       queryClient.invalidateQueries({ queryKey: ["warrantyDashboardCounts"] });
+      queryClient.invalidateQueries({ queryKey: ["myScans_savedOrders"] });
+      queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
+      queryClient.invalidateQueries({ queryKey: ["myOrders"] });
+      queryClient.invalidateQueries({ queryKey: ["myWarrantyClaims"] });
+      queryClient.invalidateQueries({ queryKey: ["myWarrantyCards"] });
 
     } catch (error) {
       console.error('Login error:', error);

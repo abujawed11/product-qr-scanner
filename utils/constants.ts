@@ -3,9 +3,9 @@
 
 //const url = "http://192.168.1.100:8000"; //working in PG
 
-//const url = "http://10.20.2.78:8000"; //working in Office
+const url = "http://10.20.2.78:8000"; //working in Office
 
-const url = "https://rcckitportal.sun-rack.com";
+//const url = "https://rcckitportal.sun-rack.com";
 
 export const BASE_URL = `${url}/api`; 
 

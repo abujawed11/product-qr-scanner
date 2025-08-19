@@ -13,7 +13,7 @@ import * as NavigationBar from 'expo-navigation-bar';
 import * as Notifications from 'expo-notifications';
 import { Slot } from 'expo-router';
 import { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import '../global.css';
 
@@ -61,6 +61,18 @@ const queryClient = new QueryClient({
   },
 });
 
+// Utility function to hide navigation bar
+const hideNavigationBar = async () => {
+  if (Platform.OS === 'android') {
+    try {
+      await NavigationBar.setBehaviorAsync('inset-swipe');
+      await NavigationBar.setVisibilityAsync('hidden');
+    } catch (e) {
+      console.log('Failed to hide navigation bar:', e);
+    }
+  }
+};
+
 export default function RootLayout() {
   useEffect(() => {
     const setupApp = async () => {
@@ -79,17 +91,26 @@ export default function RootLayout() {
           lightColor: '#FF231F7C',
         });
 
-        // Configure Android navigation bar: dim or hide
+        // Configure Android navigation bar: persistent hidden state
         try {
-          // Make nav bar darker and buttons light for a dimmed look
+          // Set dark background and light buttons
           await NavigationBar.setBackgroundColorAsync('#0a0a0a');
           await NavigationBar.setButtonStyleAsync('light');
 
-          // If you want it hidden by default, uncomment the next two lines
-          await NavigationBar.setBehaviorAsync('overlay-swipe');
+          // Set behavior BEFORE setting visibility for better stability
+          await NavigationBar.setBehaviorAsync('inset-swipe');
           await NavigationBar.setVisibilityAsync('hidden');
+          
+          // Force hide again after a small delay to ensure it sticks
+          setTimeout(async () => {
+            try {
+              await NavigationBar.setVisibilityAsync('hidden');
+            } catch (retryError) {
+              console.log('Navigation bar retry hide failed:', retryError);
+            }
+          }, 500);
         } catch (e) {
-          // Navigation bar configuration failed
+          console.log('Navigation bar configuration failed:', e);
         }
       }
     };
@@ -99,8 +120,21 @@ export default function RootLayout() {
     // 🔥 Setup network listener for auto-refetch on reconnect
     const unsubscribeNetwork = setupNetworkListener(queryClient);
 
+    // 🔥 Listen for app state changes to re-hide navigation bar
+    const handleAppStateChange = (nextAppState: string) => {
+      if (nextAppState === 'active') {
+        // Re-hide navigation bar when app becomes active
+        setTimeout(() => {
+          hideNavigationBar();
+        }, 100);
+      }
+    };
+
+    const appStateSubscription = AppState.addEventListener('change', handleAppStateChange);
+
     return () => {
       unsubscribeNetwork();
+      appStateSubscription?.remove();
     };
   }, []);
 
