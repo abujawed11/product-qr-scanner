@@ -44,6 +44,7 @@ export default function DashboardLayout() {
       <Drawer.Screen name="notifications" options={{ title: 'Notifications' }} />
       <Drawer.Screen name="order-details" options={{ title: 'Order Details' }} />
       <Drawer.Screen name="product-info" options={{ title: 'Product Info' }} />
+      <Drawer.Screen name="installation-manual" options={{ title: 'Installation Manual' }} />
       <Drawer.Screen name="profile" options={{ title: 'Profile' }} />
       <Drawer.Screen name="settings" options={{ title: 'Settings' }} />
       <Drawer.Screen name="support" options={{ title: 'Support' }} />

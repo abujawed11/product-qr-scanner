@@ -3,7 +3,7 @@ import api from "@/utils/api";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { useFocusEffect, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import { Alert, BackHandler, Text, TouchableOpacity, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 
@@ -19,7 +19,6 @@ type WarrantyStatusCounts = {
 const HomeScreen = () => {
   const router = useRouter();
   const { user } = useAuth();
-  const [tapCount, setTapCount] = useState(0);
 
   const {
     data: counts = {
@@ -47,39 +46,6 @@ const HomeScreen = () => {
     router.push("/(main)/dashboard/qr-scanner");
   };
 
-  // 🔧 Secret developer access (tap logo 7 times)
-  const handleSecretTap = () => {
-    const newTapCount = tapCount + 1;
-    setTapCount(newTapCount);
-    
-    if (newTapCount === 7) {
-      // Check if user has developer credentials
-      const isDeveloper = user?.username === 'developer' || 
-                         user?.username === 'dev_admin' || 
-                         user?.username === 'abujawed11' ||
-                         user?.email === 'developer@company.com';
-      
-      if (isDeveloper) {
-        Alert.alert(
-          '🔧 Developer Mode',
-          'Access developer dashboard?',
-          [
-            { text: 'Cancel', onPress: () => setTapCount(0) },
-            { text: 'Enter', onPress: () => router.push('/(developer)') },
-          ]
-        );
-      } else {
-        Alert.alert('Access Denied', 'You do not have developer privileges.');
-      }
-      setTapCount(0);
-    }
-    
-    // Reset tap count after 3 seconds
-    setTimeout(() => {
-      setTapCount(0);
-    }, 3000);
-  };
-
   useFocusEffect(() => {
     const onBackPress = () => {
       Alert.alert(
@@ -105,16 +71,9 @@ const HomeScreen = () => {
     <View className="flex-1 bg-black px-6 pt-14 relative">
       {/* Header */}
       <Text className="text-white text-2xl font-extrabold mb-1">Hi, {user?.username}</Text>
-      <TouchableOpacity onPress={handleSecretTap} activeOpacity={0.8}>
-        <Text className="text-white text-2xl font-extrabold mb-1">
-          Welcome to Sunrack Warranty App
-        </Text>
-        {tapCount > 0 && (
-          <Text className="text-yellow-400 text-xs">
-            Developer access: {tapCount}/7
-          </Text>
-        )}
-      </TouchableOpacity>
+      <Text className="text-white text-2xl font-extrabold mb-1">
+        Welcome to Sunrack Warranty App
+      </Text>
       <Text className="text-yellow-400 text-sm font-medium">
         Client ID: {user?.client_id}
       </Text>
