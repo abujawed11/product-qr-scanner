@@ -144,7 +144,7 @@ const CustomDrawer = (props: any) => {
           <DrawerItem
             label="About Product"
             onPress={() => router.push('/(main)/product-info')}
-            icon={({ size }) => <AntDesign name="shoppingcart" size={24} color={getIconColor('/(main)/product-info')} />}
+            icon={({ size }) => <AntDesign name="shopping-cart" size={24} color={getIconColor('/(main)/product-info')} />}
             labelStyle={getLabelStyle('/(main)/product-info')}
             style={getItemStyle('/(main)/product-info')}
           />
@@ -160,7 +160,7 @@ const CustomDrawer = (props: any) => {
           <DrawerItem
             label="About"
             onPress={() => router.push('/about')}
-            icon={({ size }) => <AntDesign name="infocirlce" size={size} color={getIconColor('/about')} />}
+            icon={({ size }) => <AntDesign name="info-circle" size={size} color={getIconColor('/about')} />}
             labelStyle={getLabelStyle('/about')}
             style={getItemStyle('/about')}
           />
