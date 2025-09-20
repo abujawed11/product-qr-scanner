@@ -65,7 +65,7 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
     async function pickImageFromGallery() {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
+            allowsEditing: false,
             quality: 1,
         });
         if (!result.canceled && result.assets?.length) {
@@ -84,7 +84,7 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
         }
         const result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
+            allowsEditing: false,
             quality: 1,
         });
         if (!result.canceled && result.assets?.length) {
