@@ -260,11 +260,11 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
                             <Text style={{ color: "#9CA3AF", fontSize: 12 }}>
                                 🎥 Size: {loadingSizes ? "⏳ Calculating..." : formatFileSize(videoSizeBytes)}
                             </Text>
-                            <View style={{ 
-                                paddingHorizontal: 6, 
-                                paddingVertical: 2, 
+                            <View style={{
+                                paddingHorizontal: 6,
+                                paddingVertical: 2,
                                 backgroundColor: videoSizeBytes > 20 * 1024 * 1024 ? "#DC2626" : videoSizeBytes > 10 * 1024 * 1024 ? "#F59E0B" : "#10B981",
-                                borderRadius: 4 
+                                borderRadius: 4
                             }}>
                                 <Text style={{ color: "white", fontSize: 10, fontWeight: "bold" }}>
                                     {videoSizeBytes > 20 * 1024 * 1024 ? "LARGE" : videoSizeBytes > 10 * 1024 * 1024 ? "MEDIUM" : "OK"}
@@ -289,19 +289,33 @@ export function MediaStep({ step, media, setMedia, goBack, goNext }: MediaStepPr
                         </TouchableOpacity>
                     </View>
                 ) : (
-                    <View style={{ flexDirection: "row", marginBottom: 16 }}>
-                        <TouchableOpacity
-                            style={{ backgroundColor: "#FAD90E", padding: 12, borderRadius: 8, marginRight: 8 }}
-                            onPress={pickVideoFromGallery}
-                        >
-                            <Text style={{ color: "#000", fontWeight: "bold" }}>Pick Video</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={{ backgroundColor: "#FAD90E", padding: 12, borderRadius: 8 }}
-                            onPress={recordVideoWithCamera}
-                        >
-                            <Text style={{ color: "#000", fontWeight: "bold" }}>Record Video</Text>
-                        </TouchableOpacity>
+                    <View style={{ marginBottom: 16 }}>
+                        <View style={{
+                            backgroundColor: "#1F2937",
+                            padding: 12,
+                            borderRadius: 8,
+                            marginBottom: 8,
+                            borderWidth: 1,
+                            borderColor: "#374151"
+                        }}>
+                            <Text style={{ color: "#9CA3AF", fontSize: 12, textAlign: "center", fontStyle: "italic" }}>
+                                🚧 Video upload will be available soon
+                            </Text>
+                        </View>
+                        <View style={{ flexDirection: "row", opacity: 0.5 }}>
+                            <TouchableOpacity
+                                style={{ backgroundColor: "#6B7280", padding: 12, borderRadius: 8, marginRight: 8 }}
+                                disabled={true}
+                            >
+                                <Text style={{ color: "#D1D5DB", fontWeight: "bold" }}>Pick Video</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={{ backgroundColor: "#6B7280", padding: 12, borderRadius: 8 }}
+                                disabled={true}
+                            >
+                                <Text style={{ color: "#D1D5DB", fontWeight: "bold" }}>Record Video</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 )}
             </ScrollView>
