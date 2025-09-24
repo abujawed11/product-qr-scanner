@@ -18,6 +18,8 @@ type WarrantyCardDetail = {
   warranty_started_at: string;
   expires_at: string;
   coverage_description?: string;
+  invoice_no?: string;
+  invoice_date?: string;
   // You can add more card fields if needed.
 };
 
@@ -47,6 +49,8 @@ type UpdateClaimPayload = {
   warranty_started_at?: string;
   expires_at?: string;
   coverage_description?: string;
+  invoice_no?: string;
+  invoice_date?: string;
 };
 
 const STATUS_DISPLAY: Record<Status, { label: string; color: string }> = {
@@ -83,6 +87,50 @@ function WarrantyStartDateInput({
         <TextInput
           mode="outlined"
           label="Warranty Start Date *"
+          value={formatDate(value)}
+          placeholder="YYYY-MM-DD"
+          editable={false}
+          style={{ marginBottom: 16, backgroundColor: "#fff" }}
+          right={<TextInput.Icon icon="calendar" onPress={() => { if (!disabled) setShowDatePicker(true); }} />}
+        />
+        {showDatePicker && (
+          <DateTimePicker
+            value={value || new Date()}
+            mode="date"
+            display={Platform.OS === "ios" ? "spinner" : "default"}
+            onChange={(event, selectedDate) => {
+              if (Platform.OS === "android") setShowDatePicker(false);
+              if (selectedDate) { onChange(selectedDate); }
+            }}
+            maximumDate={new Date(2100, 11, 31)}
+            minimumDate={new Date(2000, 0, 1)}
+          />
+        )}
+      </View>
+    </TouchableWithoutFeedback>
+  );
+}
+
+// Invoice Date input with calendar icon
+function InvoiceDateInput({
+  value, onChange, disabled
+}: {
+  value: Date | null;
+  onChange: (date: Date) => void;
+  disabled?: boolean;
+}) {
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  function formatDate(date: Date | null) {
+    if (!date) return "";
+    return date.toISOString().split("T")[0];
+  }
+  return (
+    <TouchableWithoutFeedback onPress={() => { if (!disabled) setShowDatePicker(true); Keyboard.dismiss(); }}>
+      <View pointerEvents="box-only">
+        <TextInput
+          mode="outlined"
+          label="Invoice Date"
           value={formatDate(value)}
           placeholder="YYYY-MM-DD"
           editable={false}
@@ -162,6 +210,8 @@ export default function ReviewClaimUpdateScreen() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [expiresAt, setExpiresAt] = useState<string>("");
   const [coverageDescription, setCoverageDescription] = useState<string>("");
+  const [invoiceNo, setInvoiceNo] = useState<string>("");
+  const [invoiceDate, setInvoiceDate] = useState<Date | null>(null);
 
   // Store warranty card "originals" for change detection (edit support)
   const [originalWarrantyType, setOriginalWarrantyType] = useState<string>("");
@@ -169,6 +219,8 @@ export default function ReviewClaimUpdateScreen() {
   const [originalStartDate, setOriginalStartDate] = useState<Date | null>(null);
   const [originalExpiresAt, setOriginalExpiresAt] = useState<string>("");
   const [originalCoverageDescription, setOriginalCoverageDescription] = useState<string>("");
+  const [originalInvoiceNo, setOriginalInvoiceNo] = useState<string>("");
+  const [originalInvoiceDate, setOriginalInvoiceDate] = useState<Date | null>(null);
 
   // --- Prefill/edit support ---
   useEffect(() => {
@@ -190,6 +242,12 @@ export default function ReviewClaimUpdateScreen() {
         );
         setExpiresAt(data.warranty_card.expires_at ?? "");
         setCoverageDescription(data.warranty_card.coverage_description ?? "");
+        setInvoiceNo(data.warranty_card.invoice_no ?? "");
+        setInvoiceDate(
+          data.warranty_card.invoice_date
+            ? new Date(data.warranty_card.invoice_date)
+            : null
+        );
 
         // For change detection:
         setOriginalWarrantyType(data.warranty_card.warranty_type ?? "");
@@ -201,18 +259,28 @@ export default function ReviewClaimUpdateScreen() {
         );
         setOriginalExpiresAt(data.warranty_card.expires_at ?? "");
         setOriginalCoverageDescription(data.warranty_card.coverage_description ?? "");
+        setOriginalInvoiceNo(data.warranty_card.invoice_no ?? "");
+        setOriginalInvoiceDate(
+          data.warranty_card.invoice_date
+            ? new Date(data.warranty_card.invoice_date)
+            : null
+        );
       } else {
         setWarrantyType("");
         setDurationMonths("");
         setStartDate(null);
         setExpiresAt("");
         setCoverageDescription("");
+        setInvoiceNo("");
+        setInvoiceDate(null);
 
         setOriginalWarrantyType("");
         setOriginalDurationMonths("");
         setOriginalStartDate(null);
         setOriginalExpiresAt("");
         setOriginalCoverageDescription("");
+        setOriginalInvoiceNo("");
+        setOriginalInvoiceDate(null);
       }
     }
   }, [data]);
@@ -250,6 +318,11 @@ export default function ReviewClaimUpdateScreen() {
       ) return true;
       if (expiresAt !== originalExpiresAt) return true;
       if ((coverageDescription ?? "") !== (originalCoverageDescription ?? "")) return true;
+      if ((invoiceNo ?? "") !== (originalInvoiceNo ?? "")) return true;
+      if (
+        (invoiceDate && (!originalInvoiceDate || invoiceDate.getTime() !== originalInvoiceDate.getTime())) ||
+        (!invoiceDate && originalInvoiceDate)
+      ) return true;
     }
     return false;
   }
@@ -271,6 +344,7 @@ export default function ReviewClaimUpdateScreen() {
       queryClient.invalidateQueries({ queryKey: ["myScans_claims"] });
       queryClient.invalidateQueries({ queryKey: ["myWarrantyClaims"] });
       queryClient.invalidateQueries({ queryKey: ["myWarrantyCards"] });
+      queryClient.invalidateQueries({ queryKey: ["warrantyRequests"] });
       // router.back();
       router.replace("/(adminDashboard)/review-req-dashboard")
     },
@@ -365,6 +439,24 @@ export default function ReviewClaimUpdateScreen() {
             <View style={{ marginTop: 32, marginBottom: 16, padding: 16, backgroundColor: "#f9fafb", borderRadius: 12 }}>
               <Text style={{ fontWeight: "bold", fontSize: 16, marginBottom: 12 }}>Warranty Card Information</Text>
 
+              {/* Invoice Information */}
+              <Text style={{ marginBottom: 4 }}>Invoice No</Text>
+              <TextInput
+                mode="outlined"
+                value={invoiceNo}
+                onChangeText={setInvoiceNo}
+                placeholder="Enter invoice number"
+                style={{ marginBottom: 16, backgroundColor: "#fff" }}
+                editable={!loading}
+              />
+
+              {/* Invoice Date */}
+              <InvoiceDateInput
+                value={invoiceDate}
+                onChange={setInvoiceDate}
+                disabled={loading}
+              />
+
               {/* Warranty Type Dropdown */}
               <Text style={{ marginBottom: 4 }}>Warranty Type *</Text>
               <View style={{ flexDirection: 'row', marginBottom: 16 }}>
@@ -442,6 +534,8 @@ export default function ReviewClaimUpdateScreen() {
                   warranty_started_at: startDate ? startDate.toISOString().split("T")[0] : undefined,
                   expires_at: expiresAt,
                   coverage_description: coverageDescription,
+                  invoice_no: invoiceNo,
+                  invoice_date: invoiceDate ? invoiceDate.toISOString().split("T")[0] : undefined,
                 }
                 : {})
             })}

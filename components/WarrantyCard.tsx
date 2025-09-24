@@ -16,6 +16,9 @@ export type WarrantyCardProps = {
     is_transferable: boolean;
     issued_at: string; // ISO datetime
     terms_document_url?: string | null;
+    claim?: {
+        pdf_url?: string | null;
+    };
 };
 
 const typeDisplay = (type: string) =>
@@ -124,19 +127,36 @@ export const WarrantyCard: FC<{ card: WarrantyCardProps }> = ({ card }) => {
                 </View>
             </View>
 
-            {/* --- Issued at & T&Cs --- */}
-            <View className="flex-row items-center px-6 py-2 justify-between bg-yellow-200">
-                <Text className="text-xs text-black/60">
-                    Issued: {new Date(card.issued_at).toLocaleDateString()}
-                </Text>
+            {/* --- Issued at & Links --- */}
+            <View className="px-6 py-2 bg-yellow-200">
+                <View className="flex-row items-center justify-between">
+                    <Text className="text-xs text-black/60">
+                        Issued: {new Date(card.issued_at).toLocaleDateString()}
+                    </Text>
 
-                {card.terms_document_url ? (
-                    <Pressable onPress={() => Linking.openURL(card.terms_document_url!)}>
-                        <Text className="text-xs font-semibold underline text-blue-700">
-                            View Terms & Conditions
-                        </Text>
-                    </Pressable>
-                ) : null}
+                    {card.terms_document_url ? (
+                        <Pressable onPress={() => Linking.openURL(card.terms_document_url!)}>
+                            <Text className="text-xs font-semibold underline text-blue-700">
+                                View Terms & Conditions
+                            </Text>
+                        </Pressable>
+                    ) : null}
+                </View>
+
+                {/* PDF Certificate Download */}
+                {card.claim?.pdf_url && (
+                    <View className="flex-row items-center justify-center mt-2 pt-2 border-t border-black/10">
+                        <Pressable
+                            onPress={() => Linking.openURL(card.claim!.pdf_url!)}
+                            className="flex-row items-center px-3 py-1.5 bg-black rounded-lg"
+                        >
+                            <Feather name="download" size={14} color="#fde047" />
+                            <Text className="ml-1.5 text-xs font-semibold text-yellow-300">
+                                Download Certificate PDF
+                            </Text>
+                        </Pressable>
+                    </View>
+                )}
             </View>
         </View>
     );
