@@ -3,30 +3,93 @@ import type { FC } from "react";
 import React from "react";
 import { Linking, Pressable, Text, View } from "react-native";
 
-// Extend or adjust this to match your actual API/type definitions
+// Certificate-aligned warranty card type matching official certificate fields
 export type WarrantyCardProps = {
-    certificate_no: string;
-    war_card_id: string;
-    warranty_type: "full" | "partial" | string;
-    warranty_started_at: string; // YYYY-MM-DD
-    expires_at: string; // YYYY-MM-DD
-    warranty_duration_months: number;
-    serial_number?: string | null;
-    coverage_description?: string | null;
-    is_transferable: boolean;
-    issued_at: string; // ISO datetime
+    // Core Certificate Fields
+    certificate_no: string;           // SR/WC/<Year>/<Serial>
+    war_card_id: string;             // Internal ID
+    issued_at: string;               // Date of Issue - ISO datetime
+
+    // Invoice Information
+    invoice_no?: string | null;      // Invoice No.
+    invoice_date?: string | null;    // Invoice Date - YYYY-MM-DD
+
+    // Customer & Product Information
+    company_name?: string | null;    // Customer Name
+    client_id?: string | null;       // Client ID
+    kit_id?: string | null;          // Product Name / Model No.
+    project_id?: string | null;      // Project ID
+
+    // Installation Information
+    installation_latitude?: number | string | null;   // Installation Location (GPS)
+    installation_longitude?: number | string | null;  // Installation Location (GPS)
+
+    // Warranty Period Information
+    warranty_started_at: string;     // Warranty Start Date - YYYY-MM-DD
+    expires_at: string;              // Warranty End Date (auto-calculated)
+    warranty_duration_months: number; // Duration in months (fixed 300 = 25 years)
+
+    // Coverage & Status
+    warranty_type: "full" | "partial" | string; // Coverage type
+    is_transferable: boolean;        // Transferable (default: No)
     terms_document_url?: string | null; // Certificate PDF URL
+
+    // Legacy/Internal Fields (for compatibility)
+    serial_number?: string | null;   // Mapped to kit_id for display
+    coverage_description?: string | null; // Now uses standard coverage points
     claim?: {
         war_req_id?: string | null;
     };
 };
 
-const typeDisplay = (type: string) =>
-    type === "full"
-        ? "Full Coverage"
-        : type === "partial"
-            ? "Full Coverage*"
-            : type.charAt(0).toUpperCase() + type.slice(1);
+// Standard warranty coverage points (matching official certificate)
+const STANDARD_COVERAGE_POINTS = [
+    "Structural Integrity & Strength",
+    "Manufacturing & Workmanship",
+    "Corrosion Resistance"
+];
+
+// Helper functions for certificate data formatting
+function formatDate(dateStr?: string | null): string {
+    if (!dateStr || dateStr === '') return "N/A";
+    try {
+        const date = new Date(dateStr);
+        // Check if date is valid
+        if (isNaN(date.getTime())) {
+            return "N/A";
+        }
+        return date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    } catch {
+        return "N/A";
+    }
+}
+
+function formatInstallationLocation(lat?: number | string | null, lng?: number | string | null): string {
+    if (lat != null && lng != null) {
+        try {
+            // Convert to numbers if they're strings
+            const latNum = typeof lat === 'string' ? parseFloat(lat) : lat;
+            const lngNum = typeof lng === 'string' ? parseFloat(lng) : lng;
+
+            // Check if conversion was successful and values are valid numbers
+            if (!isNaN(latNum) && !isNaN(lngNum) && isFinite(latNum) && isFinite(lngNum)) {
+                return `${latNum.toFixed(6)}, ${lngNum.toFixed(6)}`;
+            }
+        } catch (error) {
+            console.log('Error formatting installation location:', error);
+        }
+    }
+    return "N/A";
+}
+
+function getWarrantyPeriodDisplay(durationMonths: number): string {
+    const years = Math.floor(durationMonths / 12);
+    return years > 0 ? `${years} Year${years > 1 ? 's' : ''}` : `${durationMonths} Month${durationMonths > 1 ? 's' : ''}`;
+}
 
 function getWarrantyStatus(card: WarrantyCardProps): { label: string; color: string } {
     const now = new Date();
@@ -34,7 +97,7 @@ function getWarrantyStatus(card: WarrantyCardProps): { label: string; color: str
     const end = new Date(card.expires_at);
 
     if (now < start) {
-        return { label: "Not Yet Active", color: "#77777aff" }; // yellow
+        return { label: "Not Yet Active", color: "#f59e0b" }; // amber
     }
     if (now > end) {
         return { label: "Expired", color: "#ef4444" }; // red
@@ -42,155 +105,169 @@ function getWarrantyStatus(card: WarrantyCardProps): { label: string; color: str
     return { label: "Active", color: "#22c55e" }; // green
 }
 
+// Certificate Table Row Component
+const CertificateRow: FC<{ label: string; value: string; labelCol?: string; valueCol?: string }> = ({
+    label, value, labelCol = "#000", valueCol = "#333"
+}) => (
+    <View className="flex-row border-b border-gray-300">
+        <View className="flex-1 px-3 py-2 bg-gray-50 border-r border-gray-300">
+            <Text className="text-xs font-medium" style={{ color: labelCol }}>
+                {label}
+            </Text>
+        </View>
+        <View className="flex-[2] px-3 py-2 bg-white">
+            <Text className="text-xs font-normal" style={{ color: valueCol }} numberOfLines={2}>
+                {value || "N/A"}
+            </Text>
+        </View>
+    </View>
+);
+
 export const WarrantyCard: FC<{ card: WarrantyCardProps }> = ({ card }) => {
-
-    // Debug logs to understand PDF URL issue
-    console.log('🔍 WARRANTY CARD DEBUG:', {
-        war_card_id: card.war_card_id,
-        certificate_no: card.certificate_no,
-        terms_document_url: card.terms_document_url,
-        terms_document_url_type: typeof card.terms_document_url,
-        terms_document_url_length: card.terms_document_url?.length,
-        claim_object: card.claim,
-        full_card_data: JSON.stringify(card, null, 2)
-    });
-
     const statusObj = getWarrantyStatus(card);
 
+    // Debug installation location data
+    console.log('🔍 INSTALLATION LOCATION DEBUG for card', card.war_card_id, ':', {
+        installation_latitude: card.installation_latitude,
+        installation_latitude_type: typeof card.installation_latitude,
+        installation_longitude: card.installation_longitude,
+        installation_longitude_type: typeof card.installation_longitude,
+        raw_card_data: {
+            installation_latitude: card.installation_latitude,
+            installation_longitude: card.installation_longitude,
+            // Check if data might be under different field names
+            device_latitude: (card as any).device_latitude,
+            device_longitude: (card as any).device_longitude,
+            latitude: (card as any).latitude,
+            longitude: (card as any).longitude,
+        }
+    });
+
+    const installationLocation = formatInstallationLocation(card.installation_latitude, card.installation_longitude);
+    const warrantyPeriod = getWarrantyPeriodDisplay(card.warranty_duration_months);
+
+    console.log('🏠 FORMATTED INSTALLATION LOCATION:', installationLocation);
 
     return (
-        <View className="rounded-2xl border-2 border-black bg-yellow-300 shadow-xl mx-4 my-4 p-0 overflow-hidden">
-            {/* --- Card header --- */}
-            <View className="flex-row items-center justify-between px-6 py-3 bg-black">
-                <View className="flex-row items-center">
-                    <Feather name="shield" size={20} color="#fde047" />
-                    <Text className="ml-2 text-base font-semibold text-yellow-300 tracking-wider">
-                        WARRANTY CARD
-                    </Text>
-                </View>
-                <MaterialIcons name="verified-user" size={22} color="#fde047" />
-            </View>
-
-            {/* --- Main info --- */}
-            <View className="px-6 py-5 space-y-2">
-                <View className="flex-row items-center mb-1">
-                    <Text className="text-sm text-black font-medium">Certificate No:</Text>
-                    <Text
-                        // className="ml-2 text-black font-semibold"
-                        className="ml-2 text-black font-semibold flex-1"
-                        // ellipsizeMode="middle"
-                        numberOfLines={1}
-                    // selectable
-
-                    >{card.certificate_no}</Text>
-                </View>
-                {/* <View className="flex-row items-center">
-                    <Text className="text-sm text-black font-medium">Card ID:</Text>
-                    <Text className="ml-2 text-black">{card.war_card_id}</Text>
-                </View> */}
-                <View className="flex-row items-center gap-4 mt-1">
-                    <Text className="text-sm text-black font-medium">Type:</Text>
-                    <Text className="ml-1 px-2 py-0.5 text-xs bg-black text-yellow-300 rounded font-bold">
-                        {typeDisplay(card.warranty_type)}
-                    </Text>
-                </View>
-                {/* <View className="flex-row items-center gap-4 mt-2">
-                    <Text className="text-sm text-black font-medium">Status:</Text>
-                    <Text className="ml-2 font-bold text-green-700">Active</Text>
-                </View> */}
-                <View className="flex-row items-center gap-4 mt-2">
-                    <Text className="text-sm text-black font-medium">Status:</Text>
-                    <Text className="ml-2 font-bold" style={{ color: statusObj.color }}>
-                        {statusObj.label}
-                    </Text>
-                </View>
-                <View className="flex-row items-center">
-                    <Text className="text-sm text-black font-medium">Coverage:</Text>
-                    <Text className="ml-2 text-black">
-                        {card.coverage_description || "Standard manufacturer warranty"}
-                    </Text>
-                </View>
-                <View className="flex-row items-center">
-                    <Text className="text-sm text-black font-medium">Serial Number:</Text>
-                    <Text className="ml-2 text-black">{card.serial_number || "--"}</Text>
-                </View>
-                <View className="flex-row items-center">
-                    <Text className="text-sm text-black font-medium">Transferable:</Text>
-                    <Text className="ml-2 text-black">{card.is_transferable ? "Yes" : "No"}</Text>
-                </View>
-            </View>
-
-            {/* --- Period block --- */}
-            <View className="bg-black px-6 py-4 rounded-b-2xl">
-                <View className="flex-row justify-between mb-1">
-                    <Text className="text-xs text-yellow-200">WARRANTY PERIOD</Text>
-                    <Text className="text-xs text-yellow-200">Duration:</Text>
-                </View>
-                <View className="flex-row justify-between items-center">
-                    <Text className="font-semibold text-base text-yellow-300">
-                        {card.warranty_started_at}{" "}
-                        <Text className="font-normal text-xs text-yellow-100">to</Text>{" "}
-                        {card.expires_at}
-                    </Text>
-                    <Text className="font-medium text-yellow-100">
-                        {card.warranty_duration_months} months
-                    </Text>
-                </View>
-            </View>
-
-            {/* --- Issued at & Links --- */}
-            <View className="px-6 py-2 bg-yellow-200">
+        <View className="rounded-xl border border-gray-300 bg-white shadow-lg mx-4 my-3 overflow-hidden">
+            {/* Certificate Header */}
+            <View className="bg-blue-900 px-4 py-3">
                 <View className="flex-row items-center justify-between">
-                    <Text className="text-xs text-black/60">
-                        Issued: {new Date(card.issued_at).toLocaleDateString()}
-                    </Text>
-
-                    {card.terms_document_url ? (
-                        <Pressable onPress={() => Linking.openURL(card.terms_document_url!)}>
-                            <Text className="text-xs font-semibold underline text-blue-700">
-                                View Terms & Conditions
+                    <View className="flex-row items-center">
+                        <Feather name="shield" size={18} color="#fbbf24" />
+                        <Text className="ml-2 text-base font-bold text-white tracking-wide">
+                            WARRANTY CERTIFICATE
+                        </Text>
+                    </View>
+                    <View className="flex-row items-center">
+                        <View className={`px-2 py-1 rounded-full ${
+                            statusObj.color === "#22c55e" ? "bg-green-100" :
+                            statusObj.color === "#ef4444" ? "bg-red-100" : "bg-yellow-100"
+                        }`}>
+                            <Text className={`text-xs font-medium ${
+                                statusObj.color === "#22c55e" ? "text-green-800" :
+                                statusObj.color === "#ef4444" ? "text-red-800" : "text-yellow-800"
+                            }`}>
+                                {statusObj.label}
                             </Text>
-                        </Pressable>
-                    ) : null}
+                        </View>
+                    </View>
                 </View>
-
-                {/* PDF Certificate Download */}
-                {(() => {
-                    console.log('📋 PDF DOWNLOAD SECTION DEBUG:', {
-                        card_id: card.war_card_id,
-                        has_terms_document_url: !!card.terms_document_url,
-                        terms_document_url_value: card.terms_document_url,
-                        condition_result: card.terms_document_url && true,
-                        will_show_download: !!card.terms_document_url
-                    });
-
-                    if (card.terms_document_url) {
-                        console.log('✅ SHOWING PDF DOWNLOAD BUTTON for card:', card.war_card_id);
-                        return (
-                            <View className="flex-row items-center justify-center mt-2 pt-2 border-t border-black/10">
-                                <Pressable
-                                    onPress={() => {
-                                        console.log('📥 PDF DOWNLOAD PRESSED:', {
-                                            card_id: card.war_card_id,
-                                            url: card.terms_document_url
-                                        });
-                                        Linking.openURL(card.terms_document_url!);
-                                    }}
-                                    className="flex-row items-center px-3 py-1.5 bg-black rounded-lg"
-                                >
-                                    <Feather name="download" size={14} color="#fde047" />
-                                    <Text className="ml-1.5 text-xs font-semibold text-yellow-300">
-                                        Download Certificate PDF
-                                    </Text>
-                                </Pressable>
-                            </View>
-                        );
-                    } else {
-                        console.log('❌ NOT SHOWING PDF DOWNLOAD BUTTON for card:', card.war_card_id, 'because terms_document_url is:', card.terms_document_url);
-                        return null;
-                    }
-                })()}
             </View>
+
+            {/* Certificate Information Table */}
+            <View className="border border-gray-300 mx-4 mt-4 rounded-lg overflow-hidden">
+                <CertificateRow
+                    label="Certificate No."
+                    value={card.certificate_no}
+                />
+                <CertificateRow
+                    label="Date of Issue"
+                    value={formatDate(card.issued_at)}
+                />
+                <CertificateRow
+                    label="Invoice No."
+                    value={card.invoice_no || "N/A"}
+                />
+                <CertificateRow
+                    label="Invoice Date"
+                    value={formatDate(card.invoice_date)}
+                />
+                <CertificateRow
+                    label="Customer Name"
+                    value={card.company_name || "N/A"}
+                />
+                <CertificateRow
+                    label="Client ID"
+                    value={card.client_id || "N/A"}
+                />
+                <CertificateRow
+                    label="Product Name / Model No."
+                    value={card.kit_id || card.serial_number || "N/A"}
+                />
+                <CertificateRow
+                    label="Project ID"
+                    value={card.project_id || "N/A"}
+                />
+                <CertificateRow
+                    label="Installation Location"
+                    value={installationLocation}
+                />
+                <CertificateRow
+                    label="Warranty Start Date"
+                    value={formatDate(card.warranty_started_at)}
+                />
+                <View className="flex-row border-b-0">
+                    <View className="flex-1 px-3 py-2 bg-gray-50 border-r border-gray-300">
+                        <Text className="text-xs font-medium text-black">
+                            Warranty Period
+                        </Text>
+                    </View>
+                    <View className="flex-[2] px-3 py-2 bg-white">
+                        <Text className="text-xs font-semibold text-blue-900">
+                            {warrantyPeriod} (Until {formatDate(card.expires_at)})
+                        </Text>
+                    </View>
+                </View>
+            </View>
+
+            {/* Coverage Scope */}
+            <View className="mx-4 mt-4">
+                <Text className="text-sm font-semibold text-gray-800 mb-2">Coverage Scope:</Text>
+                <View className="bg-blue-50 rounded-lg p-3">
+                    {STANDARD_COVERAGE_POINTS.map((point, index) => (
+                        <View key={index} className="flex-row items-start mb-1">
+                            <Text className="text-blue-600 mr-2">•</Text>
+                            <Text className="text-xs text-blue-800 flex-1">{point}</Text>
+                        </View>
+                    ))}
+                </View>
+            </View>
+
+            {/* Transferable Status */}
+            <View className="mx-4 mt-3">
+                <View className="flex-row items-center">
+                    <Text className="text-xs text-gray-600 mr-2">Transferable:</Text>
+                    <Text className={`text-xs font-medium ${card.is_transferable ? 'text-green-600' : 'text-gray-800'}`}>
+                        {card.is_transferable ? "Yes" : "No"}
+                    </Text>
+                </View>
+            </View>
+
+            {/* PDF Download Section */}
+            {card.terms_document_url && (
+                <View className="mx-4 mt-4 mb-4">
+                    <Pressable
+                        onPress={() => Linking.openURL(card.terms_document_url!)}
+                        className="bg-blue-900 rounded-lg py-3 px-4 flex-row items-center justify-center"
+                    >
+                        <Feather name="download" size={16} color="#fbbf24" />
+                        <Text className="ml-2 text-sm font-semibold text-white">
+                            Download Official Certificate
+                        </Text>
+                    </Pressable>
+                </View>
+            )}
         </View>
     );
 };
