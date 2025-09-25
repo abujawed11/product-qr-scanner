@@ -36,6 +36,7 @@ type WarrantyCardDetail = {
   company_name?: string;
   installation_latitude?: number;
   installation_longitude?: number;
+  kit_no?: string;
 };
 
 // Groups cards by project_id and then kit_id using direct model fields
@@ -189,9 +190,37 @@ export default function MyWarrantyCardsScreen() {
                       {/* Cards for this kit */}
                       {expandedKit[kitId] && (
                         <View style={{ paddingHorizontal: 2, paddingTop: 5 }}>
-                          {grouped[projectId][kitId].map(card =>
-                            <WarrantyCard key={card.war_card_id} card={card} />
-                          )}
+                          {grouped[projectId][kitId].map((card, index) => (
+                            <View key={card.war_card_id} style={{ marginBottom: 8 }}>
+                              {/* Kit Number Header - Sequential numbering like my-scans */}
+                              <View style={{
+                                backgroundColor: "#f0f0f0",
+                                borderRadius: 8,
+                                paddingHorizontal: 12,
+                                paddingVertical: 6,
+                                marginBottom: 4,
+                                borderLeftWidth: 4,
+                                borderLeftColor: "#FAD90E"
+                              }}>
+                                <Text style={{
+                                  color: "#333",
+                                  fontWeight: "bold",
+                                  fontSize: 14
+                                }}>
+                                  📦 Kit No: {card.kit_no || "N/A"}
+                                </Text>
+                                <Text style={{
+                                  color: "#666",
+                                  fontSize: 12,
+                                  marginTop: 2
+                                }}>
+                                  🏗️ Project: {card.project_id || "N/A"} • 🔧 Model: {card.kit_id || "N/A"}
+                                </Text>
+                              </View>
+                              {/* Warranty Card */}
+                              <WarrantyCard card={card} />
+                            </View>
+                          ))}
                         </View>
                       )}
                     </View>

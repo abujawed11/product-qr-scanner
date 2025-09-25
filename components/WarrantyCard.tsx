@@ -23,6 +23,7 @@ export type WarrantyCardProps = {
     // Installation Information
     installation_latitude?: number | string | null;   // Installation Location (GPS)
     installation_longitude?: number | string | null;  // Installation Location (GPS)
+    kit_no?: string | null;              // Kit number from warranty claim
 
     // Warranty Period Information
     warranty_started_at: string;     // Warranty Start Date - YYYY-MM-DD
