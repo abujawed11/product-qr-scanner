@@ -81,7 +81,7 @@ function formatInstallationLocation(lat?: number | string | null, lng?: number |
                 return `${latNum.toFixed(6)}, ${lngNum.toFixed(6)}`;
             }
         } catch (error) {
-            console.log('Error formatting installation location:', error);
+            // console.log('Error formatting installation location:', error);
         }
     }
     return "N/A";
@@ -128,26 +128,26 @@ export const WarrantyCard: FC<{ card: WarrantyCardProps }> = ({ card }) => {
     const statusObj = getWarrantyStatus(card);
 
     // Debug installation location data
-    console.log('🔍 INSTALLATION LOCATION DEBUG for card', card.war_card_id, ':', {
-        installation_latitude: card.installation_latitude,
-        installation_latitude_type: typeof card.installation_latitude,
-        installation_longitude: card.installation_longitude,
-        installation_longitude_type: typeof card.installation_longitude,
-        raw_card_data: {
-            installation_latitude: card.installation_latitude,
-            installation_longitude: card.installation_longitude,
-            // Check if data might be under different field names
-            device_latitude: (card as any).device_latitude,
-            device_longitude: (card as any).device_longitude,
-            latitude: (card as any).latitude,
-            longitude: (card as any).longitude,
-        }
-    });
+    // console.log('🔍 INSTALLATION LOCATION DEBUG for card', card.war_card_id, ':', {
+    //     installation_latitude: card.installation_latitude,
+    //     installation_latitude_type: typeof card.installation_latitude,
+    //     installation_longitude: card.installation_longitude,
+    //     installation_longitude_type: typeof card.installation_longitude,
+    //     raw_card_data: {
+    //         installation_latitude: card.installation_latitude,
+    //         installation_longitude: card.installation_longitude,
+    //         // Check if data might be under different field names
+    //         device_latitude: (card as any).device_latitude,
+    //         device_longitude: (card as any).device_longitude,
+    //         latitude: (card as any).latitude,
+    //         longitude: (card as any).longitude,
+    //     }
+    // });
 
     const installationLocation = formatInstallationLocation(card.installation_latitude, card.installation_longitude);
     const warrantyPeriod = getWarrantyPeriodDisplay(card.warranty_duration_months);
 
-    console.log('🏠 FORMATTED INSTALLATION LOCATION:', installationLocation);
+    // console.log('🏠 FORMATTED INSTALLATION LOCATION:', installationLocation);
 
     return (
         <View className="rounded-xl border border-gray-300 bg-white shadow-lg mx-4 my-3 overflow-hidden">

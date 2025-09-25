@@ -82,6 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       queryClient.invalidateQueries({ queryKey: ["myOrders"] });
       queryClient.invalidateQueries({ queryKey: ["myWarrantyClaims"] });
       queryClient.invalidateQueries({ queryKey: ["myWarrantyCards"] });
+      queryClient.invalidateQueries({ queryKey: ["warrantyStatusById"] });
 
     } catch (error) {
       console.error('Login error:', error);

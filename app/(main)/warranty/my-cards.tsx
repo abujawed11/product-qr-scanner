@@ -41,7 +41,7 @@ type WarrantyCardDetail = {
 
 // Groups cards by project_id and then kit_id using direct model fields
 function groupByProjectAndKit(cards: WarrantyCardDetail[]): Record<string, Record<string, WarrantyCardDetail[]>> {
-  console.log('📊 GROUPING WARRANTY CARDS:', cards.length, 'cards');
+  // console.log('📊 GROUPING WARRANTY CARDS:', cards.length, 'cards');
 
   return cards.reduce((acc, card) => {
     // Use direct project_id from model, fallback to "Unknown" if not available
@@ -49,7 +49,7 @@ function groupByProjectAndKit(cards: WarrantyCardDetail[]): Record<string, Recor
     // Use direct kit_id from model, fallback to serial_number, then "Unknown"
     const kitId = card.kit_id || card.serial_number || "Unknown Kit";
 
-    console.log(`🏗️ Card ${card.war_card_id}: project_id="${card.project_id}" → "${projectId}", kit_id="${card.kit_id}" → "${kitId}"`);
+    // console.log(`🏗️ Card ${card.war_card_id}: project_id="${card.project_id}" → "${projectId}", kit_id="${card.kit_id}" → "${kitId}"`);
 
     if (!acc[projectId]) acc[projectId] = {};
     if (!acc[projectId][kitId]) acc[projectId][kitId] = [];
@@ -64,7 +64,7 @@ export default function MyWarrantyCardsScreen() {
     queryKey: ["myWarrantyCards"],
     queryFn: async () => {
       const res = await api.get("/warranty-cards/my/");
-      console.log('🔍 WARRANTY CARDS API RESPONSE:', JSON.stringify(res.data, null, 2));
+      // console.log('🔍 WARRANTY CARDS API RESPONSE:', JSON.stringify(res.data, null, 2));
       return res.data;
     },
   });
