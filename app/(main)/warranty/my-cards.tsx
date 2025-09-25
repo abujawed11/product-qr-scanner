@@ -29,19 +29,27 @@ type WarrantyCardDetail = {
   is_transferable: boolean;
   issued_at: string;
   terms_document_url?: string;
+  // New direct fields from model
+  project_id?: string;
+  kit_id?: string;
+  client_id?: string;
+  company_name?: string;
+  installation_latitude?: number;
+  installation_longitude?: number;
 };
 
-// Extracts the last dash segment as project_id from certificate_no
-function extractProjectId(certificateNo: string): string {
-  const parts = certificateNo.split("-");
-  return parts[parts.length - 1];
-}
-
-// Groups cards by project_id and then kit_id
+// Groups cards by project_id and then kit_id using direct model fields
 function groupByProjectAndKit(cards: WarrantyCardDetail[]): Record<string, Record<string, WarrantyCardDetail[]>> {
+  console.log('📊 GROUPING WARRANTY CARDS:', cards.length, 'cards');
+
   return cards.reduce((acc, card) => {
-    const projectId = extractProjectId(card.certificate_no);
-    const kitId = card.serial_number || "Unknown";
+    // Use direct project_id from model, fallback to "Unknown" if not available
+    const projectId = card.project_id || "Unknown Project";
+    // Use direct kit_id from model, fallback to serial_number, then "Unknown"
+    const kitId = card.kit_id || card.serial_number || "Unknown Kit";
+
+    console.log(`🏗️ Card ${card.war_card_id}: project_id="${card.project_id}" → "${projectId}", kit_id="${card.kit_id}" → "${kitId}"`);
+
     if (!acc[projectId]) acc[projectId] = {};
     if (!acc[projectId][kitId]) acc[projectId][kitId] = [];
     acc[projectId][kitId].push(card);
@@ -55,6 +63,7 @@ export default function MyWarrantyCardsScreen() {
     queryKey: ["myWarrantyCards"],
     queryFn: async () => {
       const res = await api.get("/warranty-cards/my/");
+      console.log('🔍 WARRANTY CARDS API RESPONSE:', JSON.stringify(res.data, null, 2));
       return res.data;
     },
   });
@@ -136,9 +145,17 @@ export default function MyWarrantyCardsScreen() {
                   backgroundColor: "#2B2B2B",
                 }}
               >
-                <Text style={{ fontWeight: "bold", color: "#FAD90E", fontSize: 16 }}>
-                  🏗️ Project ID: {projectId}
-                </Text>
+                <View>
+                  <Text style={{ fontWeight: "bold", color: "#FAD90E", fontSize: 16 }}>
+                    🏗️ Project: {projectId}
+                  </Text>
+                  {/* Show company name if available */}
+                  {grouped[projectId] && Object.values(grouped[projectId])[0]?.[0]?.company_name && (
+                    <Text style={{ color: "#CCC", fontSize: 12, marginTop: 2 }}>
+                      📍 {Object.values(grouped[projectId])[0][0].company_name}
+                    </Text>
+                  )}
+                </View>
                 <Text style={{ fontSize: 19, color: "#FAD90E", fontWeight: "bold" }}>
                   {expandedProj[projectId] ? "−" : "+"}
                 </Text>

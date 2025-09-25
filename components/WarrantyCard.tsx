@@ -15,9 +15,9 @@ export type WarrantyCardProps = {
     coverage_description?: string | null;
     is_transferable: boolean;
     issued_at: string; // ISO datetime
-    terms_document_url?: string | null;
+    terms_document_url?: string | null; // Certificate PDF URL
     claim?: {
-        pdf_url?: string | null;
+        war_req_id?: string | null;
     };
 };
 
@@ -43,6 +43,17 @@ function getWarrantyStatus(card: WarrantyCardProps): { label: string; color: str
 }
 
 export const WarrantyCard: FC<{ card: WarrantyCardProps }> = ({ card }) => {
+
+    // Debug logs to understand PDF URL issue
+    console.log('🔍 WARRANTY CARD DEBUG:', {
+        war_card_id: card.war_card_id,
+        certificate_no: card.certificate_no,
+        terms_document_url: card.terms_document_url,
+        terms_document_url_type: typeof card.terms_document_url,
+        terms_document_url_length: card.terms_document_url?.length,
+        claim_object: card.claim,
+        full_card_data: JSON.stringify(card, null, 2)
+    });
 
     const statusObj = getWarrantyStatus(card);
 
@@ -144,19 +155,41 @@ export const WarrantyCard: FC<{ card: WarrantyCardProps }> = ({ card }) => {
                 </View>
 
                 {/* PDF Certificate Download */}
-                {card.claim?.pdf_url && (
-                    <View className="flex-row items-center justify-center mt-2 pt-2 border-t border-black/10">
-                        <Pressable
-                            onPress={() => Linking.openURL(card.claim!.pdf_url!)}
-                            className="flex-row items-center px-3 py-1.5 bg-black rounded-lg"
-                        >
-                            <Feather name="download" size={14} color="#fde047" />
-                            <Text className="ml-1.5 text-xs font-semibold text-yellow-300">
-                                Download Certificate PDF
-                            </Text>
-                        </Pressable>
-                    </View>
-                )}
+                {(() => {
+                    console.log('📋 PDF DOWNLOAD SECTION DEBUG:', {
+                        card_id: card.war_card_id,
+                        has_terms_document_url: !!card.terms_document_url,
+                        terms_document_url_value: card.terms_document_url,
+                        condition_result: card.terms_document_url && true,
+                        will_show_download: !!card.terms_document_url
+                    });
+
+                    if (card.terms_document_url) {
+                        console.log('✅ SHOWING PDF DOWNLOAD BUTTON for card:', card.war_card_id);
+                        return (
+                            <View className="flex-row items-center justify-center mt-2 pt-2 border-t border-black/10">
+                                <Pressable
+                                    onPress={() => {
+                                        console.log('📥 PDF DOWNLOAD PRESSED:', {
+                                            card_id: card.war_card_id,
+                                            url: card.terms_document_url
+                                        });
+                                        Linking.openURL(card.terms_document_url!);
+                                    }}
+                                    className="flex-row items-center px-3 py-1.5 bg-black rounded-lg"
+                                >
+                                    <Feather name="download" size={14} color="#fde047" />
+                                    <Text className="ml-1.5 text-xs font-semibold text-yellow-300">
+                                        Download Certificate PDF
+                                    </Text>
+                                </Pressable>
+                            </View>
+                        );
+                    } else {
+                        console.log('❌ NOT SHOWING PDF DOWNLOAD BUTTON for card:', card.war_card_id, 'because terms_document_url is:', card.terms_document_url);
+                        return null;
+                    }
+                })()}
             </View>
         </View>
     );
