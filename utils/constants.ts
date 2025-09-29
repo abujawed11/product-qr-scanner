@@ -5,7 +5,7 @@
 
 //const url = "http://10.20.2.78:8001"; //working in Office
 
- const url = "https://rcckitportal.sun-rack.com";
+const url = "https://rcckitportal.sun-rack.com";
 
 export const BASE_URL = `${url}/api`; 
 
